@@ -2,7 +2,7 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>创建问卷调查</title>
+        <title>我的调查问卷</title>
         <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
         <link href="/static/css/style.css" rel="stylesheet">
         <style>
@@ -44,7 +44,7 @@
                         <td>
                             <a th:href="'/questionnaire/design/'+${q.id}" target="_blank" th:if="${q.status==0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">设计</a>
                             <button th:if="${q.status!=0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">统计&分析</button>
-                            <button class="hover-show layui-btn layui-btn-warm layui-btn-xs">预览</button>
+                            <a th:href="'/questionnaire/preview/'+${q.id}" class="hover-show layui-btn layui-btn-warm layui-btn-xs">预览</a>
                             <button class="hover-show layui-btn layui-btn-danger layui-btn-xs">删除</button>
                         </td>
                         <td>

@@ -27,8 +27,9 @@
                     <div class="tool-body">
                         <ul>
                             <li class="draggable tool" data-id="" data-type="3">
-                                <div class="q-header"><span class="num"></span>、
-                                    <input name="" type="text" value="题目标题"></div>
+                                <div class="q-header">
+                                    <span class="num"></span>、
+                                    <input name="" style="width: 90%" type="text" value="题目标题"></div>
                                 <div class="q-body">
                                     <span>
                                         <input name="" type="radio">
@@ -66,7 +67,7 @@
                             <li class="draggable tool" data-id="" data-type="4">
                                 <div class="q-header">
                                     <span class="num"></span>、
-                                    <input name="" type="text" value="题目标题">
+                                    <input name="" style="width: 90%" type="text" value="题目标题">
                                 </div>
                                 <div class="q-body">
                                     <span>
@@ -103,8 +104,9 @@
                         <ul>
                             <!-- 单行填空题 -->
                             <li class="draggable tool" data-id="" data-type="1">
-                                <div class="q-header"><span class="num"></span>、
-                                    <input name="" type="text" value="题目标题">
+                                <div class="q-header">
+                                    <span class="num"></span>、
+                                    <input name="" style="width: 90%" type="text" value="题目标题">
                                 </div>
                                 <div class="q-body">
                                     <input name="" type="text">
@@ -127,7 +129,7 @@
                             <li class="draggable tool" data-id="" data-type="2">
                                 <div class="q-header">
                                     <span class="num"></span>、
-                                    <input name="" type="text" value="题目标题">
+                                    <input name="" style="width: 90%" type="text" value="题目标题">
                                 </div>
                                 <div class="q-body">
                                     <textarea style="width: 100%"></textarea>
@@ -190,12 +192,12 @@
                     th:data-id="${qe.id}" th:data-type="${qe.questionType}">
                     <div class="q-header" th:if="${qe.questionType ne 5}">
                         <span class="num" th:text="${qe.questionNum}"></span>、
-                        <input name="" th:value="${qe.questionTitle}" type="text">
+                        <input name="" style="width: 90%" th:value="${qe.questionTitle}" type="text">
                     </div>
                     <div class="q-body">
                         <input name="" th:if="${qe.questionType eq 1}" th:placeholder="${qe.inputPlaceholder}"
                                type="text">
-                        <textarea cols="10" th:if="${qe.questionType eq 2}"
+                        <textarea cols="10" style="width: 100%" th:if="${qe.questionType eq 2}"
                                   th:placeholder="${qe.inputPlaceholder}"></textarea>
                         <span th:if="${qe.questionType eq 3}" th:each="qo :${qe.options}" >
                             <input name="" type="radio">
@@ -294,14 +296,14 @@
                 data: JSON.stringify(questionnaire),
                 success: function (data) {
                     if (data.code === 200) {
-                        notify("success", "保存成功！");
+                        layer.msg('保存成功！', {icon: 6});
                     }else{
-                        notify("error", "保存失败！");
+                        layer.msg('保存失败！'+data.data, {icon: 5});
                     }
                     console.log(data);
                 },
                 error: function (data) {
-                    notify("error", "保存失败！");
+                    layer.msg('保存失败！', {icon: 0});
                     console.log(data)
                 }
             });
@@ -309,8 +311,25 @@
             console.log(questionnaire);
         }
 
+        function publish(){
+            let questionnaireId = $("#questionnaire-id");
+            if(questionnaireId==undefined)
+                return ;
+            $.post("/questionnaire/design/publishQuestionnaire/",
+                {questionnaireId:questionnaireId.val()},
+                function (data){
+                    if(data.code === 200){
+                        layer.msg("发布成功！",{icon:6});
+                    }else{
+                        layer.msg("发布失败！",{icon:5});
+                    }
+                }
+            )
+        }
+
         $(function () {
             $("#save-btn").click(saveChange); //保存设计
+            $("#publish-btn").click(publish); //发布问卷
 
             $("#questions").sortable({
                 cursor: 'move',
@@ -362,16 +381,18 @@
             updateQuestionIndex(list); //删除问题，重新更新问题题号
             if (id !== '' && id !== '0') {
                 $.ajax({
-                    url: "/deleteQuestion",
+                    url: "/questionnaire/design/delQuestion",
                     type: "post",
                     data: {"questionId": id},
                     success: function (data) {
-                        if (data.code === 1) {
-                            notify("success", "删除成功！");
+                        if (data.code === 200) {
+                            layer.msg('删除问题成功！', {icon: 6});
                             saveChange();
+                        }else{
+                            layer.msg('删除问题失败！', {icon: 5});
                         }
                     }, error: function (data) {
-                        notify("error", "删除失败！");
+                        layer.msg('删除问题失败！', {icon: 0});
                     }
                 });
             }
@@ -404,46 +425,21 @@
             e.parentNode.parentNode.removeChild(e.parentNode);
             if (id !== undefined && id !== '' && id !== '0') {
                 $.ajax({
-                    url: "/deleteQuestionOption",
+                    url: "/questionnaire/design/delOption",
                     type: "post",
                     data: {"optionId": id},
                     success: function (data) {
-                        if (data.code === 1) {
-                            notify("success", "删除选项成功！");
+                        if (data.code === 200) {
+                            layer.msg('删除选项成功！', {icon: 6});
                         } else {
-                            notify("error", "删除选项失败！" + data.mess);
+                            layer.msg('删除选项失败！', {icon: 5});
                         }
                     }, error: function (data) {
-                        notify("error", "删除成功！");
+                        layer.msg('删除选项失败！'+data.data, {icon: 0});
                     }
                 });
             }
         }
-
-        //通知
-        function notify(type, msg, delayHid) {
-            $(".notify-div").remove();
-            if (delayHid == null) {
-                delayHid = 5000;
-            }
-            if (type == null)
-                type = "";
-            $("<div>")
-                .appendTo(document.body)
-                .text(msg)
-                .addClass("notify-div " + type)
-                .show({
-                    effect: "blind"
-                })
-                .delay(delayHid)
-                .hide({
-                    effect: "blind",
-                    duration: "slow"
-                }, function () {
-                    $(this).remove();
-                });
-        }
-
         //防止用户无意间关闭网页，造成未保存的数据丢失！
         window.onbeforeunload = function (e) {
             var e = window.event || e;

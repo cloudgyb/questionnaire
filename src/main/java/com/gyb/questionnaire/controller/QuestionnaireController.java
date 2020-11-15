@@ -53,6 +53,17 @@ public class QuestionnaireController {
         m.addAttribute("q",questionnaire);
         return "questionnaire_design";
     }
+    /**
+     * 预览问卷页面
+     */
+    @GetMapping("/preview/{questionnaireId}")
+    @RequiredLogin
+    public String previewQuestionnairePage(@PathVariable String questionnaireId, Model m) {
+        final QuestionnaireDTO questionnaire = questionnaireService.getUserQuestionnaireDetail(questionnaireId);
+        m.addAttribute("qa",questionnaire);
+        return "questionnaire_view";
+    }
+
 
     /**
      * 保存问卷信息
@@ -63,6 +74,39 @@ public class QuestionnaireController {
     public ResponseResult saveQuestionnaire(@RequestBody QuestionnaireDTO dto){
         System.out.println(dto);
         return questionnaireService.saveQuestionnaire(dto);
+    }
+
+    /**
+     * 发布问卷
+     */
+    @PostMapping("/design/publishQuestionnaire")
+    @RequiredLogin
+    @ResponseBody
+    public ResponseResult publishQuestionnaire(@RequestParam String questionnaireId){
+        return questionnaireService.publishQuestionnaire(questionnaireId);
+    }
+    /**
+     * 删除问题
+     * @param questionId 问题id
+     */
+    @PostMapping("/design/delQuestion")
+    @RequiredLogin
+    @ResponseBody
+    public ResponseResult deleteQuestion(@RequestParam String questionId){
+        questionnaireService.deleteQuestion(questionId);
+        return ResponseResult.ok();
+    }
+
+    /**
+     * 删除问题选项
+     * @param optionId 选项id
+     */
+    @PostMapping("/design/delOption")
+    @RequiredLogin
+    @ResponseBody
+    public ResponseResult deleteQuestionOption(@RequestParam String optionId){
+        questionnaireService.deleteQuestionOption(optionId);
+        return ResponseResult.ok();
     }
 
     @RequiredLogin

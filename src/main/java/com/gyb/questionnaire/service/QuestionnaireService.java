@@ -146,6 +146,10 @@ public class QuestionnaireService {
         final Questionnaire questionnaire = questionnaireDao.findByIdAndUserId(dto.getId(),u.getId());
         if(questionnaire == null)
             return errR;
+        if(questionnaire.getStatus() != 0){
+            String errMsg = questionnaire.getStatus()==1?"问卷已发布无法保存更新！":"问卷已结束无法编辑！";
+            return ResponseResult.error(errMsg);
+        }
         questionnaire.setName(dto.getName());
         questionnaire.setGreeting(dto.getGreeting());
         final List<QuestionnaireQuestionDTO> questions = dto.getQuestions();
@@ -182,5 +186,28 @@ public class QuestionnaireService {
                 optionDao.add(option);
             }
         }
+    }
+
+    /**
+     * 删除问卷中问题
+     */
+    public void deleteQuestion(String questionId) {
+        questionDao.delete(questionId);
+        optionDao.deleteByQuestionId(questionId);
+    }
+    /**
+     * 删除问卷中问题的选项
+     */
+    public void deleteQuestionOption(String optionId) {
+        optionDao.delete(optionId);
+    }
+
+    public ResponseResult publishQuestionnaire(String questionnaireId) {
+        final Questionnaire questionnaire = getUserQuestionnaire(questionnaireId);
+        if(questionnaire == null)
+            return ResponseResult.error("问卷不存在或已被删除");
+        questionnaire.setStatus(1);
+        questionnaireDao.update(questionnaire);
+        return ResponseResult.ok();
     }
 }
