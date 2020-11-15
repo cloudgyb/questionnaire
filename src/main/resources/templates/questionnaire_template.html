@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>问卷模板</title>
+        <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
+        <link href="/static/css/style.css" rel="stylesheet">
+        <style>
+            .layui-card {
+                box-shadow: 0 0 8px #ccc;
+            }
+            .layui-card:hover{
+                box-shadow: 0 0 10px #1E9FFF;
+            }
+            .layui-card-body{
+                height: 80px;
+                color: #808080;
+                font-size: 13px;
+            }
+        </style>
+    </head>
+    <body>
+        <div th:insert="~{header}"></div>
+        <div class="layui-bg-blue" style="height: 100px;padding: 10px 0">
+            <div class="layui-container" style="width: 600px;line-height: 100px">
+                <input class="layui-input" lay-verify="required" name="keyword"
+                       placeholder="输入关键词，立即搜索你想要的问卷模板" required style="width: 300px;display: inline-block"
+                       type="search">
+                <button class="layui-btn layui-btn-primary layui-icon layui-icon-search">立即搜索</button>
+            </div>
+        </div>
+        <div class="layui-container" style="margin-top:10px;margin-bottom: 20px">
+            <h1 style="margin: 20px 0"><i class="layui-icon layui-icon-list" style="font-size: 35px"></i>海量调查问卷模板供您选择</h1>
+            <div class="layui-row layui-col-space20">
+                <div class="layui-col-md4" th:each="category : ${categories}">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            <a th:href="'/template/list/'+${category.id}">
+                                <h3 th:text="${category.typeName}"></h3>
+                            </a>
+                        </div>
+                        <div class="layui-card-body" th:text="${category.typeDesc}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:insert="footer.html"></div>
+        <div style="position: fixed;top:30%;right: 0;">
+            <button class="text-primary layui-icon layui-icon-add-1" id="createBtn"
+                    style="cursor:pointer;font-size:50px;width:60px;height:60px;border-radius: 50%;border: 1px #ccc solid;box-shadow: 0 0 10px yellowgreen"
+                    title="立即创建问卷"></button>
+        </div>
+    </body>
+    <script src="/static/lib/layui/layui.all.js"></script>
+    <script src="/static/lib/jquery-1.9.1.min.js"></script>
+    <script>
+    </script>
+</html>

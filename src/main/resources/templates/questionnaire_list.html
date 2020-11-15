@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>创建问卷调查</title>
+        <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
+        <link href="/static/css/style.css" rel="stylesheet">
+        <style>
+            table tbody tr:hover td[class~=hover] {
+                color: #1E9FFF;
+            }
+            table tbody tr td *[class~=hover-show]{
+                display: none;
+            }
+            table tbody tr:hover td *[class~=hover-show]{
+                display: inline-block;
+            }
+            .layui-btn-xs {
+                height: 20px;
+                line-height: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div th:insert="~{header}"></div>
+        <div class="layui-container">
+            <h1 class="text-primary" style="margin: 20px 0">
+                <i class="layui-icon layui-icon-list" style="font-size: 35px"></i>
+                我的问卷
+            </h1>
+            <table class="layui-table" lay-size="lg" lay-skin="line">
+                <thead>
+                    <tr>
+                        <th style="width: 10%">No.</th>
+                        <th style="width: 30%" colspan="3">问卷名称</th>
+                        <th style="width: 30%"></th>
+                        <th style="width: 30%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="q,stat :${list}">
+                        <td th:text="${stat.count}"></td>
+                        <td th:text="${q.name}" colspan="3" class="hover" style="font-size: 18px"></td>
+                        <td>
+                            <a th:href="'/questionnaire/design/'+${q.id}" target="_blank" th:if="${q.status==0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">设计</a>
+                            <button th:if="${q.status!=0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">统计&分析</button>
+                            <button class="hover-show layui-btn layui-btn-warm layui-btn-xs">预览</button>
+                            <button class="hover-show layui-btn layui-btn-danger layui-btn-xs">删除</button>
+                        </td>
+                        <td>
+                            <span th:text="'创建于'+${#dates.format( q.createDate,'yyyy/MM/dd')}"></span>
+                            <span>共<span th:text="${q.questionCount}" class="layui-badge layui-bg-blue"></span>题</span>
+                            <span th:switch="${q.status}" class="layui-badge layui-bg-orange">
+                                <span th:case="0">设计中</span>
+                                <span th:case="1">问卷收集中</span>
+                                <span th:case="2">问卷已结束</span>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+    <script src="/static/lib/layui/layui.all.js"></script>
+    <script src="/static/lib/jquery-1.9.1.min.js"></script>
+    <script>
+    </script>
+</html>

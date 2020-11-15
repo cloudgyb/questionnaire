@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>创建问卷调查</title>
+        <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
+        <link href="/static/css/style.css" rel="stylesheet">
+        <style>
+        </style>
+    </head>
+    <body>
+        <div th:insert="~{header}"></div>
+        <div class="layui-container">
+            <form class="layui-form" style="width: 550px;margin: 0 auto">
+                <h1 style="margin: 20px 0">
+                    <i class="layui-icon layui-icon-list" style="font-size: 35px"></i>
+                    创建调查问卷
+                </h1>
+                <div class="layui-form-item">
+                    <input required lay-reqText="请输入问卷名称"
+                           lay-verify="required" class="layui-input" name="name" placeholder="问卷名称" type="text">
+                </div>
+<!--                <div class="layui-form-item">-->
+<!--                    <input class="layui-input" disabled placeholder="点击选择问卷模板(非必须)" type="text">-->
+<!--                    <input hidden name="templateId" type="text"/>-->
+<!--                </div>-->
+                <div class="layui-form-item">
+                    <input class="layui-input" name="greeting" placeholder="问卷说明是为参与者阐述该问卷调查的目的，也可以写欢迎语"
+                           type="text">
+                </div>
+                <div class="layui-form-item">
+                    <button class="layui-btn layui-btn-normal" lay-filter="submitBtn"
+                            lay-submit style="width: 100%">立即创建</button>
+                </div>
+                <div class="layui-form-item">
+                    <a href="/template" class="layui-btn layui-btn-primary" style="width: 100%">从模板创建问卷</a>
+                </div>
+            </form>
+        </div>
+        <div th:insert="footer.html" style="position: fixed;bottom: 0;left:0;right: 0"></div>
+    </body>
+    <script src="/static/lib/layui/layui.all.js"></script>
+    <script src="/static/lib/jquery-1.9.1.min.js"></script>
+    <script>
+        const form = layui.use('form', function () {
+            const form = layui.form;
+            form.on('submit(submitBtn)', function (data) {
+                $.post('/questionnaire/doCreate', data.field, function (resp) {
+                    console.log(resp)
+                    if (resp.code === 500) {
+                        layer.msg(resp.msg, {icon: 5});
+                    } else if (resp.code === 200) {
+                        layer.msg("创建成功！", {icon: 6});
+                        document.location.href = "/questionnaire/design/"+resp.data;
+                    } else {
+                        layer.msg(resp.msg, {icon: 0});
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</html>

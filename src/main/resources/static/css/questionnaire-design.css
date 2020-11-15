@@ -1,0 +1,148 @@
+/* 全局基本样式*/
+li{
+    list-style: none;
+}
+.draggable{
+    cursor: move;
+}
+
+/*问题快捷拖拽区域*/
+#question-draggable-wrap{
+    position: fixed;
+    left: 0;
+    padding: 10px;
+    top:100px;
+    width: 70px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    box-shadow: 0 0 5px #ccc;
+}
+#question-draggable-wrap ul li{
+    display: block;
+    width: 50px;
+    height: 50px;
+    background-size: contain;
+    cursor: move;
+}
+#question-draggable-wrap ul li:hover{
+    box-shadow: 0 0 5px #ccc;
+}
+
+/* 问题展示区样式 */
+#question-container{
+    margin: 0 auto;
+    width: 760px;
+    height: 550px;
+    max-height: 550px;
+    padding: 20px 40px;
+    background: white;
+    z-index: 1;
+    overflow-y: scroll;
+}
+#question-container li{
+    display: block;
+    margin: 10px 20px;
+    width: 90%;
+    padding: 5px ;
+    position: relative;
+}
+#question-container li:hover{
+    background-color: #ccc;
+}
+#question-container li div.layui-btn-group{
+    text-align: center;
+    display: none;
+}
+#question-container li:hover div.layui-btn-group{
+    display: block;
+}
+#questions{
+    min-height: 600px;
+}
+#questions li div{
+    margin-bottom: 5px;
+}
+.q-header{
+    width: 100%;
+}
+.q-header input{
+    font-size: 15px;
+    height: 30px;
+    outline: none;
+    border:1px rgba(0,0,0,0) solid;
+}
+.q-header input:hover,.q-header input:focus{
+    border:1px #ccc solid;
+    border-radius: 5px;
+}
+.q-body{
+    margin-left: 10px;
+}
+.q-body input{
+    margin-bottom: 8px;
+}
+.del-option{
+    display: none;
+    cursor: pointer;
+}
+.tool-body{
+    display: none;
+}
+.q-body span:hover .del-option{
+    display: inline;
+    font-size: 18px;
+}
+/* 顶部各题目背景样式 */
+.radio-bg{
+    background: transparent url(/static/images/radio.bmp) no-repeat;
+}
+.input-bg{
+    background: transparent url(/static/images/input.bmp) no-repeat;
+}
+.checkbox-bg{
+    background: transparent url(/static/images/checkbox.bmp) no-repeat;
+}
+.textarea-bg{
+    background: transparent url(/static/images/textarea.bmp) no-repeat;
+}
+.line-bg{
+    background: transparent url(/static/images/line.bmp) no-repeat;
+}
+
+/* 通知div */
+.notify-div{
+    position: absolute;
+    top:20%;
+    right: 10%;
+    min-width: 200px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    background-color: white;
+    border: 1px #ccc solid;
+    border-radius:5px;
+    z-index: 2000;
+}
+.notify-div.success{
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+.notify-div.info{
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+.notify-div.warning{
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+}
+.notify-div.error{
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>问卷模板</title>
+        <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
+        <link href="/static/css/style.css" rel="stylesheet">
+        <style>
+            .layui-card {
+                box-shadow: 0 0 8px #ccc;
+            }
+
+            .layui-card-header {
+                height: 50px;
+                line-height: 50px;
+            }
+
+            .layui-card-body {
+                margin: 20px 0;
+            }
+            .template-title{
+                font-size: 18px!important;
+            }
+            .template-title:hover{
+                color: #1E9FFF;
+            }
+        </style>
+    </head>
+    <body>
+        <div th:insert="~{header}"></div>
+        <div class="layui-container" style="margin-top:10px;margin-bottom: 20px">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <span>
+                        <i class="layui-icon layui-icon-list"></i>
+                        <span>问卷Online</span>
+                        <i class="layui-icon layui-icon-next"></i>
+                        <span><a href="/template">调查问卷模板</a></span>
+                        <i class="layui-icon layui-icon-next"></i>
+                        <span th:text="${type.typeName}">当前模板分类名称</span>
+                    </span>
+                    <input class="layui-input" placeholder="输入关键字搜索当前分类中模板" style="width: 300px;display: inline-block"
+                           type="search">
+                    <button class="layui-btn layui-btn-normal">
+                        <i class="layui-icon layui-icon-search"></i>
+                        搜索
+                    </button>
+                </div>
+                <div class="layui-card-body">
+                    <div class="text-dark-gray">
+                        <h2 style="text-align: center;margin-bottom: 20px;" th:text="${type.typeName}"></h2>
+                        <div th:text="${type.typeDesc}">
+                        </div>
+                    </div>
+                    <table class="layui-table" lay-size="lg" lay-skin="line">
+                        <tr th:if="${templates.isEmpty()}">
+                            <td colspan="3">
+                                <h2 class="text-danger">暂无模板</h2>
+                            </td>
+                        </tr>
+                        <tr th:each="t : ${templates}">
+                            <td class="text-dark">
+                                <a th:href="'/template/preview/'+${t.id}" class="template-title" th:text="${t.name}"></a>
+                            </td>
+                            <td class="text-gray" th:text="'发布于'+${t.publishDate}"></td>
+                            <td class="text-gray" th:text="'共'+${t.questionCount}+'题'"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div th:insert="footer.html"></div>
+        <div style="position: fixed;top:30%;right: 0;">
+            <button class="text-primary layui-icon layui-icon-add-1" id="createBtn"
+                    style="cursor:pointer;font-size:50px;width:60px;height:60px;border-radius: 50%;border: 1px #ccc solid;box-shadow: 0 0 10px yellowgreen"
+                    title="立即创建问卷"></button>
+        </div>
+    </body>
+    <script src="/static/lib/layui/layui.all.js"></script>
+    <script src="/static/lib/jquery-1.9.1.min.js"></script>
+</html>

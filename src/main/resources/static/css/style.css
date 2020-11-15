@@ -1,0 +1,38 @@
+.text-primary{
+    color: #1E9FFF;
+}
+.text-dark-gray{
+    color: #5a5a5a;
+}
+.text-gray{
+    color: #c2c2c2;
+}
+.text-dark{
+    color:#000;
+}
+.text-danger{
+    color: #FF5722;
+}
+a[class~=text-primary]:hover{
+    color: #1598f8;
+}
+
+.text-center{
+    text-align: center;
+}
+.text-left{
+    text-align: left;
+}
+.text-right{
+    text-align: right;
+    display: block;
+}
+/*自定义背景颜色*/
+.bg-primary{
+    color: #fff;
+    background-color: #1E9FFF;
+}
+.bg-white{
+    color: #0C0C0C !important;
+    background-color: #fff;
+}

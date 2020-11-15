@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <style>
+            .layui-nav-item a {
+                font-size: 16px;
+            }
+
+            .layui-nav-item a[class~=logo] {
+                font-size: 25px;
+                color: #ffffff;
+            }
+
+            .layui-nav .layui-this:after, .layui-nav-bar, .layui-nav-tree .layui-nav-itemed:after {
+                background-color: rgba(0, 0, 0, 0) !important;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <ul class="layui-nav layui-bg-cyan" style="padding: 0 45px;height: 60px;line-height: 60px">
+                <li class="layui-nav-item">
+                    <a class="logo" href="/">
+                        <i class="layui-icon layui-icon-list"
+                           style="color:#fff;line-height: 60px;height:60px;font-size: 35px;font-weight: bold"></i>
+                        问卷Online</a>
+                </li>
+                <li class="layui-nav-item" th:classappend="${#request.requestURI == '/'?'layui-this':''}"><a href="/">问卷调查</a></li>
+                <li class="layui-nav-item" th:classappend="${#request.requestURI == '/template'?'layui-this':''}">
+                    <a href="/template">问卷调查模板</a>
+                    <dl class="layui-nav-child"> <!-- 二级菜单 -->
+                        <dd><a href="/template/list/1">大学生消费情况调查</a></dd>
+                        <dd><a href="/template/list/4">市场调查</a></dd>
+                        <dd><a href="/template/list/5">客户满意度调查</a></dd>
+                        <dd><a href="/template/list/6">员工满意度调查模板</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item"><a href="">社区</a></li>
+                <li class="layui-nav-item" style="float: right" th:if="${session.curr_user == null}">
+                    <a href="/signup" title="注册"><i class="layui-icon layui-icon-add-circle"></i>注册</a>
+                </li>
+                <li class="layui-nav-item" style="float: right" th:if="${session.curr_user == null}">
+                    <a href="/login" title="登录"><i class="layui-icon layui-icon-user"></i>登录</a>
+                </li>
+                <li class="layui-nav-item" style="float: right" th:if="${session.curr_user}">
+                    <a href="javascript:;">
+                        <img class="layui-nav-img" src="//t.cn/RCzsdCq">
+                        <span th:text="${session.curr_user.username}"></span>
+                    </a>
+                    <dl class="layui-nav-child"> <!-- 二级菜单 -->
+                        <dd>
+                            <a th:href="@{/user/profile}" class="layui-icon layui-icon-username">个人中心</a>
+                        </dd>
+                        <dd><a th:href="@{/questionnaire/list}" class="layui-icon layui-icon-list">我的问卷</a></dd>
+                        <dd><a th:href="@{/help}" class="layui-icon layui-icon-help">帮助</a></dd>
+                        <dd><a href="#" th:href="@{/logout}" class="layui-icon layui-icon-logout">退出登录</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </header>
+    </body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>调查问卷设计</title>
+        <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
+        <link href="/static/css/style.css" rel="stylesheet">
+        <link rel="stylesheet" href="/static/css/questionnaire-design.css">
+        <style>
+            body{
+                background-color: #ccc;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <div th:insert="~{header}"></div>
+         <!--左边题目工具栏 展示可拖动创建题目的元素 -->
+        <div id="question-draggable-wrap">
+            <!-- 基本题型 -->
+            <h3 style="font-weight: bold">基本题型</h3>
+            <ul>
+                <li class="radio-bg">
+                    <div class="tool-title" title="单选题"></div>
+                    <div class="tool-body">
+                        <ul>
+                            <li class="draggable tool" data-id="" data-type="3">
+                                <div class="q-header"><span class="num"></span>、
+                                    <input name="" type="text" value="题目标题"></div>
+                                <div class="q-body">
+                                    <span>
+                                        <input name="" type="radio">
+                                        <input name="" type="text" value="选项1">
+                                        <button class="del-option layui-btn layui-btn-danger layui-btn-radius layui-btn-xs layui-icon layui-icon-close" onclick="delOption(this)"></button>
+                                        <br>
+                                    </span>
+                                    <span>
+                                        <input name="" type="radio">
+                                        <input name="" type="text" value="选项2">
+                                        <button class="del-option layui-btn layui-btn-danger layui-btn-radius layui-btn-xs layui-icon layui-icon-close" onclick="delOption(this)"></button>
+                                        <br>
+                                    </span>
+                                </div>
+                                <!-- 题目操作区域 -->
+                                <div class="layui-btn-group">
+                                    <button type="button" class="q-oper-del text-center layui-btn layui-btn-danger layui-btn-xs" onclick="qDel(this,'0')">
+                                        <i class="layui-icon layui-icon-delete"></i>
+                                        删除问题
+                                    </button>
+                                    <button type="button" class="q-add-option layui-btn layui-btn-normal layui-btn-xs" onclick="addOption(3,this)">
+                                        <i class="layui-icon layui-icon-add-1"></i>
+                                        添加选项
+                                    </button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="checkbox-bg">
+                    <div class="tool-title" title="多选题"></div>
+                    <div class="tool-body">
+                        <ul>
+                            <!-- 多选题 -->
+                            <li class="draggable tool" data-id="" data-type="4">
+                                <div class="q-header">
+                                    <span class="num"></span>、
+                                    <input name="" type="text" value="题目标题">
+                                </div>
+                                <div class="q-body">
+                                    <span>
+                                        <input name="" type="checkbox">
+                                        <input name="" type="text" value="选项1">
+                                        <button class="del-option layui-btn layui-btn-danger layui-btn-radius layui-btn-xs layui-icon layui-icon-close" onclick="delOption(this)"></button>
+                                        <br>
+                                    </span>
+                                    <span>
+                                        <input name="" type="checkbox">
+                                        <input name="" type="text" value="选项2">
+                                        <button class="del-option layui-btn layui-btn-danger layui-btn-radius layui-btn-xs layui-icon layui-icon-close" onclick="delOption(this)"></button>
+                                        <br>
+                                    </span>
+                                </div>
+                                <!-- 题目操作区域 -->
+                                <div class="layui-btn-group">
+                                    <button type="button" class="q-oper-del text-center layui-btn layui-btn-danger layui-btn-xs" onclick="qDel(this,'0')">
+                                        <i class="layui-icon layui-icon-delete"></i>
+                                        删除问题
+                                    </button>
+                                    <button type="button" class="q-add-option layui-btn layui-btn-normal layui-btn-xs" onclick="addOption(4,this)">
+                                        <i class="layui-icon layui-icon-add-1"></i>
+                                        添加选项
+                                    </button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="input-bg">
+                    <div class="tool-title" title="单行填空题"></div>
+                    <div class="tool-body">
+                        <ul>
+                            <!-- 单行填空题 -->
+                            <li class="draggable tool" data-id="" data-type="1">
+                                <div class="q-header"><span class="num"></span>、
+                                    <input name="" type="text" value="题目标题">
+                                </div>
+                                <div class="q-body">
+                                    <input name="" type="text">
+                                </div>
+                                <!-- 题目操作区域 -->
+                                <div class="layui-btn-group">
+                                    <button type="button" class="q-oper-del text-center layui-btn layui-btn-danger layui-btn-xs" onclick="qDel(this,'0')">
+                                        <i class="layui-icon layui-icon-delete"></i>
+                                        删除问题
+                                    </button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="textarea-bg">
+                    <div class="tool-title" title="多行填空题"></div>
+                    <div class="tool-body">
+                        <ul>
+                            <li class="draggable tool" data-id="" data-type="2">
+                                <div class="q-header">
+                                    <span class="num"></span>、
+                                    <input name="" type="text" value="题目标题">
+                                </div>
+                                <div class="q-body">
+                                    <textarea style="width: 100%"></textarea>
+                                </div>
+                                <!-- 题目操作区域 -->
+                                <div class="layui-btn-group">
+                                    <button type="button" class="q-oper-del text-center layui-btn layui-btn-danger layui-btn-xs" onclick="qDel(this,'0')">
+                                        <i class="layui-icon layui-icon-delete"></i>
+                                        删除问题
+                                    </button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+            <h3 style="font-weight: bold">辅助组件</h3>
+            <ul>
+                <li class="line-bg">
+                    <div class="tool-title" title="分割线"></div>
+                    <div class="tool-body">
+                        <ul>
+                            <li class="draggable tool" data-id="" data-type="5">
+                                <div class="q-body">
+                                    <hr>
+                                </div>
+                                <!-- 题目操作区域 -->
+                                <div class="layui-btn-group">
+                                    <button type="button" class="q-oper-del text-center layui-btn layui-btn-danger layui-btn-xs" onclick="qDel(this,'0')">
+                                        <i class="layui-icon layui-icon-delete"></i>
+                                        删除分割线
+                                    </button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div style="position: fixed;top:100px;right: 20px;width: 200px">
+            <button class="layui-btn layui-btn-normal" style="width: 100%" id="save-btn">保存</button>
+            <br><br>
+            <button class="layui-btn layui-btn-normal" style="width: 100%" id="publish-btn">发布</button>
+        </div>
+        <!-- 题目展示区（拖动题目放置的目标区） -->
+        <div id="question-container">
+            <h3 class="text-center text-primary" th:if="!${q}">该问卷已被删除或不存在！</h3>
+            <div class="text-right" th:if="${q}">
+                <h3>
+                    <input id="questionnaire-name" class="layui-input text-center text-primary" type="text" th:value="${q.name}">
+                    <input hidden id="questionnaire-id" type="text" th:value="${q.id}">
+                </h3>
+                <span class="text-info" th:text="'创建日期：'+${#dates.format(q.createDate,'yyyy/MM/dd')}"></span>
+                <div>
+                    <textarea id="questionnaire-greeting" class="layui-input" name="greeting" th:text="${q.greeting}" style="width: 100%" rows="2"></textarea>
+                </div>
+            </div>
+            <ul id="questions">
+                <li class="draggable tool" th:each="qe :${q.questions}"
+                    th:data-id="${qe.id}" th:data-type="${qe.questionType}">
+                    <div class="q-header" th:if="${qe.questionType ne 5}">
+                        <span class="num" th:text="${qe.questionNum}"></span>、
+                        <input name="" th:value="${qe.questionTitle}" type="text">
+                    </div>
+                    <div class="q-body">
+                        <input name="" th:if="${qe.questionType eq 1}" th:placeholder="${qe.inputPlaceholder}"
+                               type="text">
+                        <textarea cols="10" th:if="${qe.questionType eq 2}"
+                                  th:placeholder="${qe.inputPlaceholder}"></textarea>
+                        <span th:if="${qe.questionType eq 3}" th:each="qo :${qe.options}" >
+                            <input name="" type="radio">
+                            <input name="" th:id="${qo.id}" th:value="${qo.optionText}" type="text">
+                            <button class="del-option layui-btn layui-btn-danger layui-btn-radius layui-btn-xs layui-icon layui-icon-close"
+                                    th:onclick="delOption(this,[[${qo.id}]])"></button>
+                            <br>
+                        </span>
+                        <span th:if="${qe.questionType eq 4}" th:each="qo :${qe.options}" >
+                            <input name="" type="checkbox">
+                            <input name="" th:id="${qo.id}" th:value="${qo.optionText}" type="text">
+                            <button class="del-option layui-btn layui-btn-danger layui-btn-radius layui-btn-xs layui-icon layui-icon-close"
+                                    th:onclick="delOption(this,[[${qo.id}]])"></button>
+                            <br>
+                        </span>
+                        <hr th:if="${qe.questionType eq 5}">
+                    </div>
+                    <div class="layui-btn-group">
+                        <button type="button" class="q-oper-del text-center layui-btn layui-btn-danger layui-btn-xs"
+                                th:onclick="qDel(this,[[${qe.id}]])">
+                            <i class="layui-icon layui-icon-delete"></i>
+                            删除问题
+                        </button>
+                        <button type="button" class="q-add-option layui-btn layui-btn-normal layui-btn-xs"
+                                th:if="${qe.questionType eq 3} or ${qe.questionType eq 4}"
+                                th:onclick="addOption([[${qe.questionType}]],this)">
+                            <i class="layui-icon layui-icon-add-1"></i>
+                            添加选项
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </body>
+    <script src="/static/lib/jquery-1.9.1.min.js"></script>
+    <script src="/static/lib/jquery-ui.min.js"></script>
+    <script src="/static/lib/layui/layui.all.js"></script>
+    <script>
+        function saveChange() {
+            if($("#questionnaire-id")==undefined)
+                return ;
+            var questionnaireId = $("#questionnaire-id").val();
+            var questionnaireName = $("#questionnaire-name").val();
+            if(questionnaireName === undefined || questionnaireName.trim() ===''){
+                $("#questionnaire-name").focus()
+                layer.msg('请输入问卷名称', {icon: 5});
+                return ;
+            }
+            var questionnaireGreeting = $("#questionnaire-greeting").val();
+            var questionDomList = $("#questions").children();
+            var questions = [];
+            $.each(questionDomList, function (i, item) {
+                var qId = $(item).data("id"); //题目id
+                var qType = $(item).data("type"); //题目类型
+                var qOrder = i + 1 //题目排序号
+                var qNum = $(item).find(".q-header .num ").text(); //题目题号
+                var qTitle = $(item).find(".q-header input ").val();  //题目标题
+                var qOptions = []; //题目选项数组，只对单复题有效
+                var inputPlaceholder = ""; //input表单的placeholder，用于提示用户，只对填空题有效
+                if (qType == 1) { //单行填空题
+                    inputPlaceholder = $(item).find(".q-body input ").val();
+                } else if (qType == 2) { //多行填空题
+                    inputPlaceholder = $(item).find(".q-body textarea").val();
+                } else if (qType == 3 || qType == 4) { //单选和多选题 获取选项
+                    var optionInput = $(item).find(".q-body input[type=text]");
+                    for (var i = 0; i < optionInput.length; i++) {
+                        var optionId = $(optionInput[i]).attr("id");
+                        if(optionId === undefined)
+                            optionId = ""
+                        qOptions.push({id: optionId, optionText: $(optionInput[i]).val(), optionOrder: i + 1});
+                    }
+                } else if (qType == 5) { //辅助组件分割线
+                    qTitle = "分割线";
+                }
+                var question = {
+                    id: qId,
+                    questionType: qType,
+                    questionOrder: qOrder,
+                    questionNum: qNum,
+                    questionTitle: qTitle,
+                    options: qOptions,
+                    inputPlaceholder: inputPlaceholder
+                }
+                questions.push(question);
+            });
+            var questionnaire = {
+                id:questionnaireId,
+                name:questionnaireName,
+                greeting:questionnaireGreeting,
+                questions:questions
+            }
+            $.ajax({
+                url: "/questionnaire/design/saveQuestionnaire",
+                type: "post",
+                contentType: "application/json",
+                data: JSON.stringify(questionnaire),
+                success: function (data) {
+                    if (data.code === 200) {
+                        notify("success", "保存成功！");
+                    }else{
+                        notify("error", "保存失败！");
+                    }
+                    console.log(data);
+                },
+                error: function (data) {
+                    notify("error", "保存失败！");
+                    console.log(data)
+                }
+            });
+            console.log(JSON.stringify(questionnaire))
+            console.log(questionnaire);
+        }
+
+        $(function () {
+            $("#save-btn").click(saveChange); //保存设计
+
+            $("#questions").sortable({
+                cursor: 'move',
+                opacity: 0.5,
+                stop: function (e, ui) {
+                    var list = $(this).children();
+                    updateQuestionIndex(list); //排序结束，更新问题题号
+                }
+            }).droppable({
+                drop: function (e, ui) {
+                    var list = $(this).children();
+                    //updateQuestionIndex(list); //排序结束，更新问题题号
+                }
+            });
+            $("#question-draggable-wrap > ul > li").draggable({
+                addClasses: false,
+                cursor: 'move',
+                zIndex: 2000,
+                opacity: 0.5,
+                scroll: true,
+                scrollSensitivity: 30,
+                scrollSpeed: 30,
+                appendTo: "#questions",
+                helper: function (event, ui) {
+                    return $(this).find('.tool-body  ul li').clone();
+                },
+                connectToSortable: "#questions"
+            });
+        });
+
+        //更新问题题号
+        function updateQuestionIndex(list) {
+            var index = 0;
+            var num = 0;
+            $.each(list, function (i, item) {
+                $(item).removeAttr("style");
+                $(item).attr("data-order", ++index);
+                var type = $(item).data("type");
+                if (type != 5) {
+                    $(item).find('span.num').html(++num);
+                }
+            });
+        }
+
+        // 问题删除
+        function qDel(e, id) {
+            e.parentNode.parentNode.parentNode.removeChild(e.parentNode.parentNode);
+            var list = $("#questions").children();
+            updateQuestionIndex(list); //删除问题，重新更新问题题号
+            if (id !== '' && id !== '0') {
+                $.ajax({
+                    url: "/deleteQuestion",
+                    type: "post",
+                    data: {"questionId": id},
+                    success: function (data) {
+                        if (data.code === 1) {
+                            notify("success", "删除成功！");
+                            saveChange();
+                        }
+                    }, error: function (data) {
+                        notify("error", "删除失败！");
+                    }
+                });
+            }
+        }
+
+        //问题添加新的选项
+        function addOption(type, e) {
+            var qBody = $(e).parent().parent().find('.q-body');
+            var content = "";
+            if (type === 3) { //单选题
+                content = "<span>"+
+                            "<input name=\"\" type=\"radio\"> " +
+                            "<input name=\"\" type=\"text\" value=\"选项\"> " +
+                            "<button class=\"del-option layui-btn layui-btn-danger layui-btn-radius layui-btn-xs layui-icon layui-icon-close\" onclick=\"delOption(this)\"></button>" +
+                            "<br>" +
+                          "</span>";
+            } else if (type === 4) { //多选题
+                content = "<span>"+
+                            "<input name=\"\" type=\"checkbox\"> " +
+                            "<input name=\"\" type=\"text\" value=\"选项\"> " +
+                            "<button class=\"del-option layui-btn layui-btn-danger layui-btn-radius layui-btn-xs layui-icon layui-icon-close\" onclick=\"delOption(this)\"></button>" +
+                            "<br>" +
+                          "</span>";
+            }
+            qBody.append(content);
+        }
+
+        //删除问题选项
+        function delOption(e, id) {
+            e.parentNode.parentNode.removeChild(e.parentNode);
+            if (id !== undefined && id !== '' && id !== '0') {
+                $.ajax({
+                    url: "/deleteQuestionOption",
+                    type: "post",
+                    data: {"optionId": id},
+                    success: function (data) {
+                        if (data.code === 1) {
+                            notify("success", "删除选项成功！");
+                        } else {
+                            notify("error", "删除选项失败！" + data.mess);
+                        }
+                    }, error: function (data) {
+                        notify("error", "删除成功！");
+                    }
+                });
+            }
+        }
+
+        //通知
+        function notify(type, msg, delayHid) {
+            $(".notify-div").remove();
+            if (delayHid == null) {
+                delayHid = 5000;
+            }
+            if (type == null)
+                type = "";
+            $("<div>")
+                .appendTo(document.body)
+                .text(msg)
+                .addClass("notify-div " + type)
+                .show({
+                    effect: "blind"
+                })
+                .delay(delayHid)
+                .hide({
+                    effect: "blind",
+                    duration: "slow"
+                }, function () {
+                    $(this).remove();
+                });
+        }
+
+        //防止用户无意间关闭网页，造成未保存的数据丢失！
+        window.onbeforeunload = function (e) {
+            var e = window.event || e;
+            e.returnValue = ("确定离开当前页面吗？");
+        }
+    </script>
+</html>

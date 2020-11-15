@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <meta charset="UTF-8">
+        <title>登录</title>
+        <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
+        <link href="/static/css/style.css" rel="stylesheet">
+        <style>
+            body {
+                background-image: url("/static/images/login-bg.jpg");
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-position: center center;
+                background-attachment: fixed;
+            }
+
+            .login-form {
+                width: 400px;
+                margin: 8% auto;
+                padding: 20px;
+                background-color: #ffffff;
+                border-radius: 10px;
+            }
+
+            .layui-form-pane .layui-form-label {
+                text-align: right;
+            }
+            .login-icon{
+                display: flex;
+                align-items: center;
+                justify-content: space-around;
+            }
+            .login-icon span{
+                font-size: 40px;
+            }
+            .login-icon span[class~=qq]:hover{
+                color: #1E9FFF;
+            }
+            .login-icon span[class~=wechat]:hover{
+                color: #5FB878;
+            }
+            .login-icon span[class~=weibo]:hover{
+                color: #ff8140;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="layui-container">
+            <div style="position: fixed;top:10px;left: 5%">
+                <a href="/" style="font-size: 30px;color: #ffffff;">
+                    <i style="color:#fff;line-height: 60px;height:60px;font-size: 35px;font-weight: bold" class="layui-icon layui-icon-list"></i>
+                    问卷Online</a>
+            </div>
+            <div class="layui-card login-form">
+                <div class="layui-card-header">
+                    <span class="layui-text" style="font-size: 25px;color: #1E9FFF">用户登录</span>
+                </div>
+                <div class="layui-card-body">
+                    <form class="layui-form layui-form-pane">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户名<span
+                                    class="layui-icon layui-icon-username"></span></label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" lay-reqText="用户名不能为空"
+                                       lay-verify="required" name="username"
+                                       placeholder="用户名" required type="text">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">密码<i class="layui-icon layui-icon-password"></i></label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" id="password" lay-reqText="请输入密码" lay-verify="required"
+                                       name="password"
+                                       placeholder="密码" required type="password">
+                            </div>
+                        </div>
+                        <div class="layui-form-item" id="codeDiv" style="display: none">
+                            <label class="layui-form-label" style="padding: 0!important;cursor: pointer">
+                                <img alt="验证码" height="30px" onclick="flushCodeImg()" src="/verifyCode"
+                                     title="看不清？换一张" width="100px">
+                            </label>
+                            <div class="layui-input-block">
+                                <input class="layui-input"
+                                       lay-reqText="请输入验证码"
+                                       name="code"
+                                       placeholder="计算图片中算式的结果，除法只保留整数" type="text">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <a class="text-primary" href="/signup"
+                                   style="line-height:38px; text-align: right;float: right">还没账号？去注册 <i
+                                        class="layui-icon layui-icon-next"></i></a>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div>
+                                <button class="layui-btn layui-btn-normal" lay-filter="loginBtn"
+                                        lay-submit style="width: 100%;font-size: 20px">登录
+                                </button>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <fieldset class="layui-elem-field layui-field-title" style="text-align: center;">
+                                <legend class="text-gray" style="font-size: 15px">第三方登录</legend>
+                            </fieldset>
+                            <div class="login-icon">
+                                <span class="text-gray layui-icon layui-icon-login-qq qq"></span>
+                                <span class="text-gray layui-icon layui-icon-login-wechat wechat"></span>
+                                <span class="text-gray layui-icon layui-icon-login-weibo weibo"></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        </div>
+    </body>
+    <script src="/static/lib/layui/layui.all.js"></script>
+    <script src="/static/lib/jquery-1.9.1.min.js"></script>
+    <script>
+        function flushCodeImg() {
+            event.srcElement.src = "/verifyCode?t=" + Date.now();
+            console.log(event);
+        }
+
+        function getParam(paramName) {
+            let paramValue = "";
+            let isFound = !1;
+            let arrSource;
+            if (this.location.search.indexOf("?") === 0 && this.location.search.indexOf("=") > 1) {
+                arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
+                while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
+            }
+            return paramValue === "" && (paramValue = null), paramValue
+        }
+
+        const form = layui.use('form', function () {
+            const form = layui.form;
+            //监听提交
+            form.on('submit(loginBtn)', function (data) {
+                $.post('/doLogin', data.field, function (resp) {
+                    console.log(resp)
+                    if (resp.code === 500) {
+                        layer.msg(resp.msg, {icon: 5});
+                    } else if (resp.code === 200) {
+                        layer.msg("登录成功！", {icon: 6});
+                        document.location.href = getParam("returnUrl") === null ? "/" : getParam("returnUrl");
+                    } else {
+                        layer.msg(resp.msg, {icon: 0});
+                    }
+                    if (resp.data > 3) {
+                        $("#codeDiv").show();
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</html>

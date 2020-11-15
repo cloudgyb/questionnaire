@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>注册</title>
+        <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="/static/css/style.css">
+        <style>
+            body {
+                background-image: url("/static/images/login-bg.jpg");
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-position: center center;
+                background-attachment: fixed;
+            }
+
+            .login-form {
+                width: 500px;
+                margin: 8% auto;
+                padding: 20px;
+                background-color: #ffffff;
+                border-radius: 10px;
+            }
+
+            .layui-form-pane .layui-form-label {
+                text-align: right;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="layui-container">
+            <div style="position: fixed;top:10px;left: 5%">
+                <a href="/" style="font-size: 30px;color: #ffffff;">
+                    <i style="color:#fff;line-height: 60px;height:60px;font-size: 35px;font-weight: bold" class="layui-icon layui-icon-list"></i>
+                    问卷Online</a>
+            </div>
+            <div class="layui-card login-form">
+                <div class="layui-card-header">
+                    <span class="layui-text" style="font-size: 25px;color: #1E9FFF">用户注册</span>
+                </div>
+                <div class="layui-card-body">
+                    <form class="layui-form layui-form-pane">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户名<span
+                                    class="layui-icon layui-icon-username"></span></label>
+                            <div class="layui-input-block">
+                                <input class="layui-input" lay-verify="required|username"
+                                       name="username" placeholder="用户名不能包含特殊字符且不能有空格"
+                                       required type="text" lay-reqText="用户名不能为空">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">密码<i class="layui-icon layui-icon-password"></i></label>
+                            <div class="layui-input-block">
+                                <input id="password" class="layui-input" lay-verify="required|pass" name="password"
+                                       placeholder="密码6-12位不能且不能出现空格"
+                                       required type="password" lay-reqText="请输入密码">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">确认密码<i class="layui-icon layui-icon-auz"></i></label>
+                            <div class="layui-input-block">
+                                <input autocomplete="off" class="layui-input" lay-verify="required|confirmPass"
+                                       name="confirmPassword"
+                                       placeholder="再次输入密码"
+                                       required type="password" lay-reqText="请再次确认密码">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="padding: 0!important;cursor: pointer">
+                                <img width="100px" height="30px" onclick="flushCodeImg()" src="/verifyCode" title="看不清？换一张" alt="验证码">
+                            </label>
+                            <div class="layui-input-block">
+                                <input class="layui-input"
+                                       name="code" required lay-verify="required"
+                                       placeholder="计算图片中算式的结果，除法只保留整数"
+                                        type="text" lay-reqText="请输入验证码">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-btn-normal" lay-filter="loginBtn" lay-submit>注册</button>
+                                <button class="layui-btn layui-btn-primary" type="reset">重置</button>
+                                <a href="/login" class="text-primary" style="line-height:38px; text-align: right;float: right">已有账号？去登陆 <i class="layui-icon layui-icon-next"></i></a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        </div>
+    </body>
+    <script src="/static/lib/layui/layui.all.js"></script>
+    <script src="/static/lib/jquery-1.9.1.min.js"></script>
+    <script>
+        function flushCodeImg(){
+            event.srcElement.src = "/verifyCode?t="+Date.now();
+            console.log(event);
+        }
+        function getParam(paramName) {
+            let paramValue = "";
+            let isFound = !1;
+            let arrSource;
+            if (this.location.search.indexOf("?") === 0 && this.location.search.indexOf("=") > 1) {
+                arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
+                while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
+            }
+            return paramValue === "" && (paramValue = null), paramValue
+        }
+        const form = layui.use('form', function () {
+            const form = layui.form;
+            form.verify({
+                username: function (value, item) { //value：表单的值、item：表单的DOM对象
+                    if (!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)) {
+                        return '用户名不能有特殊字符';
+                    }
+                    if(/ /.test(value)){
+                        return '用户名不能包含空格';
+                    }
+                    if (/(^\_)|(\__)|(\_+$)/.test(value)) {
+                        return '用户名首尾不能出现下划线\'_\'';
+                    }
+                    if (/^\d+\d+\d$/.test(value)) {
+                        return '用户名不能全为数字';
+                    }
+                },
+                confirmPass: function (value,item) {
+                    if(document.getElementById("password").value !== value){
+                        return '两次密码输入不一致！';
+                    }
+                }
+                //我们既支持上述函数式的方式，也支持下述数组的形式
+                //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+                , pass: [
+                    /^[\S]{6,12}$/
+                    , '密码必须6到12位，且不能出现空格'
+                ]
+            });
+            //监听提交
+            form.on('submit(loginBtn)', function (data) {
+                $.post('/doSignup',data.field,function (resp){
+                    console.log(resp)
+                    if(resp.code === 500){
+                        layer.msg(resp.data,{icon: 5});
+                    }else if(resp.code === 200){
+                        layer.msg("恭喜注册成功！",{icon:6});
+                        document.location.href=getParam("returnUrl") === null ? "/" : getParam("returnUrl");
+                    }else{
+                        layer.msg(resp.data,{icon:0});
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</html>
