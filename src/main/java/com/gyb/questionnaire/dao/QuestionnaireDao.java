@@ -1,10 +1,7 @@
 package com.gyb.questionnaire.dao;
 
 import com.gyb.questionnaire.entity.Questionnaire;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -42,7 +39,7 @@ public interface QuestionnaireDao {
             "publish_date as publishDate,user_id as userId," +
             "type_id as typeId,question_count as questionCount, " +
             "template_id as templateId,invoke_count as invokeCount,status " +
-            "from questionnaire where user_id=#{userId}")
+            "from questionnaire where user_id=#{userId} order by create_date desc")
     List<Questionnaire> findByUserId(long userId);
 
     @Select("select id,name,greeting,create_date as createDate," +
@@ -67,4 +64,7 @@ public interface QuestionnaireDao {
             "template_id=#{templateId},invoke_count=#{invokeCount},status=#{status} " +
             "where id=#{id}")
     void update(Questionnaire q);
+
+    @Delete("delete from questionnaire where id=#{id}")
+    void delete(String id);
 }

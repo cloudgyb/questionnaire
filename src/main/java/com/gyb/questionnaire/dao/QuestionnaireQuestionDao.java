@@ -30,6 +30,9 @@ public interface QuestionnaireQuestionDao {
             "from questionnaire_question where id=#{id}")
     QuestionnaireQuestion find(String id);
 
+    @Select("select questionnaire_id from questionnaire_question where questionnaire_id=#{questionnaireId}")
+    List<String> findIdByQuestionnaireId(String questionnaireId);
+
     @Update("update questionnaire_question set " +
             "questionnaire_id=#{questionnaireId},question_type=#{questionType}," +
             "question_order=#{questionOrder}," +

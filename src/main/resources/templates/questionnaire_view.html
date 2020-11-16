@@ -42,10 +42,14 @@
     </head>
     <body>
         <div th:insert="~{header}"></div>
-        <div id="templateQuestion-container">
-            <h2 class="text-center text-primary" th:text="${qa.name}">"该模板不存在或者已被删除！</h2>
-            <span class="text-primary text-right" th:text="'创建日期:'+${#dates.format(qa.createDate,'yyyy/MM/dd hh:mm:ss')}"></span>
-            <ul id="questions">
+        <div id="templateQuestion-container" >
+            <h2 class="text-center text-danger" th:if="!${qa}">
+                该问卷不存在或者已被删除！
+            </h2>
+            <h2 class="text-center text-primary" th:if="${qa}" th:text="${qa.name}"></h2>
+            <span class="text-primary text-right" th:if="${qa}" th:text="'创建日期:'+${#dates.format(qa.createDate,'yyyy/MM/dd hh:mm:ss')}"></span>
+            <span th:if="${qa}" th:text="${qa.greeting}"></span>
+            <ul id="questions" th:if="${qa}">
                 <li th:data-id="${q.id}" th:data-type="${q.questionType}" th:each="q : ${qa.questions}">
                     <div class="q-header" th:if="${q.questionType!=5}">
                         <span class="num" th:text="${q.questionNum}+'、'"></span>

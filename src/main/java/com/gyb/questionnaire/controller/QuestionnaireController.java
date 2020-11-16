@@ -116,4 +116,15 @@ public class QuestionnaireController {
         m.addAttribute("list",userQuestionnaireList);
         return "questionnaire_list";
     }
+
+    /**
+     * 删除问卷
+     * @param questionnaireId 问卷id
+     */
+    @RequiredLogin
+    @PostMapping("/delete")
+    @ResponseBody
+    public ResponseResult deleteQuestionnaire(@RequestParam String questionnaireId){
+        return questionnaireService.delete(questionnaireId);
+    }
 }

@@ -210,4 +210,28 @@ public class QuestionnaireService {
         questionnaireDao.update(questionnaire);
         return ResponseResult.ok();
     }
+
+    /**
+     * 删除问卷
+     * @param questionnaireId 问卷id
+     */
+    public ResponseResult delete(String questionnaireId) {
+        if(!StringUtils.hasText(questionnaireId))
+            return ResponseResult.error("问卷不存在或已被删除");
+        final Questionnaire questionnaire = getUserQuestionnaire(questionnaireId);
+        if(questionnaire == null)
+            return ResponseResult.error("问卷不存在或已被删除");
+
+        List<String> questionIds = questionDao.findIdByQuestionnaireId(questionnaireId);
+        if(questionIds != null){
+            for (String questionId : questionIds) { //将每一个问题下的选项删除
+                optionDao.deleteByQuestionId(questionId);
+            }
+        }
+        //删除问题
+        questionDao.deleteByQuestionnaireId(questionnaireId);
+        //删除问卷
+        questionnaireDao.delete(questionnaireId);
+        return ResponseResult.ok();
+    }
 }
