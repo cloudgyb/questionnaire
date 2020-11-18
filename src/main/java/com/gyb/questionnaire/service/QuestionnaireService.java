@@ -6,10 +6,9 @@ import com.gyb.questionnaire.dao.QuestionnaireQuestionDao;
 import com.gyb.questionnaire.dao.QuestionnaireQuestionOptionDao;
 import com.gyb.questionnaire.dto.QuestionnaireDTO;
 import com.gyb.questionnaire.dto.QuestionnaireQuestionDTO;
-import com.gyb.questionnaire.entity.Questionnaire;
-import com.gyb.questionnaire.entity.QuestionnaireQuestion;
-import com.gyb.questionnaire.entity.QuestionnaireQuestionOption;
-import com.gyb.questionnaire.entity.User;
+import com.gyb.questionnaire.dto.QuestionnaireTemplateDTO;
+import com.gyb.questionnaire.dto.TemplateQuestionDTO;
+import com.gyb.questionnaire.entity.*;
 import com.gyb.questionnaire.util.HttpServletUtil;
 import com.gyb.questionnaire.util.RandomUtil;
 import org.springframework.stereotype.Service;
@@ -36,13 +35,16 @@ public class QuestionnaireService {
     private final QuestionnaireDao questionnaireDao;
     private final QuestionnaireQuestionDao questionDao;
     private final QuestionnaireQuestionOptionDao optionDao;
+    private final TemplateService templateService;
 
     public QuestionnaireService(QuestionnaireDao questionnaireDao,
                                 QuestionnaireQuestionDao questionDao,
-                                QuestionnaireQuestionOptionDao optionDao) {
+                                QuestionnaireQuestionOptionDao optionDao,
+                                TemplateService templateService) {
         this.questionnaireDao = questionnaireDao;
         this.questionDao = questionDao;
         this.optionDao = optionDao;
+        this.templateService = templateService;
     }
 
     /**
@@ -233,5 +235,72 @@ public class QuestionnaireService {
         //删除问卷
         questionnaireDao.delete(questionnaireId);
         return ResponseResult.ok();
+    }
+
+    /**
+     * 以模板创建调查问卷
+     * @param templateId 模板id
+     * @return 如果创建成功返回问卷id
+     */
+    public String addByTemplate(long templateId) {
+        final QuestionnaireTemplateDTO template = templateService.getTemplateDetail(templateId);
+        if(template == null)
+            return null;
+        String id = copyQuestionnaire(template);
+        copyQuestion(template.getQuestions(),id);
+        return id;
+    }
+
+    private void copyQuestion(List<TemplateQuestionDTO> questions, String questionnaireId) {
+        if(questions == null)
+            return;
+        for (TemplateQuestionDTO question : questions) {
+            final QuestionnaireQuestion q = new QuestionnaireQuestion();
+            final String qId = RandomUtil.uuid();
+            int qType = question.getQuestionType();
+            q.setId(qId);
+            q.setQuestionnaireId(questionnaireId);
+            q.setQuestionTitle(question.getQuestionTitle());
+            q.setQuestionType(qType);
+            q.setQuestionNum(question.getQuestionNum());
+            q.setQuestionOrder(question.getQuestionOrder());
+            q.setInputPlaceholder(question.getInputPlaceholder());
+            questionDao.add(q);
+            if(qType == 3 || qType == 4) //只有单选题和多选题才有选项，才需要复制选项
+                copyQuestionOption(question.getQuestionOptions(),qId);
+        }
+    }
+
+    private void copyQuestionOption(List<TemplateQuestionOption> questionOptions, String questionId) {
+        if(questionOptions == null)
+            return;
+        for (TemplateQuestionOption questionOption : questionOptions) {
+            final QuestionnaireQuestionOption option = new QuestionnaireQuestionOption();
+            final String uuid = RandomUtil.uuid();
+            option.setId(uuid);
+            option.setQuestionId(questionId);
+            option.setOptionText(questionOption.getOptionText());
+            option.setOptionOrder(questionOption.getOptionOrder());
+            optionDao.add(option);
+        }
+    }
+
+    private String copyQuestionnaire(QuestionnaireTemplateDTO template) {
+        final User u = (User) (HttpServletUtil.getSession().getAttribute(SESSION_KEY_CURR_USER));
+        if (u == null)
+            return null;
+        final Questionnaire questionnaire = new Questionnaire();
+        final String uuid = RandomUtil.uuid();
+        questionnaire.setId(uuid);
+        questionnaire.setName(template.getName());
+        questionnaire.setGreeting("感谢参与，请大家根据自身情况如实填写，谢谢大家配合!");
+        questionnaire.setQuestionCount(template.getQuestionCount());
+        questionnaire.setStatus(0);
+        questionnaire.setUserId(u.getId());
+        questionnaire.setCreateDate(new Date());
+        questionnaire.setTemplateId(template.getId());
+        questionnaire.setTypeId(template.getTypeId());
+        questionnaireDao.add(questionnaire);
+        return uuid;
     }
 }

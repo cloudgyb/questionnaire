@@ -48,7 +48,8 @@
             </h2>
             <h2 class="text-center text-primary" th:if="${qa}" th:text="${qa.name}"></h2>
             <span class="text-primary text-right" th:if="${qa}" th:text="'创建日期:'+${#dates.format(qa.createDate,'yyyy/MM/dd HH:mm:ss')}"></span>
-            <span th:if="${qa}" th:text="${qa.greeting}"></span>
+            <div th:if="${qa}" th:text="${qa.greeting}" class="text-dark-gray"
+                 style="padding: 20px 20px;border-bottom: 1px dotted #c2c2c2"></div>
             <ul id="questions" th:if="${qa}">
                 <li th:data-id="${q.id}" th:data-type="${q.questionType}" th:each="q : ${qa.questions}">
                     <div class="q-header" th:if="${q.questionType!=5}">

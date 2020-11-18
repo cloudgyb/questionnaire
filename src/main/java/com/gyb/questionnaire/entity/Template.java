@@ -22,6 +22,6 @@ public class Template {
     private java.sql.Timestamp publishDate;
     private long authorId;
     private String authorName;
-    private long typeId;
+    private int typeId;
     private int questionCount;
 }

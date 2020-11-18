@@ -19,7 +19,7 @@ import lombok.Setter;
 public class TemplateQuestion {
     private long id;
     private long templateId;
-    private long questionType;
+    private int questionType;
     private String questionTitle;
     private int questionOrder;
     private int questionNum;

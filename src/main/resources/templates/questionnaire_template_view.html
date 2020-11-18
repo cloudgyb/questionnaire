@@ -76,12 +76,11 @@
                 </li>
             </ul>
         </div>
-        <div th:insert="footer.html"></div>
-        <div style="position: fixed;top:30%;right: 0;">
-            <button class="text-primary layui-icon layui-icon-add-1" id="createBtn"
-                    style="cursor:pointer;font-size:50px;width:60px;height:60px;border-radius: 50%;border: 1px #ccc solid;box-shadow: 0 0 10px yellowgreen"
-                    title="立即创建问卷"></button>
+        <div style="position: fixed;top:30%;right: 20px;width: 200px">
+            <a th:href="'/questionnaire/createByTemplate?templateId='+${td.id}" class="layui-btn layui-btn-normal layui-icon layui-icon-add-1" style="width: 100%">以此为模板创建问卷</a>
+            <br><br>
         </div>
+        <div th:insert="footer.html"></div>
     </body>
     <script src="/static/lib/layui/layui.all.js"></script>
     <script src="/static/lib/jquery-1.9.1.min.js"></script>

@@ -43,6 +43,15 @@ public class QuestionnaireController {
         return ResponseResult.ok(id);
     }
 
+    @GetMapping("/createByTemplate")
+    @RequiredLogin
+    public String createQuestionnaireByTemplate(@RequestParam long templateId) {
+        String id = questionnaireService.addByTemplate(templateId);
+        if(id == null)
+            id="templateerror";
+        return String.format("redirect:/questionnaire/design/%s",id);
+    }
+
     /**
      * 进入问卷设计页面
      */
