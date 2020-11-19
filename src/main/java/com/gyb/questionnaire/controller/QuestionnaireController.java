@@ -136,4 +136,17 @@ public class QuestionnaireController {
     public ResponseResult deleteQuestionnaire(@RequestParam String questionnaireId){
         return questionnaireService.delete(questionnaireId);
     }
+
+    /**
+     * 分享问卷
+     * @param qId 问卷id
+     */
+    @RequiredLogin
+    @GetMapping("/share")
+    public String shareQuestionnaire(@RequestParam String qId,Model m){
+        Questionnaire questionnaire = questionnaireService.getUserQuestionnaire(qId);
+        m.addAttribute("q",questionnaire);
+        return "questionnaire_share";
+    }
+
 }

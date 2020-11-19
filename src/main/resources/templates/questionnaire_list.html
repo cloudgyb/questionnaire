@@ -48,6 +48,7 @@
                         <td>
                             <a th:href="'/questionnaire/design/'+${q.id}" target="_blank" th:if="${q.status==0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">设计</a>
                             <button th:if="${q.status!=0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">统计&分析</button>
+                            <a th:if="${q.status==1}" target="_blank" th:href="'/questionnaire/share?qId='+${q.id}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">分享问卷</a>
                             <a th:href="'/questionnaire/preview/'+${q.id}" class="hover-show layui-btn layui-btn-warm layui-btn-xs">预览</a>
                             <button th:data-id="${q.id}" data-id="" class="hover-show layui-btn layui-btn-danger layui-btn-xs">删除</button>
                         </td>

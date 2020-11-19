@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>分享问卷调查-快速完成问卷收集</title>
+        <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
+        <link href="/static/css/style.css" rel="stylesheet">
+        <link href="/static/lib/icomoon/style.css" rel="stylesheet">
+        <style>
+            body {
+                background-color: #f7f7f7;
+            }
+
+            .container {
+                width: 800px;
+                background-color: #fff;
+                padding: 30px;
+                margin: 15px auto;
+                box-shadow: 0 0 5px #c2c2c2;
+            }
+
+            .main > * {
+                margin-bottom: 10px
+            }
+            .icon{
+                font-size: 30px;
+                color: #c2c2c2;
+                margin-right: 20px;
+            }
+            a[class~=layui-icon-login-qq]{
+                color: #1E9FFF;
+            }
+            a[class~=layui-icon-login-wechat]{
+                color: #5FB878;
+            }
+            a[class~=icon-qzone]{
+                color: #ffbf40;
+            }
+            a[class~=layui-icon-login-weibo]{
+                color: #ff8140;
+            }
+        </style>
+    </head>
+    <body>
+        <div th:insert="~{header}"></div>
+        <div class="layui-container" th:with="baseURl=${#httpServletRequest.getScheme()}+'://'+${#httpServletRequest.getServerName()}+':'+${#httpServletRequest.getServerPort()}+'/'">
+            <div class="container">
+                <div class="layui-row"
+                     th:with="shareURL=${#httpServletRequest.getScheme()}+'://'+${#httpServletRequest.getServerName()}+':'+${#httpServletRequest.getServerPort()}+'/q/'+${q.id}">
+                    <div class="layui-col-xs6 layui-col-sm6 layui-col-md3">
+                        <img id="qrcodeImg" alt="二维码" style="width: 120px" th:src="'/qrcode?content='+${shareURL}">
+                    </div>
+                    <div class="layui-col-xs6 layui-col-sm6 layui-col-md9 main">
+                        <h3 style="font-weight: bold">问卷链接与二维码</h3>
+                        <input id="share-url" class="layui-input layui-input-inline" style="width:80%" th:value="${shareURL}"
+                               type="text">
+                        <button class="layui-btn layui-btn-normal" id="copyShareURLBtn" data-clipboard-action="copy" data-clipboard-target="#share-url">复制链接</button>
+                        <button class="layui-btn layui-btn-primary" onclick="downloadQRCodeImg()" style="margin-left: 0">下载二维码</button>
+                        <span style="float: right">
+                            <span class="text-dark-gray">快速分享到：</span>
+                            <a th:href="'https://connect.qq.com/widget/shareqq/index.html?url='+${shareURL}+'&title='+${q.name}+'&pics='+${baseURl}+'static/images/logo.png'+'&desc=Hi，你好，这是我在问卷Online上创建的问卷，烦请填写！'" class="layui-icon layui-icon-login-qq icon" target="_blank" title="分享给我的QQ好友"></a>
+                            <a th:href="'https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url='+${shareURL}+'&title='+${q.name}+'&pics='+${baseURl}+'static/images/logo.png'+'&desc=Hi，你好，这是我在问卷Online上创建的问卷，烦请填写！'" class="icon-qzone icon" target="_blank" title="分享到我的QQ空间"></a>
+                            <a href="#" class="layui-icon layui-icon-login-wechat icon" title="分享到微信"></a>
+                            <a th:href="'https://service.weibo.com/share/share.php?url='+${shareURL}+'&title='+${q.name}+'&pic='+${baseURl}+'static/images/logo.png'+'&desc=Hi，你好，这是我在问卷Online上创建的问卷，烦请填写！'" class="layui-icon layui-icon-login-weibo icon" title="分享到我的微博"></a>
+                        </span>
+                    </div>
+                </div>
+                <hr>
+                <div>
+                    <h3 style="font-weight: bold;margin: 20px 0">嵌入到其他文档</h3>
+                    <span class="text-dark-gray">IFrame代码,复制粘贴到你要放置的html文件中</span>
+                    <textarea id="iframe-code" class="layui-disabled" style="width: 100%;height: 50px"><iframe th:src="${baseURl}+'?width=760&source=iframe'" width="799" height="800" frameborder="0" style="overflow:auto"></iframe>
+                    </textarea>
+                    <button id="copyIFrameCodeBtn" class="layui-btn layui-btn-primary" style="margin-left: 0" data-clipboard-action="copy" data-clipboard-target="#iframe-code">复制代码</button>
+                </div>
+            </div>
+        </div>
+        <div style="position: fixed;bottom: 0;left:0;right: 0" th:insert="footer.html"></div>
+    </body>
+    <script src="/static/lib/layui/layui.all.js"></script>
+    <script src="/static/lib/jquery-1.9.1.min.js"></script>
+    <script src="/static/lib/clipboard.min.js"></script>
+
+    <script>
+        function downloadQRCodeImg(){
+            var img = document.getElementById('qrcodeImg'); // 获取要下载的图片
+            var url = img.src;                            // 获取图片地址
+            var a = document.createElement('a');          // 创建一个a节点插入的document
+            var event = new MouseEvent('click')           // 模拟鼠标click点击事件
+            a.download = '二维码'                  // 设置a节点的download属性值
+            a.href = url;                                 // 将图片的src赋值给a节点的href
+            a.dispatchEvent(event)                        // 触发鼠标点击事件
+        }
+        const clipboard = new ClipboardJS('#copyShareURLBtn');
+        clipboard.on('success', function(e) {
+            layer.msg("复制成功！",{icon:6})
+        });
+        clipboard.on('error', function(e) {
+            layer.msg("复制失败！",{icon:5})
+        });
+        const clipboard1 = new ClipboardJS('#copyIFrameCodeBtn');
+        clipboard1.on('success', function(e) {
+            layer.msg("复制成功！",{icon:6})
+        });
+        clipboard1.on('error', function(e) {
+            layer.msg("复制失败！",{icon:5})
+        });
+    </script>
+</html>

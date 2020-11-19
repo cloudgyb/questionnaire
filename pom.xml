@@ -68,6 +68,12 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- 二维码生成的依赖 -->
+    <dependency>
+      <groupId>com.google.zxing</groupId>
+      <artifactId>javase</artifactId>
+      <version>3.3.0</version>
+    </dependency>
   </dependencies>
 
   <build>
