@@ -26,8 +26,10 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             RequiredLogin requiredLogin = method.getMethodAnnotation(RequiredLogin.class);
             if (requiredLogin != null) {
                 if (request.getSession().getAttribute(SESSION_KEY_CURR_USER) == null) {
+                    String queryString = request.getQueryString();
+                    queryString = (queryString!=null&&!"".equals(queryString))?"?"+queryString:"";
                     response.sendRedirect(LOGIN_URL + "?returnUrl=" +
-                            request.getRequestURL().toString());
+                            request.getRequestURL().toString()+queryString);
                     return false;
                 }
             }

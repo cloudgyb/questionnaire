@@ -6,6 +6,7 @@ import com.gyb.questionnaire.entity.Questionnaire;
 import com.gyb.questionnaire.service.QuestionnaireService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -143,7 +144,9 @@ public class QuestionnaireController {
      */
     @RequiredLogin
     @GetMapping("/share")
-    public String shareQuestionnaire(@RequestParam String qId,Model m){
+    public String shareQuestionnaire(@RequestParam(required = false) String qId,Model m){
+        if(!StringUtils.hasText(qId))
+            return "questionnaire_share";
         Questionnaire questionnaire = questionnaireService.getUserQuestionnaire(qId);
         m.addAttribute("q",questionnaire);
         return "questionnaire_share";
