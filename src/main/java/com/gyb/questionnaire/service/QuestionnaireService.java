@@ -213,6 +213,15 @@ public class QuestionnaireService {
         return ResponseResult.ok();
     }
 
+    public ResponseResult stopQuestionnaire(String questionnaireId) {
+        final Questionnaire questionnaire = getUserQuestionnaire(questionnaireId);
+        if(questionnaire == null)
+            return ResponseResult.error("问卷不存在或已被删除");
+        questionnaire.setStatus(2);
+        questionnaireDao.update(questionnaire);
+        return ResponseResult.ok();
+    }
+
     /**
      * 删除问卷
      * @param questionnaireId 问卷id

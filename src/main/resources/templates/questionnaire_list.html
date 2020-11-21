@@ -15,6 +15,9 @@
             table tbody tr:hover td *[class~=hover-show]{
                 display: inline-block;
             }
+            table tbody tr:hover td *[class~=hover-hide]{
+                display: none;
+            }
             .layui-btn-xs {
                 height: 20px;
                 line-height: 20px;
@@ -46,11 +49,17 @@
                         <td th:text="${stat.count}"></td>
                         <td th:text="${q.name}" class="hover" style="font-size: 18px"></td>
                         <td>
+                            <span th:if="${q.status>0}" class="hover-hide">
+                                当前提交的答卷
+                                <span th:text="'0'" class="layui-badge layui-bg-blue"></span>
+                            </span>
                             <a th:href="'/questionnaire/design/'+${q.id}" target="_blank" th:if="${q.status==0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">设计</a>
                             <button th:if="${q.status!=0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">统计&分析</button>
                             <a th:if="${q.status==1}" target="_blank" th:href="'/questionnaire/share?qId='+${q.id}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">分享问卷</a>
                             <a th:href="'/questionnaire/preview/'+${q.id}" class="hover-show layui-btn layui-btn-warm layui-btn-xs">预览</a>
-                            <button th:data-id="${q.id}" data-id="" class="hover-show layui-btn layui-btn-danger layui-btn-xs">删除</button>
+                            <button th:if="${q.status==1}" th:data-id="${q.id}" data-id="" class="stopBtn hover-show layui-btn layui-btn-warm layui-btn-xs" title="停止答卷">停止</button>
+                            <button th:if="${q.status==0}" th:data-id="${q.id}" data-id="" class="publishBtn hover-show layui-btn layui-btn-warm layui-btn-xs" title="发布答卷">发布</button>
+                            <button th:data-id="${q.id}" data-id="" class="delBtn hover-show layui-btn layui-btn-danger layui-btn-xs">删除</button>
                         </td>
                         <td>
                             <span th:text="'创建于'+${#dates.format( q.createDate,'yyyy/MM/dd')}"></span>
@@ -70,12 +79,58 @@
     <script src="/static/lib/jquery-1.9.1.min.js"></script>
     <script>
         $(function (){
-            $("button[data-id]").click(function (){
+            $(".publishBtn").click(function (){
                 let questionnaireId = $(this).data("id");
                 if(questionnaireId === undefined || questionnaireId.trim() === '')
                     return ;
                 console.log(questionnaireId);
-                layer.confirm("<span class='text-danger'>确认删除？</span>",{
+                layer.confirm("<span class='text-danger'>发布之后将无法再次设计修改问卷，确认发布答卷？</span>",{
+                    btn: ['确认', '取消']
+                }, function () {
+                    $.post("/questionnaire/design/publishQuestionnaire",
+                        {questionnaireId:questionnaireId },
+                        function (data){
+                            if(data.code === 200){
+                                layer.msg("发布成功！",{icon:6});
+                                document.location.reload(); //刷新页面
+                            }else{
+                                layer.msg("发布失败！"+data.data,{icon:5});
+                            }
+                        }
+                    )
+                }, function(){
+                    // 按钮2的事件
+                });
+            });
+            $(".stopBtn").click(function (){
+                let questionnaireId = $(this).data("id");
+                if(questionnaireId === undefined || questionnaireId.trim() === '')
+                    return ;
+                console.log(questionnaireId);
+                layer.confirm("<span class='text-danger'>状态设为“停止”后该问卷将不能继续填写，确认停止答卷？</span>",{
+                    btn: ['确认', '取消']
+                }, function () {
+                    $.post("/questionnaire/stop",
+                        {questionnaireId:questionnaireId },
+                        function (data){
+                            if(data.code === 200){
+                                layer.msg("停止成功！",{icon:6});
+                                document.location.reload(); //刷新页面
+                            }else{
+                                layer.msg("停止失败！"+data.data,{icon:5});
+                            }
+                        }
+                    )
+                }, function(){
+                    // 按钮2的事件
+                });
+            });
+            $(".delBtn").click(function (){
+                let questionnaireId = $(this).data("id");
+                if(questionnaireId === undefined || questionnaireId.trim() === '')
+                    return ;
+                console.log(questionnaireId);
+                layer.confirm("<span class='text-danger'>将会删除该问卷所有数据，包括已经收集的答卷且不能还原！确认删除？</span>",{
                     btn: ['确认', '取消']
                 }, function () {
                     $.post("/questionnaire/delete",

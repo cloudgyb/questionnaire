@@ -96,6 +96,16 @@ public class QuestionnaireController {
         return questionnaireService.publishQuestionnaire(questionnaireId);
     }
     /**
+     * 停止问卷答卷收集，将问卷状态设置为结束，也就是问卷收集完成
+     */
+    @PostMapping("/stop")
+    @RequiredLogin
+    @ResponseBody
+    public ResponseResult stopQuestionnaire(@RequestParam String questionnaireId){
+        return questionnaireService.stopQuestionnaire(questionnaireId);
+    }
+
+    /**
      * 删除问题
      * @param questionId 问题id
      */
