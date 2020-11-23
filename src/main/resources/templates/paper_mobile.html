@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>感谢您的参与^-^</title>
+        <meta content="width=device-width, initial-scale=1" name="viewport">
+        <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
+        <link href="http://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css" rel="stylesheet">
+        <link href="/static/css/style.css" rel="stylesheet">
+        <script src="http://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="http://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        <style>
+            #submitBtn {
+                color: #ffffff;
+                background-color: #1E9FFF;
+                width: 100%;
+                margin: 30px 0;
+                height: 40px;
+            }
+        </style>
+    </head>
+    <body>
+        <div data-role="page">
+            <div data-role="header" th:if="${qa}">
+                <h1 class="text-primary" style="margin: 0" th:text="${qa.name}">问卷名称</h1>
+            </div>
+            <div class="ui-content" data-role="main" id="main" th:data-id="${qa.id}">
+                <div class="text-dark-gray" style="border-bottom: 1px dotted #c2c2c2" th:if="${qa}"
+                     th:text="${qa.greeting}"></div>
+                <div id="questions">
+                    <div th:each="q : ${qa.questions}" th:data-id="${q.id}" th:data-type="${q.questionType}">
+                        <!--单选-->
+                        <fieldset data-role="controlgroup" th:if="${q.questionType==3}">
+                            <legend th:text="${q.questionNum}+'.'+${q.questionTitle}"></legend>
+                            <label th:each="ops : ${q.options}" th:for="${q.id}">
+                                <input th:id="${ops.id}" th:name="${q.id}" th:value="${ops.id}" type="radio">
+                                <span th:text="${ops.optionText}"></span>
+                            </label>
+                        </fieldset>
+                        <!--多选-->
+                        <fieldset data-role="controlgroup" th:if="${q.questionType==4}">
+                            <legend th:text="${q.questionNum}+'.'+${q.questionTitle}"></legend>
+                            <label th:each="ops : ${q.options}" th:for="${ops.id}">
+                                <input th:id="${ops.id}" th:name="${ops.id}" th:value="${ops.id}" type="checkbox">
+                                <span th:text="${ops.optionText}"></span>
+                            </label>
+                        </fieldset>
+                        <fieldset th:if="${q.questionType==1}">
+                            <label th:for="${q.id}" th:text="${q.questionNum}+'.'+${q.questionTitle}"></label>
+                            <input th:name="${q.id}" type="text" value="">
+                        </fieldset>
+                        <fieldset th:if="${q.questionType==2}">
+                            <label th:for="${q.id}" th:text="${q.questionNum}+'.'+${q.questionTitle}"></label>
+                            <textarea cols="40" rows="8" th:name="${q.id}"></textarea>
+                        </fieldset>
+                        <hr th:if="${q.questionType==5}">
+                    </div>
+                </div>
+            </div>
+            <div data-role="footer" style="padding: 10px">
+                <button id="submitBtn">立即提交</button>
+            </div>
+        </div>
+    </body>
+    <script src="/static/lib/layui/layui.all.js"></script>
+    <script>
+        $(function () {
+            let startTime = new Date().getTime();
+            function submit() {
+                let questionnaireId = $("#main").data("id");
+                let questionResultList = [];
+                let questionDomList = $("#questions").children();
+                for (let i = 0; i < questionDomList.length; ++i) {
+                    let item = questionDomList[i];
+                    let res = ''
+                    debugger
+                    let qId = $(item).data("id"); //题目id
+                    let qType = $(item).data("type"); //题目类型
+                    let dom = {}
+                    if (qType === 1) { //单行填空题
+                        dom = $(item).find("input")
+                        res = $(dom).val();
+                    } else if (qType === 2) { //多行填空题
+                        dom = $(item).find("textarea")
+                        res = $(dom).val();
+                    } else if (qType === 3) {//单选
+                        dom = $(item).find("input:checked")
+                        if (dom.length === 0) {
+                            dom = $(item).find("input")
+                        } else {
+                            res = $(dom).val();
+                        }
+                    } else if (qType === 4) { //多选题 获取选项
+                        let checkBoxList = $(item).find("input:checked");
+                        if (checkBoxList.length === 0) {
+                            dom = $(item).find("input")
+                        }
+                        if (checkBoxList.length && checkBoxList.length > 0) {
+                            for (let i = 0; i < checkBoxList.length; i++) {
+                                res += $(checkBoxList[i]).val();
+                                res += ',';
+                            }
+                        } else {
+                            res = $(checkBoxList).val();
+                        }
+                    }
+                    if (res === undefined || res.trim() === '') {
+                        layer.msg("请填写第" + (i + 1) + '题哦！', {icon: 6});
+                        //alert("请填写第" + (i + 1) + '题哦！')
+                        $(dom).focus();
+                        //$(item).trigger('click');
+                        return;
+                    }
+                    questionResultList.push({
+                        questionId: qId,
+                        questionType: qType,
+                        result: res
+                    });
+                }
+                let paper = {
+                    questionnaireId: questionnaireId,
+                    elapsedTime:new Date().getTime()-startTime,
+                    source:getSource(),
+                    resultList: questionResultList
+                }
+                console.log(paper)
+                $.ajax({
+                    url: "/q/submit",
+                    type: "post",
+                    contentType: "application/json",
+                    data: JSON.stringify(paper),
+                    success: function (data) {
+                        if (data.code === 200) {
+                            layer.msg('提交成功！', {icon: 6});
+                        }
+                        console.log(data);
+                        window.location.href = "/q/thanks";
+                    },
+                    error: function (data) {
+                        layer.msg('提交失败！', {icon: 0});
+                        console.log(data)
+                    }
+                });
+            }
+
+            $("#submitBtn").click(submit);
+            function getSource(){
+                let res = getParam("from");
+                if(res === null || res === undefined || "" === res.trim())
+                    res = 5; //未知来源
+                return res;
+            }
+            function getParam(paramName) {
+                let paramValue = "";
+                if (this.location.search.indexOf("?") === 0 && this.location.search.indexOf("=") > 1) {
+                    let start = this.location.search.indexOf(paramName+"=");
+                    if(start>0){
+                        return this.location.search.substring(start+paramName.length+1);
+                    }
+                }
+                return paramValue === "" && (paramValue = null), paramValue
+            }
+        })
+    </script>
+</html>

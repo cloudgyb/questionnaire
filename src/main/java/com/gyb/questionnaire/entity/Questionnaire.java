@@ -30,5 +30,6 @@ public class Questionnaire {
   private long templateId;
   private int invokeCount;
   private int status;//0设计中，1已经发布，2已经结束
+  private int paperCount; //已提交答卷计数
 
 }

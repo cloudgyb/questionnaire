@@ -51,7 +51,7 @@
                         <td>
                             <span th:if="${q.status>0}" class="hover-hide">
                                 当前提交的答卷
-                                <span th:text="'0'" class="layui-badge layui-bg-blue"></span>
+                                <span th:text="${q.paperCount}" class="layui-badge layui-bg-blue">0</span>
                             </span>
                             <a th:href="'/questionnaire/design/'+${q.id}" target="_blank" th:if="${q.status==0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">设计</a>
                             <button th:if="${q.status!=0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">统计&分析</button>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>感谢您的参与^-^</title>
+        <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
+        <link href="/static/css/style.css" rel="stylesheet">
+        <style>
+            body {
+                background-color: #ccc;
+            }
+
+            /* 问题展示区样式 */
+            #templateQuestion-container {
+                margin: 0 auto;
+                width: 760px;
+                height: auto;
+                padding: 20px 20px;
+                background: white;
+                z-index: 1;
+                overflow-y: auto;
+            }
+
+            #templateQuestion-container li {
+                display: block;
+                margin: 10px auto;
+                width: 550px;
+                padding: 5px;
+                position: relative;
+            }
+
+            .q-header {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+
+            .q-body {
+                font-size: 15px;
+            }
+            .q-body label{
+                line-height: 25px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="templateQuestion-container" >
+            <h2 class="text-center text-danger" th:if="!${qa}">
+                感谢您的参与，该问卷不存在或者已被删除啦！
+            </h2>
+            <input type="text" id="questionnaireId" th:if="${qa}" th:value="${qa.id}" hidden>
+            <h2 class="text-center text-primary" th:if="${qa}" th:text="${qa.name}"></h2>
+            <span class="text-primary text-right" th:if="${qa}" th:text="'创建日期:'+${#dates.format(qa.createDate,'yyyy/MM/dd HH:mm:ss')}"></span>
+            <div th:if="${qa}" th:text="${qa.greeting}" class="text-dark-gray"
+                 style="padding: 20px 20px;border-bottom: 1px dotted #c2c2c2"></div>
+            <ul id="questions" th:if="${qa}">
+                <li th:data-id="${q.id}" th:data-type="${q.questionType}" th:each="q : ${qa.questions}">
+                    <div class="q-header" th:if="${q.questionType!=5}">
+                        <span class="num" th:text="${q.questionNum}+'、'"></span>
+                        <span th:for="${q.id}" th:text="${q.questionTitle}"></span>
+                    </div>
+                    <div class="q-body">
+                        <input th:if="${q.questionType==1}" th:name="${q.id}" th:placeholder="${q.inputPlaceholder}"
+                               type="text" required lay-verify="required">
+                        <textarea cols="60" rows="5" th:if="${q.questionType==2}" th:name="${q.id}"
+                                  th:placeholder="${q.inputPlaceholder}" required lay-verify="required"></textarea>
+                        <div th:if="${q.questionType==3}">
+                            <div th:each="ops : ${q.options}">
+                                <label>
+                                    <input th:id="${ops.id}" th:name="${q.id}" th:value="${ops.id}" type="radio">
+                                    <span th:text="${ops.optionText}"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div th:if="${q.questionType==4}">
+                            <div th:each="ops : ${q.options}">
+                                <label>
+                                    <input th:id="${ops.id}" th:name="${ops.id}" th:value="${ops.id}" type="checkbox">
+                                    <span th:text="${ops.optionText}"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <hr th:if="${q.questionType==5}">
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div style="position: fixed;top:100px;right: 20px;width: 200px">
+            <button class="layui-btn layui-btn-normal" style="width: 100%" id="submitBtn">^-^提交^-^</button>
+        </div>
+    </body>
+    <script src="/static/lib/layui/layui.all.js"></script>
+    <script src="/static/lib/jquery-1.9.1.min.js"></script>
+    <script>
+        $(function(){
+            let startTime = new Date().getTime();
+            function submit(){
+                let questionnaireId = $("#questionnaireId").val();
+                let questionResultList = [];
+                let questionDomList = $("#questions").children();
+                //$.each(questionDomList, function (i, item) {
+                for(let i=0;i<questionDomList.length;++i){
+                    let item = questionDomList[i];
+                    let res = ''
+                    debugger
+                    let qId = $(item).data("id"); //题目id
+                    let qType = $(item).data("type"); //题目类型
+                    let dom = {}
+                    if (qType === 1) { //单行填空题
+                        dom = $(item).find(".q-body input")
+                        res = $(dom).val();
+                    } else if (qType === 2) { //多行填空题
+                        dom = $(item).find(".q-body textarea")
+                        res = $(dom).val();
+                    } else if (qType === 3) {//单选
+                        dom = $(item).find(".q-body input:checked")
+                        if(dom.length === 0){
+                            dom = $(item).find(".q-body input")
+                        }else{
+                            res = $(dom).val();
+                        }
+                    } else if (qType === 4) { //多选题 获取选项
+                        let checkBoxList = $(item).find(".q-body input:checked");
+                        if(checkBoxList.length === 0){
+                            dom = $(item).find(".q-body input")
+                        }
+                        if(checkBoxList.length && checkBoxList.length>0){
+                            for (let i = 0; i < checkBoxList.length; i++) {
+                                res += $(checkBoxList[i]).val();
+                                res += ',';
+                            }
+                        }else{
+                            res = $(checkBoxList).val();
+                        }
+                    }
+                    if(res === undefined || res.trim() === ''){
+                        layer.msg("请填写第"+(i+1)+'题哦！',{icon:6});
+                        $(dom).focus();
+                        return ;
+                    }
+                    questionResultList.push({
+                        questionId:qId,
+                        questionType:qType,
+                        result:res
+                    });
+                }
+                let paper = {
+                    questionnaireId:questionnaireId,
+                    elapsedTime:new Date().getTime()-startTime,
+                    source:getSource(),
+                    resultList:questionResultList
+                }
+                console.log(paper)
+                $.ajax({
+                    url: "/q/submit",
+                    type: "post",
+                    contentType: "application/json",
+                    data: JSON.stringify(paper),
+                    success: function (data) {
+                        if (data.code === 200) {
+                            layer.msg('提交成功！', {icon: 6});
+                        }
+                        console.log(data);
+                        window.location.href = "/q/thanks";
+                    },
+                    error: function (data) {
+                        layer.msg('提交失败！', {icon: 0});
+                        console.log(data)
+                    }
+                });
+            }
+            $("#submitBtn").click(submit);
+
+            function getSource(){
+                let res = getParam("from");
+                if(res === null || res === undefined || "" === res.trim())
+                    res = 5; //未知来源
+                return res;
+            }
+            function getParam(paramName) {
+                let paramValue = "";
+                if (this.location.search.indexOf("?") === 0 && this.location.search.indexOf("=") > 1) {
+                    let start = this.location.search.indexOf(paramName+"=");
+                    if(start>0){
+                        return this.location.search.substring(start+paramName.length+1);
+                    }
+                }
+                return paramValue === "" && (paramValue = null), paramValue
+            }
+        })
+    </script>
+</html>

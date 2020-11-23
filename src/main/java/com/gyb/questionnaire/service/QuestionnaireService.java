@@ -1,6 +1,7 @@
 package com.gyb.questionnaire.service;
 
 import com.gyb.questionnaire.controller.ResponseResult;
+import com.gyb.questionnaire.dao.PaperDao;
 import com.gyb.questionnaire.dao.QuestionnaireDao;
 import com.gyb.questionnaire.dao.QuestionnaireQuestionDao;
 import com.gyb.questionnaire.dao.QuestionnaireQuestionOptionDao;
@@ -36,15 +37,18 @@ public class QuestionnaireService {
     private final QuestionnaireQuestionDao questionDao;
     private final QuestionnaireQuestionOptionDao optionDao;
     private final TemplateService templateService;
+    private final PaperDao paperDao;
 
     public QuestionnaireService(QuestionnaireDao questionnaireDao,
                                 QuestionnaireQuestionDao questionDao,
                                 QuestionnaireQuestionOptionDao optionDao,
-                                TemplateService templateService) {
+                                TemplateService templateService,
+                                PaperDao paperDao) {
         this.questionnaireDao = questionnaireDao;
         this.questionDao = questionDao;
         this.optionDao = optionDao;
         this.templateService = templateService;
+        this.paperDao = paperDao;
     }
 
     /**
@@ -75,7 +79,16 @@ public class QuestionnaireService {
         final User u = (User) (HttpServletUtil.getSession().getAttribute(SESSION_KEY_CURR_USER));
         if (u == null)
             return null;
-        return questionnaireDao.findByUserId(u.getId());
+        final List<Questionnaire> questionnaireList = questionnaireDao.findByUserId(u.getId());
+        if(questionnaireList != null){
+            for (Questionnaire questionnaire : questionnaireList) {
+                if(questionnaire.getStatus() > 0){ //对于已经发布的问卷统计答卷数量
+                   int paperCount = paperDao.countByQuestionnaireId(questionnaire.getId());
+                   questionnaire.setPaperCount(paperCount);
+                }
+            }
+        }
+        return questionnaireList;
     }
 
     public String add(String name, String greeting) {
@@ -105,13 +118,17 @@ public class QuestionnaireService {
         final Questionnaire questionnaire = getUserQuestionnaire(questionnaireId);
         if (questionnaire == null)
             return null;
+        return getQuestionnaireDetail(questionnaire);
+    }
+
+    public QuestionnaireDTO getQuestionnaireDetail(Questionnaire questionnaire){
         final QuestionnaireDTO dto = new QuestionnaireDTO();
-        dto.setId(questionnaireId);
+        dto.setId(questionnaire.getId());
         dto.setCreateDate(questionnaire.getCreateDate());
         dto.setGreeting(questionnaire.getGreeting());
         dto.setName(questionnaire.getName());
         dto.setQuestionCount(questionnaire.getQuestionCount());
-        List<QuestionnaireQuestionDTO> questionsDTO = getQuestionnaireQuestionsDTO(questionnaireId);
+        List<QuestionnaireQuestionDTO> questionsDTO = getQuestionnaireQuestionsDTO(questionnaire.getId());
         questionsDTO.sort(Comparator.comparing(QuestionnaireQuestionDTO::getQuestionOrder));
         dto.setQuestions(questionsDTO);
         return dto;
