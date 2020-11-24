@@ -43,31 +43,30 @@
     </head>
     <body>
         <div th:insert="~{header}"></div>
-        <div class="layui-container" th:with="baseURl=${#httpServletRequest.getScheme()}+'://'+${#httpServletRequest.getServerName()}+':'+${#httpServletRequest.getServerPort()}+'/'">
+        <div class="layui-container">
             <div class="container" th:if="!${q}">
                 <div>
                     <h3 class="text-danger">问卷不存在！无法分享！</h3>
                     <a href="/questionnaire/list" target="_self" class="layui-btn layui-btn-normal">返回我的问卷</a>
                 </div>
             </div>
-            <div class="container" th:if="${q}">
-                <div class="layui-row"
-                     th:with="shareURL=${#httpServletRequest.getScheme()}+'://'+${#httpServletRequest.getServerName()}+':'+${#httpServletRequest.getServerPort()}+'/q/'+${q.id}">
+            <div class="container" id="main" th:if="${q}" th:data-baseurl="${baseURL}" th:data-url="${shareURL}" th:data-title="${q.name}">
+                <div class="layui-row">
                     <div class="layui-col-xs6 layui-col-sm6 layui-col-md3">
-                        <img id="qrcodeImg" alt="二维码" style="width: 120px" th:src="'/qrcode?content='+${shareURL}">
+                        <img id="qrcodeImg" alt="二维码" style="width: 120px" th:src="'/qrcode?content='+${shareURL}+'?5'">
                     </div>
                     <div class="layui-col-xs6 layui-col-sm6 layui-col-md9 main">
                         <h3 style="font-weight: bold">问卷链接与二维码</h3>
-                        <input id="share-url" class="layui-input layui-input-inline" style="width:80%" th:value="${shareURL}"
+                        <input id="share-url" class="layui-input layui-input-inline" style="width:80%" th:value="${shareURL}+'?0'"
                                type="text">
                         <button class="layui-btn layui-btn-normal" id="copyShareURLBtn" data-clipboard-action="copy" data-clipboard-target="#share-url">复制链接</button>
                         <button class="layui-btn layui-btn-primary" onclick="downloadQRCodeImg()" style="margin-left: 0">下载二维码</button>
                         <span style="float: right">
                             <span class="text-dark-gray">快速分享到：</span>
-                            <a th:href="'https://connect.qq.com/widget/shareqq/index.html?url='+${shareURL}+'&title='+${q.name}+'&pics='+${baseURl}+'static/images/logo.png'+'&desc=Hi，你好，这是我在问卷Online上创建的问卷，烦请填写！'" class="layui-icon layui-icon-login-qq icon" target="_blank" title="分享给我的QQ好友"></a>
-                            <a th:href="'https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url='+${shareURL}+'&title='+${q.name}+'&pics='+${baseURl}+'static/images/logo.png'+'&desc=Hi，你好，这是我在问卷Online上创建的问卷，烦请填写！'" class="icon-qzone icon" target="_blank" title="分享到我的QQ空间"></a>
-                            <a href="#" class="layui-icon layui-icon-login-wechat icon" title="分享到微信"></a>
-                            <a th:href="'https://service.weibo.com/share/share.php?url='+${shareURL}+'&title='+${q.name}+'&pic='+${baseURl}+'static/images/logo.png'+'&desc=Hi，你好，这是我在问卷Online上创建的问卷，烦请填写！'" class="layui-icon layui-icon-login-weibo icon" title="分享到我的微博"></a>
+                            <a href="javascript:void(0)" onclick="share(1)" class="layui-icon layui-icon-login-qq icon" target="_blank" title="分享给我的QQ好友"></a>
+                            <a href="javascript:void(0)" onclick="share(3)" class="icon-qzone icon" target="_blank" title="分享到我的QQ空间"></a>
+                            <a href="javascript:void(0)" onclick="share(2)" class="layui-icon layui-icon-login-wechat icon" title="分享到微信"></a>
+                            <a href="javascript:void(0)" onclick="share(4)" class="layui-icon layui-icon-login-weibo icon" title="分享到我的微博"></a>
                         </span>
                     </div>
                 </div>
@@ -75,7 +74,7 @@
                 <div>
                     <h3 style="font-weight: bold;margin: 20px 0">嵌入到其他文档</h3>
                     <span class="text-dark-gray">IFrame代码,复制粘贴到你要放置的html文件中</span>
-                    <textarea id="iframe-code" class="layui-disabled" style="width: 100%;height: 50px"><iframe th:src="${baseURl}+'?width=760&source=iframe'" width="799" height="800" frameborder="0" style="overflow:auto"></iframe>
+                    <textarea id="iframe-code" class="layui-disabled" style="width: 100%;height: 50px"><iframe th:src="${shareURL}+'?width=760&source=iframe'" width="799" height="800" frameborder="0" style="overflow:auto"></iframe>
                     </textarea>
                     <button id="copyIFrameCodeBtn" class="layui-btn layui-btn-primary" style="margin-left: 0" data-clipboard-action="copy" data-clipboard-target="#iframe-code">复制代码</button>
                 </div>
@@ -88,6 +87,42 @@
     <script src="/static/lib/clipboard.min.js"></script>
 
     <script>
+        String.prototype.format = function() {
+            if (arguments.length === 0) return this;
+            var param = arguments[0];
+            var s = this;
+            if (typeof (param) == 'object') {
+                for (let key in param)
+                    s = s.replace(new RegExp("\\{" + key + "\\}", "g"), param[key]);
+                return s;
+            } else {
+                for (let i = 0; i < arguments.length; i++)
+                    s = s.replace(new RegExp("\\{" + i + "\\}", "g"), arguments[i]);
+                return s;
+            }
+        }
+        function share(type){
+            let url = $("#main").data("url");
+            let shareTitle = $("#main").data("title");
+            let shareLogo = $("#main").data("baseurl")+'/static/images/logo.png';
+            let shareDesc = "Hi，你好，这是我在问卷Online上创建的问卷，烦请填写！";
+            let qqShareUrl="https://connect.qq.com/widget/shareqq/index.html?url={0}&title={1}&pics={2}&desc={3}";
+            let qzoneShareUrl="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url={0}&title={1}&pics={2}&desc={3}"
+            let weiboShareUrl="https://service.weibo.com/share/share.php?url={0}&title={1}&pic={2}&desc={3}"
+            let wechatShareUrl="";
+            let shareUrl = "";
+            if(type===1){
+                shareUrl = qqShareUrl.format(encodeURI(url+'?'+type),encodeURI(shareTitle),encodeURI(shareLogo),encodeURI(shareDesc));
+            }else if(type===2){
+                shareUrl = wechatShareUrl.format(encodeURI(url+'?'+type),encodeURI(shareTitle),encodeURI(shareLogo),encodeURI(shareDesc));
+            } else if(type===3){
+                shareUrl = qzoneShareUrl.format(encodeURI(url+'?'+type),encodeURI(shareTitle),encodeURI(shareLogo),encodeURI(shareDesc));
+            } else if(type===4){
+                shareUrl = weiboShareUrl.format(encodeURI(url+'?'+type),encodeURI(shareTitle),encodeURI(shareLogo),encodeURI(shareDesc));
+            }
+            debugger;
+            window.open(shareUrl);
+        }
         function downloadQRCodeImg(){
             var img = document.getElementById('qrcodeImg'); // 获取要下载的图片
             var url = img.src;                            // 获取图片地址

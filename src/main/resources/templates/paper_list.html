@@ -2,74 +2,51 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>我的调查问卷</title>
+        <title>答卷列表</title>
         <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
         <link href="/static/css/style.css" rel="stylesheet">
         <style>
-            table tbody tr:hover td[class~=hover] {
-                color: #1E9FFF;
-            }
-            table tbody tr td *[class~=hover-show]{
-                display: none;
-            }
-            table tbody tr:hover td *[class~=hover-show]{
-                display: inline-block;
-            }
-            table tbody tr:hover td *[class~=hover-hide]{
-                display: none;
-            }
-            .layui-btn-xs {
-                height: 20px;
-                line-height: 20px;
-            }
         </style>
     </head>
     <body>
         <div th:insert="~{header}"></div>
-        <div class="layui-container">
+        <div th:if="!${q}" style="margin: 50px auto;padding: 30px;box-shadow: 0 0 5px #ccc">
+            <h2>问卷不存在或者已被删除！</h2>
+        </div>
+        <div class="layui-container" th:if="${q}">
             <h1 class="text-primary" style="margin: 20px 0">
                 <i class="layui-icon layui-icon-list" style="font-size: 35px"></i>
-                我的问卷
-                <a href="/questionnaire/create" class="layui-btn layui-btn-normal layui-icon layui-icon-add-1" style="float: right">创建新的问卷</a>
+                <span th:text="'《'+${q.name}+'》的答卷'"></span>
+                <a href="/questionnaire/list" class="layui-btn layui-btn-normal layui-icon layui-icon-add-1" style="float: right">返回我的问卷</a>
             </h1>
+            <h3 th:if="${list}" class="text-dark-gray">有效答卷共计<span th:text="${q.paperCount}" class="layui-badge layui-bg-blue"></span>份</h3>
             <table class="layui-table" lay-size="lg" lay-skin="line">
                 <thead>
                     <tr>
                         <th style="width: 10%">No.</th>
-                        <th style="width: 30%">问卷名称</th>
-                        <th style="width: 30%"></th>
-                        <th style="width: 30%"></th>
+                        <th style="width: 30%">来源</th>
+                        <th style="width: 20%"></th>
+                        <th style="width: 40%"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:if="${list.isEmpty()}">
-                        <td colspan="4"><h3 class="text-primary">你还没有创建任何问卷啊！</h3></td>
+                    <tr th:if="!${list}">
+                        <td colspan="6"><h3 class="text-primary">该问卷暂时没有答卷！</h3></td>
                     </tr>
-                    <tr th:each="q,stat :${list}">
+                    <tr th:if="${list}" th:each="p,stat :${list}">
                         <td th:text="${stat.count}"></td>
-                        <td th:text="${q.name}" class="hover" style="font-size: 18px"></td>
                         <td>
-                            <span th:if="${q.status>0}" class="hover-hide">
-                                当前提交的答卷
-                                <span th:text="${q.paperCount}" class="layui-badge layui-bg-blue">0</span>
-                            </span>
-                            <a th:href="'/questionnaire/design/'+${q.id}" target="_blank" th:if="${q.status==0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">设计</a>
-                            <button th:if="${q.status!=0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">统计&分析</button>
-                            <a th:if="${q.paperCount>0}" target="_blank" th:href="'/paper/list/'+${q.id}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">查看答卷</a>
-                            <a th:if="${q.status==1}" target="_blank" th:href="'/questionnaire/share?qId='+${q.id}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">分享问卷</a>
-                            <a th:href="'/questionnaire/preview/'+${q.id}" class="hover-show layui-btn layui-btn-warm layui-btn-xs">预览</a>
-                            <button th:if="${q.status==1}" th:data-id="${q.id}" data-id="" class="stopBtn hover-show layui-btn layui-btn-warm layui-btn-xs" title="停止答卷">停止</button>
-                            <button th:if="${q.status==0}" th:data-id="${q.id}" data-id="" class="publishBtn hover-show layui-btn layui-btn-warm layui-btn-xs" title="发布答卷">发布</button>
-                            <button th:data-id="${q.id}" data-id="" class="delBtn hover-show layui-btn layui-btn-danger layui-btn-xs">删除</button>
+                            ip：<span th:text="${p.ip}" class="text-dark"></span>
+                            <span th:text="${p.address}" class="text-dark">上海-上海</span>
+                            来自：<span th:text="${p.sourceText}" class="text-dark">未知</span>
                         </td>
                         <td>
-                            <span th:text="'创建于'+${#dates.format( q.createDate,'yyyy/MM/dd')}"></span>
-                            <span>共<span th:text="${q.questionCount}" class="layui-badge layui-bg-blue"></span>题</span>
-                            <span th:switch="${q.status}" class="layui-badge layui-bg-orange">
-                                <span th:case="0">设计中</span>
-                                <span th:case="1">问卷收集中</span>
-                                <span th:case="2">问卷已结束</span>
-                            </span>
+                            <a th:href="'/paper/view/'+${p.id}" target="_blank" class="layui-btn layui-btn-normal layui-btn-xs">查看</a>
+                            <button th:data-id="${p.id}" data-id="" class="layui-btn layui-btn-danger layui-btn-xs">删除</button>
+                        </td>
+                        <td>
+                            答卷耗时：<span th:text="${p.elapsedTimeText}" class="layui-badge layui-bg-orange"></span>
+                            提交时间：<span th:text="${p.submitTime}" class="text-dark"></span>
                         </td>
                     </tr>
                 </tbody>

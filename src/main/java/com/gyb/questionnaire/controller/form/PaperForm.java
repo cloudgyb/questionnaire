@@ -20,7 +20,7 @@ import java.util.List;
 public class PaperForm {
     private String questionnaireId;
     private int elapsedTime;
-    //通过哪种途径获取的答卷地址，0-网站链接，1-QQ，2-WX，3-QQ空间，4-微博,5-其他
+    //通过哪种途径获取的答卷地址，0-网站链接，1-QQ，2-WX，3-QQ空间，4-微博,5-二维码扫码，6-其他
     private int source;
     private List<QuestionAnswer> resultList;
 }

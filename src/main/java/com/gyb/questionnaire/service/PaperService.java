@@ -9,6 +9,7 @@ import com.gyb.questionnaire.dao.QuestionnaireDao;
 import com.gyb.questionnaire.entity.Paper;
 import com.gyb.questionnaire.entity.PaperAnswer;
 import com.gyb.questionnaire.entity.Questionnaire;
+import com.gyb.questionnaire.entity.User;
 import com.gyb.questionnaire.util.Client;
 import com.gyb.questionnaire.util.ClientUtil;
 import com.gyb.questionnaire.util.RandomUtil;
@@ -54,7 +55,7 @@ public class PaperService {
         paper.setId(paperId);
         paper.setQuestionnaireId(questionnaireId);
         paper.setSubmitTime(new Date(System.currentTimeMillis()));
-        paper.setElapsedTime(paperForm.getElapsedTime());
+        paper.setElapsedTime(paperForm.getElapsedTime()/1000); //form传的是毫秒，/1000转为秒
         paper.setIp(clientInfo.getIp());
         paper.setAddress("");
         paper.setSource(paperForm.getSource());
@@ -82,5 +83,19 @@ public class PaperService {
 
     public int paperCount(String questionnaireId){
         return paperDao.countByQuestionnaireId(questionnaireId);
+    }
+
+    /**
+     * 获取问卷下的答卷
+     * @param questionnaireId 问卷id
+     */
+    public List<Paper> getByQuestionnaireId(String questionnaireId) {
+        final User loginUser = LoginUserService.getLoginUser();
+        if(loginUser == null)
+            return null;
+        final Questionnaire questionnaire = questionnaireDao.findByIdAndUserId(questionnaireId, loginUser.getId());
+        if(questionnaire == null)
+            return null;
+        return paperDao.findByQuestionnaireId(questionnaireId);
     }
 }

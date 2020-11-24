@@ -1,7 +1,9 @@
 package com.gyb.questionnaire.controller;
 
+import com.gyb.questionnaire.config.RequiredLogin;
 import com.gyb.questionnaire.controller.form.PaperForm;
 import com.gyb.questionnaire.dto.QuestionnaireDTO;
+import com.gyb.questionnaire.entity.Paper;
 import com.gyb.questionnaire.entity.Questionnaire;
 import com.gyb.questionnaire.service.PaperService;
 import com.gyb.questionnaire.service.QuestionnaireService;
@@ -9,6 +11,8 @@ import com.gyb.questionnaire.util.ClientUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 答卷相关，进入答卷页面，提交答卷等操作
@@ -68,5 +72,23 @@ public class PaperController {
     @GetMapping("/q/thanks")
     public String thanksPage() {
         return "paper_thank";
+    }
+
+    /**
+     * 获取问卷下的答卷列表
+     * @param questionnaireId 问卷id
+     * @return
+     */
+    @GetMapping("/paper/list/{questionnaireId}")
+    @RequiredLogin
+    public String paperList(@PathVariable String questionnaireId,Model model){
+        final Questionnaire questionnaire = questionnaireService.getUserQuestionnaire(questionnaireId);
+        final int n = paperService.paperCount(questionnaireId);
+        if(questionnaire !=null)
+            questionnaire.setPaperCount(n);
+        List<Paper> list = paperService.getByQuestionnaireId(questionnaireId);
+        model.addAttribute("list",list);
+        model.addAttribute("q",questionnaire);
+        return "paper_list";
     }
 }

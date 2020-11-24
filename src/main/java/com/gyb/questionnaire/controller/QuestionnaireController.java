@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
@@ -154,11 +155,24 @@ public class QuestionnaireController {
      */
     @RequiredLogin
     @GetMapping("/share")
-    public String shareQuestionnaire(@RequestParam(required = false) String qId,Model m){
+    public String shareQuestionnaire(@RequestParam(required = false) String qId,
+                                     HttpServletRequest request, Model m){
         if(!StringUtils.hasText(qId))
             return "questionnaire_share";
+        String schema = request.getScheme();
+        String serverName = request.getServerName();
+        int port = request.getServerPort();
+        String baseUrl;
+        String shareUrl;
+        if(("http".equals(schema) && port == 80) || ("https".equals(schema) && port == 443))
+            baseUrl = schema+"://"+serverName;
+        else
+            baseUrl = schema+"://"+serverName+":"+port;
+        shareUrl = baseUrl+"/q/"+qId;
         Questionnaire questionnaire = questionnaireService.getUserQuestionnaire(qId);
         m.addAttribute("q",questionnaire);
+        m.addAttribute("shareURL",shareUrl);
+        m.addAttribute("baseURL",baseUrl);
         return "questionnaire_share";
     }
 

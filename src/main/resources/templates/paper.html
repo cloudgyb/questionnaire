@@ -171,20 +171,11 @@
             $("#submitBtn").click(submit);
 
             function getSource(){
-                let res = getParam("from");
-                if(res === null || res === undefined || "" === res.trim())
-                    res = 5; //未知来源
-                return res;
-            }
-            function getParam(paramName) {
-                let paramValue = "";
-                if (this.location.search.indexOf("?") === 0 && this.location.search.indexOf("=") > 1) {
-                    let start = this.location.search.indexOf(paramName+"=");
-                    if(start>0){
-                        return this.location.search.substring(start+paramName.length+1);
-                    }
+                let queryStr = this.location.search;
+                if (queryStr !== null && queryStr.length >0 && queryStr.indexOf("?") === 0) {
+                    return this.location.search.substring(1);
                 }
-                return paramValue === "" && (paramValue = null), paramValue
+                return 6;
             }
         })
     </script>
