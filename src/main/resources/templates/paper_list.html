@@ -46,7 +46,7 @@
                         </td>
                         <td>
                             答卷耗时：<span th:text="${p.elapsedTimeText}" class="layui-badge layui-bg-orange"></span>
-                            提交时间：<span th:text="${p.submitTime}" class="text-dark"></span>
+                            提交时间：<span th:text="${#dates.format(p.submitTime,'yyyy/MM/dd HH:mm:ss')}" class="text-dark"></span>
                         </td>
                     </tr>
                 </tbody>

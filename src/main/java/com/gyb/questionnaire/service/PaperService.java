@@ -16,7 +16,7 @@ import com.gyb.questionnaire.util.RandomUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,7 +54,7 @@ public class PaperService {
         String paperId = RandomUtil.uuid();
         paper.setId(paperId);
         paper.setQuestionnaireId(questionnaireId);
-        paper.setSubmitTime(new Date(System.currentTimeMillis()));
+        paper.setSubmitTime(new Date());
         paper.setElapsedTime(paperForm.getElapsedTime()/1000); //form传的是毫秒，/1000转为秒
         paper.setIp(clientInfo.getIp());
         paper.setAddress("");
