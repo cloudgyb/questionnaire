@@ -2,6 +2,7 @@ package com.gyb.questionnaire.controller;
 
 import com.gyb.questionnaire.config.RequiredLogin;
 import com.gyb.questionnaire.controller.form.PaperForm;
+import com.gyb.questionnaire.dto.PaperDetailDTO;
 import com.gyb.questionnaire.dto.QuestionnaireDTO;
 import com.gyb.questionnaire.entity.Paper;
 import com.gyb.questionnaire.entity.Questionnaire;
@@ -77,7 +78,6 @@ public class PaperController {
     /**
      * 获取问卷下的答卷列表
      * @param questionnaireId 问卷id
-     * @return
      */
     @GetMapping("/paper/list/{questionnaireId}")
     @RequiredLogin
@@ -90,5 +90,17 @@ public class PaperController {
         model.addAttribute("list",list);
         model.addAttribute("q",questionnaire);
         return "paper_list";
+    }
+
+    /**
+     * 获取答卷答案详情
+     * @param paperId 答卷id
+     */
+    @GetMapping("/paper/view/{paperId}")
+    @RequiredLogin
+    public String paperDetail(@PathVariable String paperId,Model m){
+        final PaperDetailDTO paperDetail = paperService.getPaperDetail(paperId);
+        m.addAttribute("dto",paperDetail);
+        return "paper_detail";
     }
 }

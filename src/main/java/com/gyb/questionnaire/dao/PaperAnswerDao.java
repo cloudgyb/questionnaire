@@ -49,4 +49,9 @@ public interface PaperAnswerDao {
             "question_id as questionId," +
             "answer from paper_answer where question_id=#{questionId}")
     List<PaperAnswer> findByQuestionId(String questionId);
+
+    @Select("select id,paper_id as paperId," +
+            "question_id as questionId," +
+            "answer from paper_answer where paper_id=#{paperId} and question_id=#{questionId}")
+    PaperAnswer findByPaperIdAndQuestionId(String paperId, String questionId);
 }

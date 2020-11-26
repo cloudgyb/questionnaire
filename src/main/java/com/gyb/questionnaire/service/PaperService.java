@@ -4,18 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gyb.questionnaire.controller.ResponseResult;
 import com.gyb.questionnaire.controller.form.PaperForm;
 import com.gyb.questionnaire.controller.form.QuestionAnswer;
-import com.gyb.questionnaire.dao.PaperAnswerDao;
-import com.gyb.questionnaire.dao.PaperDao;
-import com.gyb.questionnaire.dao.QuestionnaireDao;
+import com.gyb.questionnaire.dao.*;
 import com.gyb.questionnaire.dto.AddressInfo;
-import com.gyb.questionnaire.entity.Paper;
-import com.gyb.questionnaire.entity.PaperAnswer;
-import com.gyb.questionnaire.entity.Questionnaire;
-import com.gyb.questionnaire.entity.User;
+import com.gyb.questionnaire.dto.PaperDetailDTO;
+import com.gyb.questionnaire.dto.PaperQuestionAnswerDTO;
+import com.gyb.questionnaire.entity.*;
 import com.gyb.questionnaire.util.Client;
 import com.gyb.questionnaire.util.ClientUtil;
 import com.gyb.questionnaire.util.RandomUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -24,6 +22,8 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -42,15 +42,21 @@ public class PaperService {
     private final PaperDao paperDao;
     private final PaperAnswerDao paperAnswerDao;
     private final QuestionnaireDao questionnaireDao;
+    private final QuestionnaireQuestionDao questionnaireQuestionDao;
+    private final QuestionnaireQuestionOptionDao questionnaireQuestionOptionDao;
     @Resource
     private RestTemplate restTemplate;
     private ThreadPoolExecutor threadPool;
 
     public PaperService(PaperDao paperDao, PaperAnswerDao paperAnswerDao,
-                        QuestionnaireDao questionnaireDao) {
+                        QuestionnaireDao questionnaireDao,
+                        QuestionnaireQuestionDao questionnaireQuestionDao,
+                        QuestionnaireQuestionOptionDao questionnaireQuestionOptionDao) {
         this.paperDao = paperDao;
         this.paperAnswerDao = paperAnswerDao;
         this.questionnaireDao = questionnaireDao;
+        this.questionnaireQuestionDao = questionnaireQuestionDao;
+        this.questionnaireQuestionOptionDao = questionnaireQuestionOptionDao;
     }
 
     @PostConstruct
@@ -161,5 +167,57 @@ public class PaperService {
         if (questionnaire == null)
             return null;
         return paperDao.findByQuestionnaireId(questionnaireId);
+    }
+
+    /**
+     * 获取答卷详情
+     * @param paperId 答卷id
+     */
+    public PaperDetailDTO getPaperDetail(String paperId) {
+        Paper paper = paperDao.find(paperId);
+        if(paper == null) //答卷不存在
+            return null;
+        final User loginUser = LoginUserService.getLoginUser();
+        if(loginUser == null) //用户登录过期
+            return null;
+        Questionnaire q = questionnaireDao.findByIdAndUserId(paper.getQuestionnaireId(),loginUser.getId());
+        if(q == null) //答卷对应的问卷不存在或者不属于该登录用户
+            return null;
+        final PaperDetailDTO dto = new PaperDetailDTO();
+        dto.setQ(q);
+        dto.setPaper(paper);
+        List<PaperQuestionAnswerDTO> questionAnsList = new ArrayList<>();
+        final List<QuestionnaireQuestion> questions = questionnaireQuestionDao.findByQuestionnaireId(q.getId());
+        if(questions != null){
+            questions.sort(Comparator.comparingInt(QuestionnaireQuestion::getQuestionOrder));
+            for (QuestionnaireQuestion question : questions) {
+                PaperQuestionAnswerDTO questionAnsDTO = new PaperQuestionAnswerDTO();
+                int qType = question.getQuestionType();
+                PaperAnswer pa = paperAnswerDao.findByPaperIdAndQuestionId(paperId,question.getId());
+                if(qType == 3 || qType == 4){ //对于单选和双选查询选项
+                    List<QuestionnaireQuestionOption> options = questionnaireQuestionOptionDao
+                            .findByQuestionId(question.getId());
+                    setOptionsChecked(options,pa.getAnswer());
+                    questionAnsDTO.setOptions(options);
+                }
+                BeanUtils.copyProperties(question,questionAnsDTO);
+                questionAnsDTO.setAnswer(pa.getAnswer());
+                questionAnsList.add(questionAnsDTO);
+            }
+        }
+        dto.setQuestions(questionAnsList);
+        return dto;
+    }
+
+    private void setOptionsChecked(List<QuestionnaireQuestionOption> options, String answer) {
+        if(options == null)
+            return;
+        if(answer == null || "".equals(answer.trim()))
+            return;
+        for (QuestionnaireQuestionOption option : options) {
+            String id = option.getId();
+            if(answer.contains(id))
+                option.setChecked(true);
+        }
     }
 }

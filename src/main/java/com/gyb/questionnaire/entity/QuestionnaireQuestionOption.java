@@ -22,5 +22,6 @@ public class QuestionnaireQuestionOption {
     private String questionId;
     private String optionText;
     private int optionOrder;
+    private boolean isChecked;
 
 }

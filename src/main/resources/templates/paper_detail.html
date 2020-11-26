@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>答卷详情</title>
+        <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
+        <link href="/static/css/style.css" rel="stylesheet">
+        <style>
+            body {
+                background-color: #ccc;
+            }
+
+            /* 问题展示区样式 */
+            #templateQuestion-container {
+                margin: 0 auto;
+                width: 760px;
+                height: auto;
+                padding: 20px 20px;
+                background: white;
+                z-index: 1;
+                overflow-y: auto;
+                min-height: 768px;
+            }
+
+            #templateQuestion-container li {
+                display: block;
+                margin: 10px auto;
+                width: 550px;
+                padding: 5px;
+                position: relative;
+            }
+
+            .q-header {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+
+            .q-body {
+                font-size: 15px;
+            }
+            .q-body label{
+                line-height: 25px;
+            }
+            input:checked:disabled{
+               display: none;
+            }
+            input:checked:disabled+span:before{
+                content: "\e605";
+                font-family:layui-icon!important;
+                background-color: #1E9FFF;
+                margin-right: 3px;
+                color: #ffffff;
+            }
+            input[type="radio"]:checked:disabled+span:before{
+                border-radius: 50%;
+            }
+            input[type="checkbox"]:checked:disabled+span:before{
+                border-radius: 3px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="templateQuestion-container" >
+            <h2 class="text-center text-danger" th:if="!${dto}">
+                答卷不存在或者已被删除啦！
+            </h2>
+            <h2 class="text-center text-primary" th:if="${dto}" th:text="${dto.q.name}+'(答卷)'"></h2>
+            <span class="text-primary text-right" th:if="${dto}" th:text="'答卷提交日期:'+${#dates.format(dto.paper.submitTime,'yyyy/MM/dd HH:mm:ss')}"></span>
+            <div th:if="${dto}" th:text="'来自：'+${dto.paper.ip}+' '+${dto.paper.address}" class="text-dark-gray"
+                 style="padding: 20px 20px;border-bottom: 1px dotted #c2c2c2"></div>
+            <ul id="questions" th:if="${dto}">
+                <li th:data-id="${q.id}" th:data-type="${q.questionType}" th:each="q : ${dto.questions}">
+                    <div class="q-header" th:if="${q.questionType!=5}">
+                        <span class="num" th:text="${q.questionNum}+'、'"></span>
+                        <span th:for="${q.id}" th:text="${q.questionTitle}"></span>
+                    </div>
+                    <div class="q-body">
+                        <input th:if="${q.questionType==1}" th:name="${q.id}" th:value="${q.answer}"
+                               type="text" disabled>
+                        <textarea cols="60" rows="5" th:if="${q.questionType==2}" th:text="${q.answer}" th:name="${q.id}"
+                                   disabled>
+                        </textarea>
+                        <div th:if="${q.questionType==3}">
+                            <div th:each="ops : ${q.options}">
+                                <label>
+                                    <input th:id="${ops.id}" th:name="${q.id}" th:checked="${ops.isChecked()}" disabled th:value="${ops.id}" type="radio">
+                                    <span th:text="${ops.optionText}"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div th:if="${q.questionType==4}">
+                            <div th:each="ops : ${q.options}">
+                                <label>
+                                    <input th:id="${ops.id}" th:name="${ops.id}" th:checked="${ops.isChecked()}" disabled th:value="${ops.id}" type="checkbox">
+                                    <span th:text="${ops.optionText}"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <hr th:if="${q.questionType==5}">
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </body>
+    <script src="/static/lib/layui/layui.all.js"></script>
+    <script src="/static/lib/jquery-1.9.1.min.js"></script>
+</html>
