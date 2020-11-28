@@ -297,6 +297,7 @@
                 success: function (data) {
                     if (data.code === 200) {
                         layer.msg('保存成功！', {icon: 6});
+                        window.location.reload();
                     }else{
                         layer.msg('保存失败！'+data.data, {icon: 5});
                     }
@@ -312,6 +313,7 @@
         }
 
         function publish(){
+            saveChange(); //发布之前先保存
             let questionnaireId = $("#questionnaire-id");
             if(questionnaireId==undefined)
                 return ;
@@ -320,6 +322,7 @@
                 function (data){
                     if(data.code === 200){
                         layer.msg("发布成功！",{icon:6});
+                        window.location.href="/questionnaire/share?qId="+questionnaireId.val();
                     }else{
                         layer.msg("发布失败！",{icon:5});
                     }
@@ -337,11 +340,13 @@
                 stop: function (e, ui) {
                     var list = $(this).children();
                     updateQuestionIndex(list); //排序结束，更新问题题号
+                    debugger;
                 }
             }).droppable({
                 drop: function (e, ui) {
-                    var list = $(this).children();
-                    //updateQuestionIndex(list); //排序结束，更新问题题号
+                    // var list = $(this).children();
+                    // updateQuestionIndex(list); //有新的问题拖进来，更新问题题号
+                    debugger;
                 }
             });
             $("#question-draggable-wrap > ul > li").draggable({
@@ -441,9 +446,9 @@
             }
         }
         //防止用户无意间关闭网页，造成未保存的数据丢失！
-        window.onbeforeunload = function (e) {
-            var e = window.event || e;
-            e.returnValue = ("确定离开当前页面吗？");
-        }
+        // window.onbeforeunload = function (e) {
+        //     var e = window.event || e;
+        //     e.returnValue = ("确定离开当前页面吗？");
+        // }
     </script>
 </html>
