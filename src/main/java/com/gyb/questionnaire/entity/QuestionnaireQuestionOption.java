@@ -23,5 +23,6 @@ public class QuestionnaireQuestionOption {
     private String optionText;
     private int optionOrder;
     private boolean isChecked;
+    private int checkedCount;
 
 }

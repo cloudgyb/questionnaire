@@ -67,4 +67,9 @@ public interface PaperDao {
             "from paper " +
             "where questionnaire_id=#{questionnaireId}")
     int countByQuestionnaireId(String questionnaireId);
+
+    @Select("select id "+
+            "from paper " +
+            "where questionnaire_id=#{questionnaireId}")
+    List<String> findIdsByQuestionnaireId(String questionnaireId);
 }

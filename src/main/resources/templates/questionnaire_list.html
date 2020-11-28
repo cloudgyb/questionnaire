@@ -54,7 +54,7 @@
                                 <span th:text="${q.paperCount}" class="layui-badge layui-bg-blue">0</span>
                             </span>
                             <a th:href="'/questionnaire/design/'+${q.id}" target="_blank" th:if="${q.status==0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">设计</a>
-                            <button th:if="${q.status!=0}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">统计&分析</button>
+                            <a th:if="${q.status!=0}" th:href="'/questionnaire/statistics/'+${q.id}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">统计&分析</a>
                             <a th:if="${q.paperCount>0}" target="_blank" th:href="'/paper/list/'+${q.id}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">查看答卷</a>
                             <a th:if="${q.status==1}" target="_blank" th:href="'/questionnaire/share?qId='+${q.id}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">分享问卷</a>
                             <a th:href="'/questionnaire/preview/'+${q.id}" class="hover-show layui-btn layui-btn-warm layui-btn-xs">预览</a>

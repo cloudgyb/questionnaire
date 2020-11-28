@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>问卷报告</title>
+        <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
+        <link href="/static/css/style.css" rel="stylesheet">
+        <style>
+            body {
+                background-color: #ccc;
+            }
+            /* 问题展示区样式 */
+            #templateQuestion-container {
+                margin: 0 auto;
+                width: 760px;
+                height: auto;
+                padding: 20px 20px;
+                background: white;
+                z-index: 1;
+                overflow-y: auto;
+                min-height: 768px;
+            }
+
+            #templateQuestion-container li {
+                display: block;
+                margin: 10px auto;
+                width: 550px;
+                padding: 5px;
+                position: relative;
+            }
+
+            .q-header {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+
+            .q-body {
+                font-size: 15px;
+            }
+            .q-body label{
+                line-height: 25px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="templateQuestion-container" >
+            <h2 class="text-center text-danger" th:if="!${dto}">
+                答卷不存在或者已被删除啦！
+            </h2>
+            <h2 class="text-center text-primary" th:if="${dto}" th:text="${dto.questionnaire.name}+'(报告)'"></h2>
+            <ul id="questions" th:if="${dto}">
+                <li th:data-id="${q.id}" th:data-type="${q.questionType}" th:each="q : ${dto.questions}">
+                    <div class="q-header" th:if="${q.questionType!=5}">
+                        <span class="num" th:text="${q.questionNum}+'、'"></span>
+                        <span th:text="${q.questionTitle}"></span>
+                        <span th:switch="${q.questionType}">
+                            <span th:case="1">(单行文本题)</span>
+                            <span th:case="2">(多行文本题)</span>
+                            <span th:case="3">(单选题)</span>
+                            <span th:case="4">(多选题)</span>
+                        </span>
+                    </div>
+                    <div class="q-body">
+                        <div th:if="${q.questionType==1} or ${q.questionType==2}">
+                            <table class="layui-table" th:if="${q.answers}">
+                                <thead>
+                                    <tr><th th:text="'提交的'+${q.answers.size()+'条数据如下：'}" colspan="2"></th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="a,stat : ${q.answers}">
+                                        <td th:text="${stat.index+1}"></td>
+                                        <td th:text="${a}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!--<h4 th:if="${q.answers}" th:text="'提交的'+${q.answers.size()+'条数据如下：'}"></h4>
+                            <div th:each="a,stat : ${q.answers}" th:text="${stat.index+1}+'.'+${a}"></div>-->
+                        </div>
+                        <div th:if="${q.questionType==3} or ${q.questionType==4}">
+                            <table class="layui-table" lay-size="sm">
+                                <thead>
+                                    <tr><th style="width: 35%">选项</th><th style="width: 15%">小计</th><th>比例</th></tr>
+                                </thead>
+                                <tbody th:with="total=${dto.questionnaire.paperCount==0?1:dto.questionnaire.paperCount}">
+                                    <tr th:each="ops : ${q.options}">
+                                        <td th:text="${ops.optionText}"></td>
+                                        <td th:text="${ops.checkedCount}"></td>
+                                        <td th:with="v=${#numbers.formatPercent(ops.checkedCount/1.0/total,2,2)}">
+                                            <span th:utext="'<div class=\'layui-progress\'><div class=\'layui-progress-bar layui-bg-red\' lay-percent=\''+${v}+'\'></div></div>'">
+                                            </span>
+                                            <span th:text="${v}"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>本题有效填写人次</td>
+                                        <td th:text="${total}"></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="text-right" style="margin: 10px 0">
+                                <button class="layui-btn layui-btn-normal layui-btn-xs" th:onclick="hide([[${q.id}]])">表格</button>
+                                <button class="layui-btn layui-btn-primary layui-btn-xs" th:onclick="pieChart([[${q.id}]])">饼图</button>
+                                <button class="layui-btn layui-btn-primary layui-btn-xs" th:onclick="barChart([[${q.id}]])">柱状图</button>
+                            </div>
+                            <div style="width: 550px;height: 250px;display: none;border:1px solid #ccc" th:id="${q.id}"></div>
+                        </div>
+                        <hr th:if="${q.questionType==5}">
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </body>
+    <script src="/static/lib/layui/layui.all.js"></script>
+    <script src="/static/lib/jquery-1.9.1.min.js"></script>
+    <script src="/static/lib/echarts.min.js"></script>
+    <script th:inline="javascript">
+        let json = JSON.parse([[${json}]])
+        let questions = json.questions;
+        $("button").click(function (){
+            $(this).removeClass("layui-btn-primary")
+                .addClass("layui-btn-normal")
+                .siblings()
+                .removeClass("layui-btn-normal")
+                .addClass("layui-btn-primary")
+
+        });
+        function hide(qid){
+            $("#"+qid).hide();
+        }
+        function pieChart(qid){
+            echarts.dispose(document.getElementById(qid))
+            let q = questions.find(e => e.id === qid);
+            if(q === undefined)
+                return ;
+            let options = q.options;
+            let ops = [];
+            let data = [];
+            options.forEach((item) => {
+                ops.push(item.optionText)
+                data.push({value:item.checkedCount,name:item.optionText})
+            })
+            let myChart = echarts.init(document.getElementById(qid));
+            let echartsOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b} : {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    data: ops
+                },
+                series: [
+                    {
+                        name: '',
+                        type: 'pie',
+                        radius: '55%',
+                        center: ['50%', '60%'],
+                        data: data,
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            };
+            myChart.setOption(echartsOption);
+            $("#"+qid).show();
+        }
+        function barChart(qid){
+            echarts.dispose(document.getElementById(qid))
+            let q = questions.find(e => e.id === qid);
+            if(q === undefined)
+                return ;
+            let options = q.options;
+            let ops = [];
+            let data = [];
+            options.forEach((item) => {
+                ops.push(item.optionText)
+                data.push(item.checkedCount)
+            })
+            let myChart1 = echarts.init(document.getElementById(qid));
+            let chartOption = {
+                xAxis: {
+                    type: 'category',
+                    data: ops
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: data,
+                    type: 'bar'
+                }]
+            };
+            myChart1.setOption(chartOption);
+            $("#"+qid).show();
+        }
+    </script>
+</html>
