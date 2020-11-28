@@ -53,7 +53,7 @@
             <div th:if="${qa}" th:text="${qa.greeting}" class="text-dark-gray"
                  style="padding: 20px 20px;border-bottom: 1px dotted #c2c2c2"></div>
             <ul id="questions" th:if="${qa}">
-                <li th:data-id="${q.id}" th:data-type="${q.questionType}" th:each="q : ${qa.questions}">
+                <li th:data-id="${q.id}" th:data-num="${q.questionNum}" th:data-type="${q.questionType}" th:each="q : ${qa.questions}">
                     <div class="q-header" th:if="${q.questionType!=5}">
                         <span class="num" th:text="${q.questionNum}+'、'"></span>
                         <span th:for="${q.id}" th:text="${q.questionTitle}"></span>
@@ -104,7 +104,10 @@
                     debugger
                     let qId = $(item).data("id"); //题目id
                     let qType = $(item).data("type"); //题目类型
+                    let qNum = $(item).data("num"); //题目题号
                     let dom = {}
+                    if(qType === 5) //分割线直接跳过
+                        continue;
                     if (qType === 1) { //单行填空题
                         dom = $(item).find(".q-body input")
                         res = $(dom).val();
@@ -133,7 +136,7 @@
                         }
                     }
                     if(res === undefined || res.trim() === ''){
-                        layer.msg("请填写第"+(i+1)+'题哦！',{icon:6});
+                        layer.msg("请填写第"+qNum+'题哦！',{icon:6});
                         $(dom).focus();
                         return ;
                     }

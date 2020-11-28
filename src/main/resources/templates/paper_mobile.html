@@ -28,7 +28,7 @@
                 <div class="text-dark-gray" style="border-bottom: 1px dotted #c2c2c2" th:if="${qa}"
                      th:text="${qa.greeting}"></div>
                 <div id="questions">
-                    <div th:each="q : ${qa.questions}" th:data-id="${q.id}" th:data-type="${q.questionType}">
+                    <div th:each="q : ${qa.questions}" th:data-id="${q.id}" th:data-num="${q.questionNum}" th:data-type="${q.questionType}">
                         <!--单选-->
                         <fieldset data-role="controlgroup" th:if="${q.questionType==3}">
                             <legend th:text="${q.questionNum}+'.'+${q.questionTitle}"></legend>
@@ -76,6 +76,9 @@
                     debugger
                     let qId = $(item).data("id"); //题目id
                     let qType = $(item).data("type"); //题目类型
+                    if(qType === 5) //分割线直接跳过
+                        continue;
+                    let qNum = $(item).data("num"); //题目题号
                     let dom = {}
                     if (qType === 1) { //单行填空题
                         dom = $(item).find("input")
@@ -105,7 +108,7 @@
                         }
                     }
                     if (res === undefined || res.trim() === '') {
-                        layer.msg("请填写第" + (i + 1) + '题哦！', {icon: 6});
+                        layer.msg("请填写第" + qNum + '题哦！', {icon: 6});
                         //alert("请填写第" + (i + 1) + '题哦！')
                         $(dom).focus();
                         //$(item).trigger('click');
