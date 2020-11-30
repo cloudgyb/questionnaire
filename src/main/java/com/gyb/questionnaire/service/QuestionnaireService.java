@@ -1,10 +1,7 @@
 package com.gyb.questionnaire.service;
 
 import com.gyb.questionnaire.controller.ResponseResult;
-import com.gyb.questionnaire.dao.PaperDao;
-import com.gyb.questionnaire.dao.QuestionnaireDao;
-import com.gyb.questionnaire.dao.QuestionnaireQuestionDao;
-import com.gyb.questionnaire.dao.QuestionnaireQuestionOptionDao;
+import com.gyb.questionnaire.dao.*;
 import com.gyb.questionnaire.dto.QuestionnaireDTO;
 import com.gyb.questionnaire.dto.QuestionnaireQuestionDTO;
 import com.gyb.questionnaire.dto.QuestionnaireTemplateDTO;
@@ -38,17 +35,20 @@ public class QuestionnaireService {
     private final QuestionnaireQuestionOptionDao optionDao;
     private final TemplateService templateService;
     private final PaperDao paperDao;
+    private final PaperAnswerDao paperAnswerDao;
 
     public QuestionnaireService(QuestionnaireDao questionnaireDao,
                                 QuestionnaireQuestionDao questionDao,
                                 QuestionnaireQuestionOptionDao optionDao,
                                 TemplateService templateService,
-                                PaperDao paperDao) {
+                                PaperDao paperDao,
+                                PaperAnswerDao paperAnswerDao) {
         this.questionnaireDao = questionnaireDao;
         this.questionDao = questionDao;
         this.optionDao = optionDao;
         this.templateService = templateService;
         this.paperDao = paperDao;
+        this.paperAnswerDao = paperAnswerDao;
     }
 
     /**
@@ -260,6 +260,15 @@ public class QuestionnaireService {
         questionDao.deleteByQuestionnaireId(questionnaireId);
         //删除问卷
         questionnaireDao.delete(questionnaireId);
+        final List<String> paperIds = paperDao.findIdsByQuestionnaireId(questionnaireId);
+        if(paperIds != null){
+            for (String paperId : paperIds) {
+                //删除答卷答案
+                paperAnswerDao.deleteByPaperId(paperId);
+            }
+        }
+        //删除答卷
+        paperDao.deleteByQuestionnaireId(questionnaireId);
         return ResponseResult.ok();
     }
 

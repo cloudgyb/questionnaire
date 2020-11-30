@@ -83,7 +83,6 @@ public class QuestionnaireController {
     @RequiredLogin
     @ResponseBody
     public ResponseResult saveQuestionnaire(@RequestBody QuestionnaireDTO dto){
-        System.out.println(dto);
         return questionnaireService.saveQuestionnaire(dto);
     }
 
