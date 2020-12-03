@@ -14,12 +14,9 @@
             #templateQuestion-container {
                 margin: 0 auto;
                 width: 760px;
-                height: 550px;
-                max-height: 550px;
+                min-height: 100vh;
                 padding: 20px 20px;
                 background: white;
-                z-index: 1;
-                overflow-y: scroll;
             }
 
             #templateQuestion-container li {
@@ -41,10 +38,9 @@
         </style>
     </head>
     <body>
-        <div th:insert="~{header}"></div>
         <div id="templateQuestion-container">
-            <h2 class="text-center text-primary" th:text="${td.name}">"该模板不存在或者已被删除！</h2>
-            <span class="text-primary text-right" th:text="'发布日期:'+${td.publishDate}"></span>
+            <h2 class="text-center text-primary" th:text="${td.name}+'（预览）'">"该模板不存在或者已被删除！</h2>
+            <span class="text-primary text-right" th:text="'发布日期:'+${#dates.format(td.publishDate,'yyyy/MM/dd HH:mm:ss')}"></span>
             <ul id="questions">
                 <li th:data-id="${q.id}" th:data-type="${q.questionType}" th:each="q : ${td.questions}">
                     <div class="q-header">
@@ -80,7 +76,6 @@
             <a th:href="'/questionnaire/createByTemplate?templateId='+${td.id}" class="layui-btn layui-btn-normal layui-icon layui-icon-add-1" style="width: 100%">以此为模板创建问卷</a>
             <br><br>
         </div>
-        <div th:insert="footer.html"></div>
     </body>
     <script src="/static/lib/layui/layui.all.js"></script>
     <script src="/static/lib/jquery-1.9.1.min.js"></script>

@@ -16,7 +16,8 @@
             }
 
             .layui-card-body {
-                margin: 20px 0;
+                max-height: 470px;
+                overflow-y: auto;
             }
             .template-title{
                 font-size: 18px!important;
@@ -60,7 +61,8 @@
                         </tr>
                         <tr th:each="t : ${templates}">
                             <td class="text-dark">
-                                <a th:href="'/template/preview/'+${t.id}" class="template-title" th:text="${t.name}"></a>
+                                <a th:href="'/template/preview/'+${t.id}" class="template-title" th:text="${t.name}"
+                                   target="_blank" title="预览模板"></a>
                             </td>
                             <td class="text-gray" th:text="'发布于'+${t.publishDate}"></td>
                             <td class="text-gray" th:text="'共'+${t.questionCount}+'题'"></td>
@@ -69,12 +71,7 @@
                 </div>
             </div>
         </div>
-        <div th:insert="footer.html"></div>
-        <div style="position: fixed;top:30%;right: 0;">
-            <button class="text-primary layui-icon layui-icon-add-1" id="createBtn"
-                    style="cursor:pointer;font-size:50px;width:60px;height:60px;border-radius: 50%;border: 1px #ccc solid;box-shadow: 0 0 10px yellowgreen"
-                    title="立即创建问卷"></button>
-        </div>
+        <div th:insert="footer.html" style="position: fixed;bottom: 0;left: 0;right: 0"></div>
     </body>
     <script src="/static/lib/layui/layui.all.js"></script>
     <script src="/static/lib/jquery-1.9.1.min.js"></script>
