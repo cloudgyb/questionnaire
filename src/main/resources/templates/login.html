@@ -114,7 +114,6 @@
                 </div>
             </div>
         </div>
-        </div>
     </body>
     <script src="/static/lib/layui/layui.all.js"></script>
     <script src="/static/lib/jquery-1.9.1.min.js"></script>
@@ -126,16 +125,11 @@
 
         function getParam(paramName) {
             let paramValue = "";
-            // let isFound = !1;
-            // let arrSource;
-            debugger;
             if (this.location.search.indexOf("?") === 0 && this.location.search.indexOf("=") > 1) {
                 let start = this.location.search.indexOf(paramName+"=");
                 if(start>0){
                     return this.location.search.substring(start+paramName.length+1);
                 }
-                // arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
-                // while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
             }
             return paramValue === "" && (paramValue = null), paramValue
         }
@@ -157,6 +151,8 @@
                     if (resp.data > 3) {
                         $("#codeDiv").show();
                     }
+                }).fail(function(){
+                    layer.msg("登录失败，请稍后重试！", {icon: 0});
                 });
                 return false;
             });

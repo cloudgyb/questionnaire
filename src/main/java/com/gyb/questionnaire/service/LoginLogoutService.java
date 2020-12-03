@@ -41,7 +41,7 @@ public class LoginLogoutService {
         if(inputPass != null && inputPass.equals(user.getPassword())){
             session.setAttribute(SESSION_KEY_CURR_USER,user);
             session.removeAttribute(SESSION_KEY_LOGIN_ERR_COUNT); //登录成功清楚登录错误计数
-            return ResponseResult.ok("登录成功！");
+            return ResponseResult.ok("登录成功！",null);
         }
         int count = incrementLoginErrorCount(session);
         return ResponseResult.error("用户名或密码错误",count);

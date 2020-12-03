@@ -37,14 +37,14 @@
                 </li>
                 <li class="layui-nav-item"><a href="">社区</a></li>
                 <li class="layui-nav-item" style="float: right" th:if="${session.curr_user == null}">
-                    <a href="/signup" title="注册"><i class="layui-icon layui-icon-add-circle"></i>注册</a>
+                    <a th:href="@{/signup}" title="注册"><i class="layui-icon layui-icon-add-circle"></i>注册</a>
                 </li>
                 <li class="layui-nav-item" style="float: right" th:if="${session.curr_user == null}">
-                    <a href="/login" title="登录"><i class="layui-icon layui-icon-user"></i>登录</a>
+                    <a th:href="@{/login}" title="登录"><i class="layui-icon layui-icon-user"></i>登录</a>
                 </li>
                 <li class="layui-nav-item" style="float: right" th:if="${session.curr_user}">
-                    <a href="javascript:;">
-                        <img class="layui-nav-img" src="//t.cn/RCzsdCq">
+                    <a href="javascript:void(0)">
+                        <img class="layui-nav-img" src="/static/images/head.jpg" alt="head">
                         <span th:text="${session.curr_user.username}"></span>
                     </a>
                     <dl class="layui-nav-child"> <!-- 二级菜单 -->
