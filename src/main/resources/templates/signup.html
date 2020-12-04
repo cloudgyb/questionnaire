@@ -95,7 +95,6 @@
     <script>
         function flushCodeImg(){
             event.srcElement.src = "/verifyCode?t="+Date.now();
-            console.log(event);
         }
         function getParam(paramName) {
             let paramValue = "";
@@ -141,13 +140,15 @@
                 $.post('/doSignup',data.field,function (resp){
                     console.log(resp)
                     if(resp.code === 500){
-                        layer.msg(resp.data,{icon: 5});
+                        layer.msg(resp.msg,{icon: 5});
                     }else if(resp.code === 200){
                         layer.msg("恭喜注册成功！",{icon:6});
                         document.location.href=getParam("returnUrl") === null ? "/" : getParam("returnUrl");
                     }else{
-                        layer.msg(resp.data,{icon:0});
+                        layer.msg(resp.msg,{icon:0});
                     }
+                }).fail(function(){
+                    layer.msg("注册失败，请稍后重试！", {icon: 0});
                 });
                 return false;
             });

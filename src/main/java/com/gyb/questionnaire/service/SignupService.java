@@ -28,7 +28,7 @@ public class SignupService {
     public ResponseResult signup(SignupForm form){
         final int i = userDao.countByUsername(form.getUsername());
         if(i>0){
-            return ResponseResult.error("用户名已被占用，请换一个吧！");
+            return ResponseResult.error("用户名已被占用，请换一个吧！",null);
         }
         final User user = new User();
         user.setUsername(form.getUsername());
@@ -40,6 +40,6 @@ public class SignupService {
         user.setIsVip(0);
         user.setCreateDate(new Date());
         userDao.addUser(user);
-        return ResponseResult.ok("注册成功！");
+        return ResponseResult.ok("注册成功！",null);
     }
 }

@@ -4,10 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 /**
  * @author geng
@@ -20,6 +19,7 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 public class SignupForm {
     @NotBlank(message = "用户名不能为空")
+    @Length(min = 1,max = 10,message = "用户名太长")
     private String username;
     @NotBlank(message = "密码不能为空")
     private String password;

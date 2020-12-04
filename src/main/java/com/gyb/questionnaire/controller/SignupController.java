@@ -34,7 +34,7 @@ public class SignupController {
     public ResponseResult doSignup(@Validated SignupForm form, HttpSession session){
         final String code = form.getCode();
         if(!code.equalsIgnoreCase((String) session.getAttribute("_code"))){
-            return ResponseResult.error("验证码错误");
+            return ResponseResult.error("验证码错误",null);
         }
         return signupService.signup(form);
     }
