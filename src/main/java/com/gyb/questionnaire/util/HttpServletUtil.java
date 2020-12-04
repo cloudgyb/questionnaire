@@ -27,4 +27,10 @@ public class HttpServletUtil {
     public static HttpSession getSession() {
         return getRequest().getSession();
     }
+
+    public static boolean isAjaxRequest() {
+        final HttpServletRequest request = getRequest();
+        final String header = request.getHeader("x-requested-with");
+        return "XMLHttpRequest".equalsIgnoreCase(header);
+    }
 }
