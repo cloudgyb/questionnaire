@@ -1,5 +1,10 @@
 package com.gyb.questionnaire.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gyb.questionnaire.dto.AddressInfo;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -108,6 +113,39 @@ public final class ClientUtil {
             return getClientName(userAgent);
         }
         return "未知";
+    }
+
+    public static String getPositionByIP(String ip) {
+        if (ip == null || "".equals(ip))
+            return "";
+        if("127.0.0.1".equals(ip))
+            return "本机";
+        String url = "http://whois.pconline.com.cn/ipJson.jsp?json=true&ip="+ip;
+        try {
+            final RestTemplate restTemplate = new RestTemplate();
+            String resp = restTemplate.getForObject(url, String.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            AddressInfo address = objectMapper.readValue(resp,AddressInfo.class);
+            String addressStr = "";
+            if (address != null) {
+                if (StringUtils.hasText(address.getPro())) {
+                    addressStr += address.getPro();
+                    addressStr += " ";
+                }
+                if (StringUtils.hasText(address.getCity())) {
+                    addressStr += address.getCity();
+                    addressStr += " ";
+                }
+                if (StringUtils.hasText(address.getRegion())) {
+                    addressStr += address.getRegion();
+                }
+            }
+            addressStr = addressStr.trim();
+            return addressStr;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
 }

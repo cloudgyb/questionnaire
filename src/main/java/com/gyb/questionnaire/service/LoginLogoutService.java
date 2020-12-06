@@ -24,9 +24,11 @@ import static com.gyb.questionnaire.config.GlobalConstant.SESSION_KEY_LOGIN_ERR_
 @Service
 public class LoginLogoutService {
     private final UserDao userDao;
+    private final LoginLogService loginLogService;
 
-    public LoginLogoutService(UserDao userDao) {
+    public LoginLogoutService(UserDao userDao,LoginLogService loginLogService) {
         this.userDao = userDao;
+        this.loginLogService = loginLogService;
     }
 
     public ResponseResult login(LoginForm loginForm){
@@ -41,6 +43,7 @@ public class LoginLogoutService {
         if(inputPass != null && inputPass.equals(user.getPassword())){
             session.setAttribute(SESSION_KEY_CURR_USER,user);
             session.removeAttribute(SESSION_KEY_LOGIN_ERR_COUNT); //登录成功清楚登录错误计数
+            loginLogService.addLoginLog(user.getId());
             return ResponseResult.ok("登录成功！",null);
         }
         int count = incrementLoginErrorCount(session);

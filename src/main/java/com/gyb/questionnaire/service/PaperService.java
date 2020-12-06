@@ -1,11 +1,9 @@
 package com.gyb.questionnaire.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gyb.questionnaire.controller.ResponseResult;
 import com.gyb.questionnaire.controller.form.PaperForm;
 import com.gyb.questionnaire.controller.form.QuestionAnswer;
 import com.gyb.questionnaire.dao.*;
-import com.gyb.questionnaire.dto.AddressInfo;
 import com.gyb.questionnaire.dto.PaperDetailDTO;
 import com.gyb.questionnaire.dto.PaperQuestionAnswerDTO;
 import com.gyb.questionnaire.entity.*;
@@ -17,11 +15,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -44,8 +40,6 @@ public class PaperService {
     private final QuestionnaireDao questionnaireDao;
     private final QuestionnaireQuestionDao questionnaireQuestionDao;
     private final QuestionnaireQuestionOptionDao questionnaireQuestionOptionDao;
-    @Resource
-    private RestTemplate restTemplate;
     private ThreadPoolExecutor threadPool;
 
     public PaperService(PaperDao paperDao, PaperAnswerDao paperAnswerDao,
@@ -102,34 +96,10 @@ public class PaperService {
     }
 
     private void updatePaperAddress(String ip, Paper paper) {
-        if (ip == null || "".equals(ip) || "127.0.0.1".equals(ip))
-            return;
-        String url = "http://whois.pconline.com.cn/ipJson.jsp?json=true&ip="+ip;
-        try {
-            final String resp = restTemplate.getForObject(url, String.class);
-            final ObjectMapper objectMapper = new ObjectMapper();
-            AddressInfo address = objectMapper.readValue(resp,AddressInfo.class);
-            String addressStr = "";
-            if (address != null) {
-                if (StringUtils.hasText(address.getPro())) {
-                    addressStr += address.getPro();
-                    addressStr += " ";
-                }
-                if (StringUtils.hasText(address.getCity())) {
-                    addressStr += address.getCity();
-                    addressStr += " ";
-                }
-                if (StringUtils.hasText(address.getRegion())) {
-                    addressStr += address.getRegion();
-                }
-            }
-            addressStr = addressStr.trim();
-            if (StringUtils.hasText(addressStr)) {
-                paper.setAddress(addressStr);
-                paperDao.update(paper);
-            }
-        } catch (Exception e) {
-            log.error("更新答卷地址失败！",e);
+        final String addressStr = ClientUtil.getPositionByIP(ip);
+        if (StringUtils.hasText(addressStr)) {
+            paper.setAddress(addressStr);
+            paperDao.update(paper);
         }
     }
 
