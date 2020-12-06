@@ -6,8 +6,8 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -32,9 +32,9 @@ public class QRCodeUtil {
         try {
             //参数分别为：编码内容、编码类型、图片宽度、图片高度，设置参数
             bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, 300, 300, hints);
-            final ByteOutputStream byteOutputStream = new ByteOutputStream();
-            MatrixToImageWriter.writeToStream(bitMatrix, "png", byteOutputStream);
-            return byteOutputStream.getBytes();
+            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix, "png", bos);
+            return bos.toByteArray();
         } catch (IOException | WriterException e) {
             e.printStackTrace();
         }
