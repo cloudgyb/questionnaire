@@ -22,13 +22,19 @@ public interface LoginLogDao {
             "value(#{id},#{userId},#{clientName},#{systemName},#{ip},#{position},#{createTime})")
     int add(LoginLog log);
 
-    @Select("select id,user_id,client_name,system_name,ip,position,create_time from log_login where id=#{id}")
+    @Select("select id,user_id as userId,client_name as clientName," +
+            "system_name as systemName,ip,position," +
+            "create_time as createTime from log_login where id=#{id}")
     LoginLog find(long id);
 
-    @Select("select id,user_id,client_name,system_name,ip,position,create_time from log_login")
+    @Select("select id,user_id as userId,client_name as clientName," +
+            "system_name as systemName,ip,position," +
+            "create_time as createTime from log_login order by create_time desc")
     List<LoginLog> findAll();
 
-    @Select("select id,user_id,client_name,system_name,ip,position,create_time from log_login where user_id=#{userId}")
+    @Select("select id,user_id as userId,client_name as clientName," +
+            "system_name as systemName,ip,position," +
+            "create_time as createTime from log_login where user_id=#{userId} order by create_time desc")
     List<LoginLog> findByUserId(long userId);
 
     @Delete("delete from log_login")

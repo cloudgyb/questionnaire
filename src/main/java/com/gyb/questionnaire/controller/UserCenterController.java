@@ -2,7 +2,9 @@ package com.gyb.questionnaire.controller;
 
 import com.gyb.questionnaire.config.RequiredLogin;
 import com.gyb.questionnaire.controller.form.UpdateUserForm;
+import com.gyb.questionnaire.entity.LoginLog;
 import com.gyb.questionnaire.entity.User;
+import com.gyb.questionnaire.service.LoginLogService;
 import com.gyb.questionnaire.service.LoginUserService;
 import com.gyb.questionnaire.util.HttpServletUtil;
 import org.hibernate.validator.constraints.Length;
@@ -18,6 +20,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+import java.util.List;
+
 import static com.gyb.questionnaire.config.GlobalConstant.SESSION_KEY_EMAIL_CODE;
 
 /**
@@ -30,16 +34,21 @@ import static com.gyb.questionnaire.config.GlobalConstant.SESSION_KEY_EMAIL_CODE
 @Controller
 public class UserCenterController {
     private final LoginUserService loginUserService;
+    private final LoginLogService loginLogService;
 
-    public UserCenterController(LoginUserService loginUserService) {
+    public UserCenterController(LoginUserService loginUserService,
+                                LoginLogService loginLogService) {
         this.loginUserService = loginUserService;
+        this.loginLogService = loginLogService;
     }
 
     @GetMapping("/user/profile")
     @RequiredLogin
     public String userProfile(Model m){
         final User loginUser = LoginUserService.getLoginUser();
+        final List<LoginLog> loginLog = loginLogService.getRecentLoginLog(10);
         m.addAttribute("u",loginUser);
+        m.addAttribute("logs",loginLog);
         return "user/profile";
     }
 
@@ -106,4 +115,11 @@ public class UserCenterController {
         return loginUserService.sendEmailCode(email);
     }
 
+    @PostMapping("/user/cleanLoginLog")
+    @RequiredLogin
+    @ResponseBody
+    public ResponseResult cleanLoginLog(){
+        loginLogService.cleanUserLoginLog();
+        return ResponseResult.ok();
+    }
 }

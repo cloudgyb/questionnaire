@@ -68,7 +68,7 @@ public class LoginUserService {
         final String oldPass = EncryptUtil.encryptPassword(oldPassword, passwordSalt);
         assert oldPass != null;
         if(!oldPass.equals(user.getPassword())){
-            return ResponseResult.error("原密码错误！");
+            return ResponseResult.error("原密码错误！",null);
         }
         final String newPass = EncryptUtil.encryptPassword(newPassword, passwordSalt);
         userDao.updatePassword(user.getId(),newPass);
@@ -81,7 +81,7 @@ public class LoginUserService {
         final int n = userDao.updatePhone(loginUser.getId(), phone);
         if(n <= 0){
             log.error("用户绑定手机号失败："+phone);
-            return ResponseResult.error("绑定失败！");
+            return ResponseResult.error("绑定失败！",null);
         }
         loginUser.setPhone(phone);
         updateLoginUserInfo(loginUser);
@@ -94,7 +94,7 @@ public class LoginUserService {
         final int n = userDao.updatePhone(loginUser.getId(), "");
         if(n <= 0){
             log.error("用户解绑手机号失败");
-            return ResponseResult.error("解绑失败！");
+            return ResponseResult.error("解绑失败！",null);
         }
         loginUser.setPhone("");
         updateLoginUserInfo(loginUser);
@@ -107,7 +107,7 @@ public class LoginUserService {
         final int n = userDao.updateEmail(loginUser.getId(), email);
         if(n <= 0){
             log.error("用户绑定邮箱失败"+email);
-            return ResponseResult.error("绑定失败！");
+            return ResponseResult.error("绑定失败！",null);
         }
         loginUser.setEmail(email);
         updateLoginUserInfo(loginUser);
@@ -120,7 +120,7 @@ public class LoginUserService {
         final int n = userDao.updateEmail(loginUser.getId(), "");
         if(n <= 0){
             log.error("用户解绑邮箱失败");
-            return ResponseResult.error("解绑失败！");
+            return ResponseResult.error("解绑失败！",null);
         }
         loginUser.setEmail("");
         updateLoginUserInfo(loginUser);

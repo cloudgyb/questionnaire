@@ -47,6 +47,12 @@
       <scope>runtime</scope>
       <optional>true</optional>
     </dependency>
+    <!--MyBatis分页插件,依赖的MyBatis版本于项目引入的版本一致，这里不做排除了-->
+    <dependency>
+      <groupId>com.github.pagehelper</groupId>
+      <artifactId>pagehelper-spring-boot-starter</artifactId>
+      <version>1.3.0</version>
+    </dependency>
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>

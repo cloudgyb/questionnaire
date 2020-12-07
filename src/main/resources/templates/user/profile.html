@@ -254,27 +254,27 @@
             <div class="layui-card" id="loginLog">
                 <div class="layui-card-header">登录日志</div>
                 <div class="layui-card-body">
+                    <span>以下是您最近的登录记录，若存在异常登录记录，请尽快修改密码！</span>
+                    <button class="layui-btn layui-btn-normal layui-btn-sm"
+                            id="cleanLoginLogBtn">清空登录记录</button>
                     <table class="layui-table">
                         <thead>
                             <tr>
-                                <th>时间</th>
+                                <th>客户端</th>
+                                <th>系统</th>
                                 <th>地点</th>
                                 <th>ip</th>
-                                <th>客户端</th>
+                                <th>时间</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>贤心</td>
-                                <td>2016-11-29</td>
-                                <td>127.0.0.1</td>
-                                <td>人生就像是一场修行</td>
-                            </tr>
-                            <tr>
-                                <td>许闲心</td>
-                                <td>2016-11-28</td>
-                                <td></td>
-                                <td>于千万人之中遇见你所遇见的人，于千万年之中，时间的无涯的荒野里…</td>
+                        <tbody id="loginLogBody" th:with="hasLogs=${logs!=null and !logs.isEmpty()}">
+                            <tr th:if="!${hasLogs}"><td colspan='5'><span>暂无登录日志！</span></td></tr>
+                            <tr th:if="${hasLogs}" th:each="log :${logs}">
+                                <td th:text="${log.clientName}"></td>
+                                <td th:text="${log.systemName}"></td>
+                                <td th:text="${log.position}"></td>
+                                <td th:text="${log.ip}"></td>
+                                <td th:text="${#dates.format(log.createTime,'yyyy/MM-dd HH:mm:ss')}"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -320,7 +320,7 @@
                 $.post('/user/modifyPassword', data.field, function (resp) {
                     console.log(resp)
                     if (resp.code === 500) {
-                        layer.msg(resp.data, {icon: 5});
+                        layer.msg(resp.msg, {icon: 5});
                     } else if (resp.code === 200) {
                         layer.msg("修改成功！", {icon: 6});
                     } else {
@@ -337,7 +337,7 @@
                 $.post('/user/bindPhone', data.field, function (resp) {
                     console.log(resp)
                     if (resp.code === 500) {
-                        layer.msg(resp.data, {icon: 5});
+                        layer.msg(resp.msg, {icon: 5});
                     } else if (resp.code === 200) {
                         layer.msg("修改成功！", {icon: 6});
                         $("#unbindPhoneBtn").show()
@@ -358,7 +358,7 @@
                         $.post('/user/unbindPhone', data.field, function (resp) {
                             console.log(resp)
                             if (resp.code === 500) {
-                                layer.msg(resp.data, {icon: 5});
+                                layer.msg(resp.msg, {icon: 5});
                             } else if (resp.code === 200) {
                                 layer.msg("解绑成功！", {icon: 6});
                                 form.val("bindPhoneForm",{phone:""})
@@ -399,7 +399,7 @@
                         $.post('/user/unbindEmail', data.field, function (resp) {
                             console.log(resp)
                             if (resp.code === 500) {
-                                layer.msg(resp.data, {icon: 5});
+                                layer.msg(resp.msg, {icon: 5});
                             } else if (resp.code === 200) {
                                 layer.msg("解绑成功！", {icon: 6});
                                 form.val("bindEmailForm",{email:""})
@@ -421,7 +421,7 @@
             $.post('/user/sendEmailCode',{email:email}, function (resp) {
                 console.log(resp)
                 if (resp.code === 500) {
-                    layer.msg(resp.data, {icon: 5});
+                    layer.msg(resp.msg, {icon: 5});
                 } else if (resp.code === 200) {
                     layer.msg("验证码已发送至邮箱！", {icon: 6});
                     _this.addClass("layui-disabled");
@@ -442,6 +442,20 @@
                 }
             }).fail(function () {
                 layer.msg('验证码发送失败！', {icon: 5});
+            });
+        });
+
+        $("#cleanLoginLogBtn").click(function (){
+            $.post("/user/cleanLoginLog",{},function(resp){
+                if(resp.code === 200){
+                    $("#loginLogBody").empty()
+                        .append("<tr><td colspan='5'><span>暂无登录日志！</span></td></tr>");
+                    layer.msg("日志已清空！", {icon: 6});
+                }else{
+                    layer.msg(resp.msg, {icon: 5});
+                }
+            }).fail(function () {
+                layer.msg('操作失败，请稍后重试！', {icon: 5});
             });
         });
     </script>
