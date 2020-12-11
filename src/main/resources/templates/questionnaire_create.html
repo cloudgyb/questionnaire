@@ -5,8 +5,6 @@
         <title>创建问卷调查</title>
         <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
         <link href="/static/css/style.css" rel="stylesheet">
-        <style>
-        </style>
     </head>
     <body>
         <div th:insert="~{header}"></div>
@@ -20,10 +18,6 @@
                     <input required lay-reqText="请输入问卷名称"
                            lay-verify="required" class="layui-input" name="name" placeholder="问卷名称" type="text">
                 </div>
-<!--                <div class="layui-form-item">-->
-<!--                    <input class="layui-input" disabled placeholder="点击选择问卷模板(非必须)" type="text">-->
-<!--                    <input hidden name="templateId" type="text"/>-->
-<!--                </div>-->
                 <div class="layui-form-item">
                     <input class="layui-input" name="greeting" placeholder="问卷说明是为参与者阐述该问卷调查的目的，也可以写欢迎语"
                            type="text">
@@ -46,15 +40,24 @@
             const form = layui.form;
             form.on('submit(submitBtn)', function (data) {
                 $.post('/questionnaire/doCreate', data.field, function (resp) {
-                    console.log(resp)
                     if (resp.code === 500) {
                         layer.msg(resp.msg, {icon: 5});
                     } else if (resp.code === 200) {
-                        layer.msg("创建成功！", {icon: 6});
-                        document.location.href = "/questionnaire/design/"+resp.data;
+                        layer.confirm(
+                            '问卷已创建！是否进入问卷设计页面？',
+                            {btn:['确定','我的问卷列表'],icon:6,title:'提示'},
+                            function (){
+                                document.location.href = "/questionnaire/design/"+resp.data;
+                            },
+                            function (){
+                                document.location.href = "/questionnaire/list";
+                            }
+                        )
                     } else {
                         layer.msg(resp.msg, {icon: 0});
                     }
+                }).fail(function (){
+                    layer.msg('创建失败，请稍后重试！', {icon: 0});
                 });
                 return false;
             });

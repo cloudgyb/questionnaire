@@ -155,19 +155,17 @@ public class QuestionnaireService {
     }
 
     public ResponseResult saveQuestionnaire(QuestionnaireDTO dto) {
-        ResponseResult errR = ResponseResult.error("问卷不存在或已被删除");
+        ResponseResult errR = ResponseResult.error("问卷不存在或已被删除",null);
         if(!StringUtils.hasText(dto.getId())){
             return errR;
         }
-        final User u = (User) (HttpServletUtil.getSession().getAttribute(SESSION_KEY_CURR_USER));
-        if (u == null)
-            return ResponseResult.error("用户登录过期！");
+        final User u = LoginUserService.getLoginUser();
         final Questionnaire questionnaire = questionnaireDao.findByIdAndUserId(dto.getId(),u.getId());
         if(questionnaire == null)
             return errR;
         if(questionnaire.getStatus() != 0){
             String errMsg = questionnaire.getStatus()==1?"问卷已发布无法保存更新！":"问卷已结束无法编辑！";
-            return ResponseResult.error(errMsg);
+            return ResponseResult.error(errMsg,null);
         }
         questionnaire.setName(dto.getName());
         questionnaire.setGreeting(dto.getGreeting());
@@ -224,7 +222,7 @@ public class QuestionnaireService {
     public ResponseResult publishQuestionnaire(String questionnaireId) {
         final Questionnaire questionnaire = getUserQuestionnaire(questionnaireId);
         if(questionnaire == null)
-            return ResponseResult.error("问卷不存在或已被删除");
+            return ResponseResult.error("问卷不存在或已被删除",null);
         questionnaire.setStatus(1);
         questionnaireDao.update(questionnaire);
         return ResponseResult.ok();
@@ -233,7 +231,7 @@ public class QuestionnaireService {
     public ResponseResult stopQuestionnaire(String questionnaireId) {
         final Questionnaire questionnaire = getUserQuestionnaire(questionnaireId);
         if(questionnaire == null)
-            return ResponseResult.error("问卷不存在或已被删除");
+            return ResponseResult.error("问卷不存在或已被删除",null);
         questionnaire.setStatus(2);
         questionnaireDao.update(questionnaire);
         return ResponseResult.ok();
@@ -245,10 +243,10 @@ public class QuestionnaireService {
      */
     public ResponseResult delete(String questionnaireId) {
         if(!StringUtils.hasText(questionnaireId))
-            return ResponseResult.error("问卷不存在或已被删除");
+            return ResponseResult.error("问卷不存在或已被删除",null);
         final Questionnaire questionnaire = getUserQuestionnaire(questionnaireId);
         if(questionnaire == null)
-            return ResponseResult.error("问卷不存在或已被删除");
+            return ResponseResult.error("问卷不存在或已被删除",null);
 
         List<String> questionIds = questionDao.findIdByQuestionnaireId(questionnaireId);
         if(questionIds != null){

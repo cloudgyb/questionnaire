@@ -4,6 +4,7 @@ import com.gyb.questionnaire.config.RequiredLogin;
 import com.gyb.questionnaire.dto.QuestionnaireDTO;
 import com.gyb.questionnaire.entity.Questionnaire;
 import com.gyb.questionnaire.service.QuestionnaireService;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -39,10 +40,12 @@ public class QuestionnaireController {
     @PostMapping("/doCreate")
     @ResponseBody
     @RequiredLogin
-    public ResponseResult createQuestionnaire(@NotBlank(message = "问卷名称不能为空") String name,
+    public ResponseResult createQuestionnaire(@NotBlank(message = "问卷名称不能为空")
+                                              @Length(max = 30,message = "问卷名称不能超过30个字符") String name,
+                                              @Length(max = 100,message = "欢迎语不能超过100个字符")
                                               @RequestParam(required = false) String greeting) {
         final String id = questionnaireService.add(name, greeting);
-        return ResponseResult.ok(id);
+        return ResponseResult.ok("创建成功",id);
     }
 
     @GetMapping("/createByTemplate")
@@ -83,6 +86,14 @@ public class QuestionnaireController {
     @RequiredLogin
     @ResponseBody
     public ResponseResult saveQuestionnaire(@RequestBody QuestionnaireDTO dto){
+        final String name = dto.getName();
+        final String greeting = dto.getGreeting();
+        if(!StringUtils.hasText(name) || !StringUtils.hasText(dto.getId()))
+            return ResponseResult.error("name或id参数为空！",null);
+        if(name.length()>30)
+            return ResponseResult.error("问卷名称太长，不能超过30个字符",null);
+        if(greeting != null && greeting.length()>100)
+            return ResponseResult.error("欢迎语不能超过100个字符",null);
         return questionnaireService.saveQuestionnaire(dto);
     }
 

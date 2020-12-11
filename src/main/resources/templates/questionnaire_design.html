@@ -299,7 +299,7 @@
                         layer.msg('保存成功！', {icon: 6});
                         window.location.reload();
                     }else{
-                        layer.msg('保存失败！'+data.data, {icon: 5});
+                        layer.msg('保存失败！'+data.msg, {icon: 5});
                     }
                     console.log(data);
                 },
@@ -324,10 +324,12 @@
                         layer.msg("发布成功！",{icon:6});
                         window.location.href="/questionnaire/share?qId="+questionnaireId.val();
                     }else{
-                        layer.msg("发布失败！",{icon:5});
+                        layer.msg("发布失败！"+data.msg,{icon:5});
                     }
                 }
-            )
+            ).fail(function(){
+                layer.msg("发布失败，请稍后重试！",{icon:5});
+            });
         }
 
         $(function () {
@@ -440,7 +442,7 @@
                             layer.msg('删除选项失败！', {icon: 5});
                         }
                     }, error: function (data) {
-                        layer.msg('删除选项失败！'+data.data, {icon: 0});
+                        layer.msg('删除选项失败！'+data.msg, {icon: 0});
                     }
                 });
             }

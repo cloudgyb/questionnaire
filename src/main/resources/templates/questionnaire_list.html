@@ -95,10 +95,12 @@
                                 layer.msg("发布成功！",{icon:6});
                                 document.location.reload(); //刷新页面
                             }else{
-                                layer.msg("发布失败！"+data.data,{icon:5});
+                                layer.msg("发布失败！"+data.msg,{icon:5});
                             }
                         }
-                    )
+                    ).fail(function(){
+                        layer.msg("发布失败，请稍后重试！",{icon:5});
+                    });
                 }, function(){
                     // 按钮2的事件
                 });
@@ -118,10 +120,12 @@
                                 layer.msg("停止成功！",{icon:6});
                                 document.location.reload(); //刷新页面
                             }else{
-                                layer.msg("停止失败！"+data.data,{icon:5});
+                                layer.msg("停止失败！"+data.msg,{icon:5});
                             }
                         }
-                    )
+                    ).fail(function(){
+                        layer.msg("停止失败，请稍后重试！",{icon:5});
+                    });
                 }, function(){
                     // 按钮2的事件
                 });
@@ -141,10 +145,12 @@
                                 layer.msg("删除成功！",{icon:6});
                                 document.location.reload(); //刷新页面
                             }else{
-                                layer.msg("删除失败！"+data.data,{icon:5});
+                                layer.msg("删除失败！"+data.msg,{icon:5});
                             }
                         }
-                    )
+                    ).fail(function(){
+                        layer.msg("删除失败，请稍后重试！",{icon:5});
+                    });
                 }, function(){
                     // 按钮2的事件
                 });
