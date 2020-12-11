@@ -142,8 +142,9 @@ public class QuestionnaireController {
 
     @RequiredLogin
     @GetMapping("/list")
-    public String userQuestionnaireList(Model m){
-        List<Questionnaire> userQuestionnaireList = questionnaireService.getUserQuestionnaireList();
+    public String userQuestionnaireList(@RequestParam(defaultValue = "1") int page,
+                                        @RequestParam(defaultValue = "10") int size,Model m){
+        List<Questionnaire> userQuestionnaireList = questionnaireService.getUserQuestionnaireList(page,size);
         m.addAttribute("list",userQuestionnaireList);
         return "questionnaire_list";
     }

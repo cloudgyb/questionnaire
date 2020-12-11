@@ -32,7 +32,7 @@
                 我的问卷
                 <a href="/questionnaire/create" class="layui-btn layui-btn-normal layui-icon layui-icon-add-1" style="float: right">创建新的问卷</a>
             </h1>
-            <table class="layui-table" lay-size="lg" lay-skin="line">
+            <table class="layui-table" lay-skin="line" style="margin-bottom: 0">
                 <thead>
                     <tr>
                         <th style="width: 10%">No.</th>
@@ -41,14 +41,17 @@
                         <th style="width: 30%"></th>
                     </tr>
                 </thead>
+            </table>
+            <table class="layui-table" lay-size="lg" lay-skin="line"
+                   style="display:block;max-height: 400px;overflow-y: auto;border-top: none;margin-top:0">
                 <tbody>
                     <tr th:if="${list.isEmpty()}">
                         <td colspan="4"><h3 class="text-primary">你还没有创建任何问卷啊！</h3></td>
                     </tr>
                     <tr th:each="q,stat :${list}">
-                        <td th:text="${stat.count}"></td>
-                        <td th:text="${q.name}" class="hover" style="font-size: 18px"></td>
-                        <td>
+                        <td th:text="${stat.count}" style="width: 10%"></td>
+                        <td th:text="${q.name}" class="hover" style="width: 30%;font-size: 18px"></td>
+                        <td style="width: 30%">
                             <span th:if="${q.status>0}" class="hover-hide">
                                 当前提交的答卷
                                 <span th:text="${q.paperCount}" class="layui-badge layui-bg-blue">0</span>
@@ -74,6 +77,7 @@
                     </tr>
                 </tbody>
             </table>
+            <div id="page" style="text-align: right"></div>
         </div>
     </body>
     <script src="/static/lib/layui/layui.all.js"></script>
@@ -155,6 +159,32 @@
                     // 按钮2的事件
                 });
             });
+        });
+    </script>
+    <script th:inline="javascript">
+        layui.use('laypage', function(){
+            let page = layui.laypage;
+            //执行一个laypage实例
+            page.render({
+                elem: 'page', //注意，这里的 test1 是 ID，不用加 # 号
+                limit: [[${list.pageSize}]],
+                curr:[[${list.pageNum}]],
+                count: [[${list.total}]], //数据总数，从服务端得到
+                limits:[5,10,15,20],
+                theme:'#1E9FFF',
+                layout:['count','prev', 'page', 'next','limit'],
+                jump: function(obj, first){
+                    //obj包含了当前分页的所有参数，比如：
+                    console.log(obj);
+                    console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                    console.log(obj.limit); //得到每页显示的条数
+                    //首次不执行
+                    if(!first){
+                        window.location.href='/questionnaire/list?page='+obj.curr
+                            +'&size='+obj.limit;
+                    }
+                }
+            })
         });
     </script>
 </html>

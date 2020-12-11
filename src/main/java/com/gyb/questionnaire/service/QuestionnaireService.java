@@ -1,5 +1,7 @@
 package com.gyb.questionnaire.service;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.gyb.questionnaire.controller.ResponseResult;
 import com.gyb.questionnaire.dao.*;
 import com.gyb.questionnaire.dto.QuestionnaireDTO;
@@ -75,10 +77,9 @@ public class QuestionnaireService {
     /**
      * 获取该登陆用户下的问卷列表
      */
-    public List<Questionnaire> getUserQuestionnaireList() {
-        final User u = (User) (HttpServletUtil.getSession().getAttribute(SESSION_KEY_CURR_USER));
-        if (u == null)
-            return null;
+    public Page<Questionnaire> getUserQuestionnaireList(int page,int size) {
+        final User u = LoginUserService.getLoginUser();
+        final Page<Questionnaire> pages = PageHelper.startPage(page, size);
         final List<Questionnaire> questionnaireList = questionnaireDao.findByUserId(u.getId());
         if(questionnaireList != null){
             for (Questionnaire questionnaire : questionnaireList) {
@@ -88,7 +89,7 @@ public class QuestionnaireService {
                 }
             }
         }
-        return questionnaireList;
+        return pages;
     }
 
     public String add(String name, String greeting) {
