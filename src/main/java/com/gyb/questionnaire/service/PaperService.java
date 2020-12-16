@@ -1,5 +1,6 @@
 package com.gyb.questionnaire.service;
 
+import com.gyb.questionnaire.config.CustomThreadFactory;
 import com.gyb.questionnaire.controller.ResponseResult;
 import com.gyb.questionnaire.controller.form.PaperForm;
 import com.gyb.questionnaire.controller.form.QuestionAnswer;
@@ -56,8 +57,9 @@ public class PaperService {
     @PostConstruct
     public void init(){
         if(threadPool == null){
-            threadPool = new ThreadPoolExecutor(3,5,5*60, TimeUnit.SECONDS,
-                    new LinkedBlockingDeque<>(1000));
+            CustomThreadFactory threadFactory = new CustomThreadFactory("PSThreadPool-thread");
+            threadPool = new ThreadPoolExecutor(3,5,5*60,
+                    TimeUnit.SECONDS, new LinkedBlockingDeque<>(1000),threadFactory);
         }
     }
 

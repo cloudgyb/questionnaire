@@ -1,6 +1,7 @@
 package com.gyb.questionnaire.service;
 
 import com.github.pagehelper.PageHelper;
+import com.gyb.questionnaire.config.CustomThreadFactory;
 import com.gyb.questionnaire.dao.LoginLogDao;
 import com.gyb.questionnaire.entity.LoginLog;
 import com.gyb.questionnaire.entity.User;
@@ -36,8 +37,9 @@ public class LoginLogService {
     @PostConstruct
     public void init() {
         if (threadPool == null) {
+            CustomThreadFactory customThreadFactory = new CustomThreadFactory("LoginLogThreadPool-thread");
             threadPool = new ThreadPoolExecutor(3, 5, 5 * 60,
-                    TimeUnit.SECONDS, new LinkedBlockingDeque<>(1000),
+                    TimeUnit.SECONDS, new LinkedBlockingDeque<>(1000),customThreadFactory,
                     new ThreadPoolExecutor.CallerRunsPolicy());
         }
     }
