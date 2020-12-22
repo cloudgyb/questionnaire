@@ -21,14 +21,7 @@
     </head>
     <body>
         <div th:insert="~{header}"></div>
-        <div class="layui-bg-blue" style="height: 100px;padding: 10px 0">
-            <div class="layui-container" style="width: 600px;line-height: 100px">
-                <input class="layui-input" lay-verify="required" name="keyword"
-                       placeholder="输入关键词，立即搜索你想要的问卷模板" required style="width: 300px;display: inline-block"
-                       type="search">
-                <button class="layui-btn layui-btn-primary layui-icon layui-icon-search">立即搜索</button>
-            </div>
-        </div>
+        <div th:insert="~{questionnaire_template_search_div}"></div>
         <div class="layui-container" style="margin-top:10px;margin-bottom: 20px">
             <h1 style="margin: 20px 0"><i class="layui-icon layui-icon-list" style="font-size: 35px"></i>海量调查问卷模板供您选择</h1>
             <div class="layui-row layui-col-space20">

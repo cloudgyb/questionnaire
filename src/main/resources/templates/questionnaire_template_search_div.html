@@ -1,0 +1,19 @@
+<div class="layui-bg-blue" style="height: 100px;padding: 10px 0">
+    <div class="layui-container" style="width: 600px;line-height: 100px">
+        <input class="layui-input" name="keyword"
+               placeholder="输入关键词，立即搜索你想要的问卷模板" id="kwInput" style="width: 300px;display: inline-block"
+               type="search">
+        <button id="searchBtn" class="layui-btn layui-btn-primary layui-icon layui-icon-search">立即搜索</button>
+    </div>
+    <script src="/static/lib/jquery-1.9.1.min.js"></script>
+    <script>
+        $(function (){
+            $("#searchBtn").click(function(){
+                let kw = $("#kwInput").val();
+                if(kw===undefined || kw.trim() === '')
+                    return;
+                window.location.href="/template/search?kw="+kw;
+            });
+        })
+    </script>
+</div>
