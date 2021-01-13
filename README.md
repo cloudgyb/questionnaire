@@ -16,5 +16,41 @@
 * 丰富的问卷调查模板
 * ... ...
 
+### 数据库ER图
+![ER图](docs/ER图.png)
+
+### 运行与部署文档
+[运行与部署文档](RUN_DEPLOY.md)
+
 ### 运行截图
- 
+#### 登录/注册
+![登录](docs/screenshots/login.png)
+![注册](docs/screenshots/signup.png)
+
+#### 主页
+![主页](docs/screenshots/index.png)
+
+#### 问卷模板
+![问卷模板](docs/screenshots/template.png)
+![模板列表](docs/screenshots/template_list.jpg)
+
+#### 模板预览
+![模板预览](docs/screenshots/template_detail.png)
+
+#### 创建问卷
+![创建问卷](docs/screenshots/questionnaire_create.png)
+
+#### 问卷设计
+![问卷设计](docs/screenshots/questionnaire_design.png)
+
+#### 我的问卷
+![我的问卷](docs/screenshots/questionnaire_list.jpg)
+
+#### 问卷分享
+![问卷分享](docs/screenshots/questionnaire_share.png)
+
+#### 问卷报告
+![问卷报告](docs/screenshots/report.png)
+
+#### 个人中心
+![登录](docs/screenshots/profile.png)
