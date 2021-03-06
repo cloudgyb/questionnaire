@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "spring.elasticsearch.address",
+      "type": "java.lang.String",
+      "description": "The address for elasticsearch.",
+      "defaultValue": "localhost:9200"
+    }
+  ]
+}
