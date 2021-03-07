@@ -1,16 +1,14 @@
 package com.gyb.questionnaire.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.gyb.questionnaire.config.RequiredLogin;
 import com.gyb.questionnaire.dto.QuestionnaireStatisticDTO;
 import com.gyb.questionnaire.service.QuestionnaireStatisticsService;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import javax.jws.WebParam;
 
 /**
  * 问卷调查结果的分析与统计相关
