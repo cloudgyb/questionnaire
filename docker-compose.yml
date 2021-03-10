@@ -1,0 +1,61 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+    container_name: questionnaire_web
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    networks:
+      - quesnet
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB=questionnaire
+      - DB_USER=questionnaire
+      - DB_PASSWORD=123456
+      - ES_ADDRESS=es:9200
+    restart: always
+    depends_on:
+      - db
+      - es
+
+  db:
+    image: mysql:8.0.22
+    container_name: questionnaire_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=questionnaire
+      - MYSQL_USER=questionnaire
+      - MYSQL_PASSWORD=123456
+    command: ["--character-set-server=utf8mb4"]
+    volumes:
+      - ./docker/initdb/:/docker-entrypoint-initdb.d/
+    expose:
+      - 3306
+    ports:
+      - "3306:3306"
+    networks:
+      - quesnet
+
+  es:
+    image: elasticsearch:7.6.2
+    container_name: questionnaire_es
+    environment:
+      - discovery.type=single-node
+    depends_on:
+      - db
+    expose:
+      - 9200
+      - 9300
+    ports:
+      - "9200:9200"
+    networks:
+      - quesnet
+
+networks:
+  quesnet:
+    driver: bridge
