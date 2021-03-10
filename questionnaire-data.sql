@@ -1,3 +1,4 @@
+SET NAMES 'utf8mb4';
 --
 -- Dumping data for table `questionnaire_type`,调查问卷模板类型测试数据
 --

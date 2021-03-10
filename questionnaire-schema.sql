@@ -7,6 +7,7 @@
 --
 -- Table structure for table `log_login`
 --
+SET NAMES 'utf8mb4';
 
 DROP TABLE IF EXISTS `log_login`;
 CREATE TABLE `log_login` (
