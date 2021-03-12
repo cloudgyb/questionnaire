@@ -53,6 +53,9 @@ services:
       - 9300
     ports:
       - "9200:9200"
+    command: ["/bin/bash","-c",
+              "elasticsearch-plugin install -batch https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.6.2/elasticsearch-analysis-ik-7.6.2.zip
+              && docker-entrypoint.sh"]
     networks:
       - quesnet
 
