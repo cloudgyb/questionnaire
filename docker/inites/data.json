@@ -1,0 +1,22 @@
+{"index": {"_index": "template"}}
+{"id":1,"name":"大学生消费情况调查问卷","createDate":"2020/11/08 04:13:26","publishDate":"2020/11/08 04:13:45","authorId":0,"authorName":null,"typeId":1,"questionCount":12,"questions":[{"id":1,"templateId":1,"questionType":3,"questionTitle":"您的性别?","questionOrder":1,"questionNum":1,"inputPlaceholder":null},{"id":2,"templateId":1,"questionType":3,"questionTitle":"你的年级？","questionOrder":2,"questionNum":2,"inputPlaceholder":null},{"id":3,"templateId":1,"questionType":3,"questionTitle":"在校期间的平均月消费?","questionOrder":3,"questionNum":3,"inputPlaceholder":null},{"id":4,"templateId":1,"questionType":3,"questionTitle":"生活费来源?","questionOrder":4,"questionNum":4,"inputPlaceholder":null},{"id":5,"templateId":1,"questionType":3,"questionTitle":"每月用于校内食堂就餐的费用约为","questionOrder":5,"questionNum":5,"inputPlaceholder":null},{"id":6,"templateId":1,"questionType":3,"questionTitle":" 购物的方式通常为?","questionOrder":6,"questionNum":6,"inputPlaceholder":null},{"id":7,"templateId":1,"questionType":3,"questionTitle":"每月购置生活用品及衣物的费用","questionOrder":7,"questionNum":7,"inputPlaceholder":null},{"id":8,"templateId":1,"questionType":3,"questionTitle":"每学期在化妆品或护肤品方面的花费","questionOrder":8,"questionNum":8,"inputPlaceholder":null},{"id":9,"templateId":1,"questionType":3,"questionTitle":"今年双11您打算花费多少钱在网购上?","questionOrder":9,"questionNum":9,"inputPlaceholder":null},{"id":10,"templateId":1,"questionType":4,"questionTitle":"您的月消费多用在哪些方面?","questionOrder":10,"questionNum":10,"inputPlaceholder":null},{"id":11,"templateId":1,"questionType":4,"questionTitle":"你会使用哪些预支方式付款","questionOrder":11,"questionNum":11,"inputPlaceholder":null},{"id":12,"templateId":1,"questionType":4,"questionTitle":"每月的生活费有余时，你会把它用于?","questionOrder":12,"questionNum":12,"inputPlaceholder":null},{"id":13,"templateId":1,"questionType":2,"questionTitle":"你对大学生超前消费的看法？","questionOrder":13,"questionNum":13,"inputPlaceholder":"请填写你对大学生超前消费的看法"}]}
+{"index": {"_index": "template"}}
+{"id":2,"name":"大学生“双十一”消费情况调查问卷","createDate":"2020/11/08 04:13:30","publishDate":"2020/11/08 04:13:47","authorId":0,"authorName":null,"typeId":1,"questionCount":20,"questions":[]}
+{"index": {"_index": "template"}}
+{"id":3,"name":"大学生双十一期间网上消费情况调查问卷","createDate":"2020/11/08 04:13:33","publishDate":"2020/11/08 04:13:49","authorId":0,"authorName":null,"typeId":1,"questionCount":10,"questions":[]}
+{"index": {"_index": "template"}}
+{"id":4,"name":"大学生校内消费情况调查","createDate":"2020/11/08 04:13:35","publishDate":"2020/11/08 04:13:51","authorId":0,"authorName":null,"typeId":1,"questionCount":15,"questions":[]}
+{"index": {"_index": "template"}}
+{"id": 5, "name": "疫情后大学生就业情况与就业指导调查", "createDate": "2020/11/08 04:13:37", "publishDate": "2020/11/08 04:13:53", "authorId": 0, "authorName": null, "typeId": 2, "questionCount": 12, "questions": []}
+{"index": {"_index": "template"}}
+{"id": 6, "name": "大学生就业意向调查", "createDate": "2020/11/08 04:13:40", "publishDate": "2020/11/08 04:13:56", "authorId": 0, "authorName": null, "typeId": 2, "questionCount": 12, "questions": []}
+{"index": {"_index": "template"}}
+{"id": 7, "name": "大学生赴日就业调查", "createDate": "2020/11/08 04:13:42", "publishDate": "2020/11/08 04:13:59", "authorId": 0, "authorName": null, "typeId": 2, "questionCount": 20, "questions": []}
+{"index": {"_index": "template"}}
+{"id": 8, "name": "大学生“12.12”消费情况调查", "createDate": "2020/12/03 09:08:29", "publishDate": "2020/12/03 09:08:35", "authorId": 0, "authorName": null, "typeId": 1, "questionCount": 0, "questions": []}
+{"index": {"_index": "template"}}
+{"id": 9, "name": "关于大学生情侣之间的消费情况调查", "createDate": "2020/12/03 09:09:56", "publishDate": "2020/12/03 09:10:00", "authorId": 0, "authorName": null, "typeId": 1, "questionCount": 0, "questions": []}
+{"index": {"_index": "template"}}
+{"id": 10, "name": "关于大学生情侣之间的消费情况调查2", "createDate": "2020/12/03 09:10:20", "publishDate": "2020/12/03 09:10:22", "authorId": 0, "authorName": null, "typeId": 1, "questionCount": 0, "questions": []}
+{"index": {"_index": "template"}}
+{"id": 11, "name": "关于大学生情侣之间的消费情况调查3", "createDate": "2020/12/03 09:12:56", "publishDate": "2020/12/03 09:12:59", "authorId": 0,"authorName": null, "typeId": 1, "questionCount": 0, "questions": []}

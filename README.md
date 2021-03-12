@@ -20,7 +20,8 @@
 ![ER图](docs/ER图.png)
 
 ### 运行与部署文档
-[运行与部署文档](RUN_DEPLOY.md)
+- [本地运行与部署文档](RUN_DEPLOY.md)
+- [docker部署文档](DOCKER_DEPLOY.md)
 
 ### 运行截图
 #### 登录/注册

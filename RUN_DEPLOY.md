@@ -60,8 +60,7 @@
 ## 3. 配置项目
 1. 首先导入项目到IDE，推荐IDEA
 2. 修改配置 <br>
-   在application-dev.properties修改数据库连接配置和邮件配置。
-   在com.gyb.questionnaire.config.ESClientConfig类中修改Elasticsearch配置。
+   根据你的环境和需要在application-<profile>.properties修改数据库连接配置、Elasticsearch连接配置、邮件配置等配置项。
 3. 导入数据到ElasticSearch <br>
    直接执行src/test/java/com/gyb/questionnaire/ESTemplateSearchTest.java的indexTemplateToES测试方法，将数据库中的数据导入到Elasticsearch。
    
