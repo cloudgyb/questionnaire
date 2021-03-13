@@ -4,6 +4,11 @@
 ## 一键启动项目
 > 首先确保你本地安装了docker engine和docker compose，并且**系统能够联网**。
 
+首先使用Maven构建项目
+```shell
+./mvnw clean package -Dmaven.test.skip=true
+```
+
 使用docker compose启动项目和依赖服务
 ```shell
 docker-compose up --build
