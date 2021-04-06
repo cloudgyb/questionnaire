@@ -267,17 +267,10 @@
                                 <th>时间</th>
                             </tr>
                         </thead>
-                        <tbody id="loginLogBody" th:with="hasLogs=${logs!=null and !logs.isEmpty()}">
-                            <tr th:if="!${hasLogs}"><td colspan='5'><span>暂无登录日志！</span></td></tr>
-                            <tr th:if="${hasLogs}" th:each="log :${logs}">
-                                <td th:text="${log.clientName}"></td>
-                                <td th:text="${log.systemName}"></td>
-                                <td th:text="${log.position}"></td>
-                                <td th:text="${log.ip}"></td>
-                                <td th:text="${#dates.format(log.createTime,'yyyy/MM-dd HH:mm:ss')}"></td>
-                            </tr>
+                        <tbody id="loginLogBody">
                         </tbody>
                     </table>
+                    <div id="page" style="text-align: right"></div>
                 </div>
             </div>
         </div>
@@ -291,6 +284,8 @@
 
         function show(id) {
             let $1 = $('#' + id);
+            if(id === "loginLog")
+                getLoginLog(1,10);
             $1.show()
             $1.siblings().hide();
         }
@@ -418,6 +413,10 @@
         $("#sendCodeBtn").click(function (){
             let _this = $(this);
             let email = $("#email").val();
+            if(email === null || email.trim() === "") {
+                layer.msg("请输入邮箱！", {icon: 5});
+                return;
+            }
             $.post('/user/sendEmailCode',{email:email}, function (resp) {
                 console.log(resp)
                 if (resp.code === 500) {
@@ -450,6 +449,7 @@
                 if(resp.code === 200){
                     $("#loginLogBody").empty()
                         .append("<tr><td colspan='5'><span>暂无登录日志！</span></td></tr>");
+                    getLoginLog(1,10)
                     layer.msg("日志已清空！", {icon: 6});
                 }else{
                     layer.msg(resp.msg, {icon: 5});
@@ -458,5 +458,37 @@
                 layer.msg('操作失败，请稍后重试！', {icon: 5});
             });
         });
+        function getLoginLog(pageNum,pageSize) {
+            $.get("/user/loginLog?pageNum="+pageNum+"&pageSize="+pageSize,function (resp) {
+                if(resp.code === 200){
+                    let data = resp.data;
+                    $("#loginLogBody").html(data.html)
+                    layui.use('laypage', function(){
+                        let page = layui.laypage;
+                        //执行一个laypage实例
+                        page.render({
+                            elem: 'page', //注意，这里的 test1 是 ID，不用加 # 号
+                            limit: data.page.pageSize,
+                            curr:data.page.pageNum,
+                            count: data.page.total, //数据总数，从服务端得到
+                            limits:[5,10,15,20],
+                            theme:'#1E9FFF',
+                            layout:['count','prev', 'page', 'next','limit'],
+                            jump: function(obj, first){
+                                //obj包含了当前分页的所有参数，比如：
+                                console.log(obj);
+                                console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                                console.log(obj.limit); //得到每页显示的条数
+                                //首次不执行
+                                if(!first){
+                                    getLoginLog(obj.curr, obj.limit);
+                                }
+                            }
+                        })
+                    });
+                }
+            })
+        }
+
     </script>
 </html>

@@ -1,5 +1,6 @@
 package com.gyb.questionnaire.service;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.gyb.questionnaire.config.CustomThreadFactory;
 import com.gyb.questionnaire.dao.LoginLogDao;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -59,12 +59,13 @@ public class LoginLogService {
      * 获取最近登录的size条日志
      * @param size 条数
      */
-    public List<LoginLog> getRecentLoginLog(int size){
+    public Page<LoginLog> getRecentLoginLog(int pageNum, int size){
         if(size <= 0)
             throw new IllegalArgumentException(String.format("size值为%s，不合法！", size));
         final User loginUser = LoginUserService.getLoginUser();
-        PageHelper.offsetPage(0,size);
-        return loginLogDao.findByUserId(loginUser.getId());
+        Page<LoginLog> objects = PageHelper.startPage(pageNum, size);
+        loginLogDao.findByUserId(loginUser.getId());
+        return objects;
     }
 
     /**

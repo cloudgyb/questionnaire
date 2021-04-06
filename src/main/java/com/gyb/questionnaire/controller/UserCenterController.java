@@ -1,5 +1,13 @@
 package com.gyb.questionnaire.controller;
 
+import java.util.HashMap;
+
+import javax.annotation.Resource;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
+import com.github.pagehelper.Page;
 import com.gyb.questionnaire.config.RequiredLogin;
 import com.gyb.questionnaire.controller.form.UpdateUserForm;
 import com.gyb.questionnaire.entity.LoginLog;
@@ -8,6 +16,9 @@ import com.gyb.questionnaire.service.LoginLogService;
 import com.gyb.questionnaire.service.LoginUserService;
 import com.gyb.questionnaire.util.HttpServletUtil;
 import org.hibernate.validator.constraints.Length;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -15,12 +26,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-
-import java.util.List;
 
 import static com.gyb.questionnaire.config.GlobalConstant.SESSION_KEY_EMAIL_CODE;
 
@@ -35,6 +40,8 @@ import static com.gyb.questionnaire.config.GlobalConstant.SESSION_KEY_EMAIL_CODE
 public class UserCenterController {
     private final LoginUserService loginUserService;
     private final LoginLogService loginLogService;
+    @Resource
+    private SpringTemplateEngine templateEngine;
 
     public UserCenterController(LoginUserService loginUserService,
                                 LoginLogService loginLogService) {
@@ -46,10 +53,31 @@ public class UserCenterController {
     @RequiredLogin
     public String userProfile(Model m){
         final User loginUser = LoginUserService.getLoginUser();
-        final List<LoginLog> loginLog = loginLogService.getRecentLoginLog(10);
         m.addAttribute("u",loginUser);
-        m.addAttribute("logs",loginLog);
         return "user/profile";
+    }
+
+    @GetMapping(value = "/user/loginLog")
+    @ResponseBody
+    @RequiredLogin
+    public ResponseResult loginLog(@RequestParam(defaultValue = "1") int pageNum,
+            @RequestParam(defaultValue = "10") int pageSize){
+        Page<LoginLog> recentLoginLog = loginLogService.getRecentLoginLog(pageNum, pageSize);
+        HashMap<String, Object> data = new HashMap<>(2);
+        HashMap<String, Object> page = new HashMap<>(3);
+        page.put("pageSize",recentLoginLog.getPageSize());
+        page.put("pageNum",recentLoginLog.getPageNum());
+        page.put("total",recentLoginLog.getTotal());
+        data.put("page",page);
+        if(recentLoginLog.isEmpty()){
+            data.put("html","<tr><td colspan='5'><span>暂无登录日志！</span></td></tr>");
+            return ResponseResult.ok(data);
+        }
+        Context context = new Context();
+        context.setVariable("logs",recentLoginLog);
+        String html = templateEngine.process("user/loginLog", context);
+        data.put("html",html);
+        return ResponseResult.ok(data);
     }
 
     @PostMapping("/user/modifyProfile")
