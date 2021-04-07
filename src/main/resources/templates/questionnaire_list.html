@@ -43,7 +43,7 @@
                 </thead>
             </table>
             <table class="layui-table" lay-size="lg" lay-skin="line"
-                   style="display:block;max-height: 400px;overflow-y: auto;border-top: none;margin-top:0">
+                   style="max-height: 400px;overflow-y: auto;border-top: none;margin-top:0">
                 <tbody>
                     <tr th:if="${list.isEmpty()}">
                         <td colspan="4"><h3 class="text-primary">你还没有创建任何问卷啊！</h3></td>
@@ -64,6 +64,7 @@
                             <button th:if="${q.status==1}" th:data-id="${q.id}" data-id="" class="stopBtn hover-show layui-btn layui-btn-warm layui-btn-xs" title="停止答卷">停止</button>
                             <button th:if="${q.status==0}" th:data-id="${q.id}" data-id="" class="publishBtn hover-show layui-btn layui-btn-warm layui-btn-xs" title="发布答卷">发布</button>
                             <button th:data-id="${q.id}" data-id="" class="delBtn hover-show layui-btn layui-btn-danger layui-btn-xs">删除</button>
+                            <button th:data-id="${q.id}" th:data-name="${q.name}" th:data-greeting="${q.greeting}" data-id="" class="cloneBtn hover-show layui-btn layui-btn-normal layui-btn-xs">克隆</button>
                         </td>
                         <td>
                             <span th:text="'创建于'+${#dates.format( q.createDate,'yyyy/MM/dd')}"></span>
@@ -78,6 +79,20 @@
                 </tbody>
             </table>
             <div id="page" style="text-align: right"></div>
+        </div>
+        <div style="display: none;margin: 20px" id="cloneDom">
+            <div class="layui-form-item">
+                <label class="layui-form-label">新问卷名称</label>
+                <div class="layui-input-block">
+                    <input type="text" id="cloneName" name="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">新问卷问候语</label>
+                <div class="layui-input-block">
+                    <input type="text" id="cloneGreeting" name="" autocomplete="off" class="layui-input">
+                </div>
+            </div>
         </div>
     </body>
     <script src="/static/lib/layui/layui.all.js"></script>
@@ -157,6 +172,52 @@
                     });
                 }, function(){
                     // 按钮2的事件
+                });
+            });
+            $(".cloneBtn").click(function () {
+                let questionnaireId = $(this).data("id");
+                let sourceQuestionnaireName = $(this).data("name");
+                let sourceQuestionnaireGreeting = $(this).data("greeting");
+                $("#cloneName").val(sourceQuestionnaireName + "(复制)");
+                $("#cloneGreeting").val(sourceQuestionnaireGreeting);
+                if (questionnaireId === undefined || questionnaireId.trim() === '')
+                    return;
+                layer.open({
+                    type: 1,
+                    title: "克隆调查问卷：《" + sourceQuestionnaireName + "》",
+                    btn: ['确认克隆','取消'],
+                    content: $("#cloneDom"),
+                    area: ['550px', '300px'],
+                    btn1: function () {
+                        $.post("/questionnaire/copy",
+                            {
+                                questionnaireId:questionnaireId,
+                                name: $("#cloneName").val(),
+                                greeting:$("#cloneGreeting").val()
+                            },
+                            function (data){
+                                if(data.code === 200){
+                                    layer.msg("克隆成功！",{icon:6});
+                                    document.location.reload(); //刷新页面
+                                }else{
+                                    layer.msg("克隆失败！"+data.msg,{icon:5});
+                                }
+                                $("#cloneDom").hide()
+                                layer.closeAll('page')
+                            }
+                        ).fail(function(){
+                            layer.msg("克隆失败，请稍后重试！",{icon:5});
+                            $("#cloneDom").hide()
+                            layer.closeAll('page')
+                        });
+                    },
+                    btn2: function () {
+                        layer.msg("您取消了克隆！")
+                        $("#cloneDom").hide()
+                    },
+                    cancel: function(){
+                        $("#cloneDom").hide()
+                    }
                 });
             });
         });

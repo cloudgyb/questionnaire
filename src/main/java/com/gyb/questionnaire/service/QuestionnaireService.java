@@ -31,7 +31,7 @@ import static com.gyb.questionnaire.config.GlobalConstant.SESSION_KEY_CURR_USER;
 
 @Service
 @Transactional
-public class QuestionnaireService {
+public class QuestionnaireService extends QuestionnaireBaseService {
     private final QuestionnaireDao questionnaireDao;
     private final QuestionnaireQuestionDao questionDao;
     private final QuestionnaireQuestionOptionDao optionDao;
@@ -45,33 +45,13 @@ public class QuestionnaireService {
                                 TemplateService templateService,
                                 PaperDao paperDao,
                                 PaperAnswerDao paperAnswerDao) {
+        super(questionnaireDao);
         this.questionnaireDao = questionnaireDao;
         this.questionDao = questionDao;
         this.optionDao = optionDao;
         this.templateService = templateService;
         this.paperDao = paperDao;
         this.paperAnswerDao = paperAnswerDao;
-    }
-
-    /**
-     * 根据id获取问卷
-     *
-     * @param questionnaireId 问卷id
-     */
-    public Questionnaire get(String questionnaireId) {
-        return questionnaireDao.find(questionnaireId);
-    }
-
-    /**
-     * 根据问卷id获取登录用户的问卷，如果该登陆用户下没有对应的问卷返回null
-     *
-     * @param questionnaireId 问卷id
-     */
-    public Questionnaire getUserQuestionnaire(String questionnaireId) {
-        final User u = (User) (HttpServletUtil.getSession().getAttribute(SESSION_KEY_CURR_USER));
-        if (u == null)
-            return null;
-        return questionnaireDao.findByIdAndUserId(questionnaireId, u.getId());
     }
 
     /**
