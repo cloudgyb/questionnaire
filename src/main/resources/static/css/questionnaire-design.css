@@ -28,17 +28,19 @@ li{
     box-shadow: 0 0 5px #ccc;
 }
 
-/* 问题展示区样式 */
 #question-container{
-    margin: 0 auto;
+    position: absolute;
     width: 760px;
-    height: 550px;
-    max-height: 550px;
     padding: 20px 40px;
     background: white;
     z-index: 1;
+    top:60px;
+    bottom: 0;
+    left: 50%;
+    margin-left: -380px;
     overflow-y: scroll;
 }
+/* 问题展示区样式 */
 #question-container li{
     display: block;
     margin: 10px 20px;

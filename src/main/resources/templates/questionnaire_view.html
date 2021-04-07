@@ -12,10 +12,12 @@
 
             /* 问题展示区样式 */
             #templateQuestion-container {
-                margin: 0 auto;
+                position: absolute;
+                top: 60px;
+                bottom: 0;
+                left: 50%;
+                margin-left: -380px;
                 width: 760px;
-                height: 550px;
-                max-height: 550px;
                 padding: 20px 20px;
                 background: white;
                 z-index: 1;
@@ -46,7 +48,7 @@
             <h2 class="text-center text-danger" th:if="!${qa}">
                 该问卷不存在或者已被删除！
             </h2>
-            <h2 class="text-center text-primary" th:if="${qa}" th:text="${qa.name}"></h2>
+            <h2 class="text-center text-primary" th:if="${qa}" th:text="${qa.name}+'（预览）'"></h2>
             <span class="text-primary text-right" th:if="${qa}" th:text="'创建日期:'+${#dates.format(qa.createDate,'yyyy/MM/dd HH:mm:ss')}"></span>
             <div th:if="${qa}" th:text="${qa.greeting}" class="text-dark-gray"
                  style="padding: 20px 20px;border-bottom: 1px dotted #c2c2c2"></div>
@@ -82,7 +84,6 @@
                 </li>
             </ul>
         </div>
-        <div th:insert="footer.html"></div>
     </body>
     <script src="/static/lib/layui/layui.all.js"></script>
     <script src="/static/lib/jquery-1.9.1.min.js"></script>
