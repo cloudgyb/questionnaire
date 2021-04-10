@@ -199,4 +199,24 @@ public class PaperService {
                 option.setChecked(true);
         }
     }
+
+    @Transactional
+    public ResponseResult deletePaper(Long paperId) {
+        final User loginUser = LoginUserService.getLoginUser();
+        Paper paper = paperDao.find(paperId);
+        if(paper == null)
+            return ResponseResult.error("答卷不存在！",null);
+        Long questionnaireId = paper.getQuestionnaireId();
+        Questionnaire questionnaire = questionnaireDao.find(questionnaireId);
+        if(loginUser.getId() != questionnaire.getUserId()) //删除的不是用户自己的问卷的答卷
+            return ResponseResult.error("答卷不存在！",null);
+        int i = paperAnswerDao.deleteByPaperId(paperId);
+        log.info(String.format("删除答卷数据%s条!", i));
+        int n = paperDao.delete(paperId);
+        if(n > 0) {
+            log.info(String.format("删除答卷id为%d!", n));
+            return ResponseResult.ok();
+        }
+        return ResponseResult.error("删除失败！",null);
+    }
 }

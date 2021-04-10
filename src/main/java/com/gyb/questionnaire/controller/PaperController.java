@@ -103,4 +103,11 @@ public class PaperController {
         m.addAttribute("dto",paperDetail);
         return "paper_detail";
     }
+
+    @PostMapping("/paper/delete")
+    @RequiredLogin
+    @ResponseBody
+    public ResponseResult delete(@RequestParam Long paperId){
+       return paperService.deletePaper(paperId);
+    }
 }
