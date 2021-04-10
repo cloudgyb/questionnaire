@@ -16,20 +16,21 @@ import java.util.List;
 @Mapper
 public interface QuestionnaireQuestionOptionDao {
     @Delete("delete from questionnaire_question_option where id=#{id}")
-    int delete(String id);
+    int delete(Long id);
 
     @Delete("delete from questionnaire_question_option where question_id=#{questionId}")
-    int deleteByQuestionId(String questionId);
+    int deleteByQuestionId(Long questionId);
 
     @Select("select id," +
             "question_id as questionId," +
             "option_text as optionText," +
             "option_order as optionOrder " +
             "from questionnaire_question_option where question_id=#{questionId}")
-    List<QuestionnaireQuestionOption> findByQuestionId(String questionId);
+    List<QuestionnaireQuestionOption> findByQuestionId(Long questionId);
 
     @Insert("insert into questionnaire_question_option(id,question_id,option_text,option_order) " +
             "value(#{id},#{questionId},#{optionText},#{optionOrder})")
+    @Options(keyProperty = "id",useGeneratedKeys = true)
     int add(QuestionnaireQuestionOption questionOption);
 
     @Update("update questionnaire_question_option " +

@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class QuestionAnswer {
-    private String questionId;
+    private long questionId;
     private int questionType;
     private String result;
 }

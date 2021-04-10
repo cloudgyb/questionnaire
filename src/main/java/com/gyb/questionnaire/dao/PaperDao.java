@@ -19,6 +19,7 @@ public interface PaperDao {
             "elapsed_time,source,ip,address) " +
             "value(#{id},#{questionnaireId},#{submitTime}," +
             "#{elapsedTime},#{source},#{ip},#{address})")
+    @Options(keyProperty = "id",useGeneratedKeys = true)
     int insert(Paper p);
 
     @Update("update paper set " +
@@ -31,10 +32,10 @@ public interface PaperDao {
     int update(Paper p);
 
     @Delete("delete from paper where id=#{id}")
-    int delete(String id);
+    int delete(Long id);
 
     @Delete("delete from paper where questionnaire_id=#{questionnaireId}")
-    int deleteByQuestionnaireId(String questionnaireId);
+    int deleteByQuestionnaireId(Long questionnaireId);
 
     @Select("select id," +
             "questionnaire_id as questionnaireId," +
@@ -43,7 +44,7 @@ public interface PaperDao {
             "source," +
             "ip," +
             "address from paper where id=#{id}")
-    Paper find(String id);
+    Paper find(Long id);
 
     @Select("select id," +
             "questionnaire_id as questionnaireId," +
@@ -52,7 +53,7 @@ public interface PaperDao {
             "source,ip,address " +
             "from paper where questionnaire_id=#{questionnaireId} " +
             "order by submit_time desc")
-    List<Paper> findByQuestionnaireId(String questionnaireId);
+    List<Paper> findByQuestionnaireId(Long questionnaireId);
 
     @Select("select id," +
             "questionnaire_id as questionnaireId," +
@@ -61,15 +62,15 @@ public interface PaperDao {
             "source,ip,address " +
             "from paper " +
             "where questionnaire_id=#{questionnaireId} and ip=#{ip}")
-    Paper findByQuestionnaireIdAndIp(String questionnaireId, String ip);
+    Paper findByQuestionnaireIdAndIp(Long questionnaireId, String ip);
 
     @Select("select count(questionnaire_id) "+
             "from paper " +
             "where questionnaire_id=#{questionnaireId}")
-    int countByQuestionnaireId(String questionnaireId);
+    int countByQuestionnaireId(Long questionnaireId);
 
     @Select("select id "+
             "from paper " +
             "where questionnaire_id=#{questionnaireId}")
-    List<String> findIdsByQuestionnaireId(String questionnaireId);
+    List<Long> findIdsByQuestionnaireId(Long questionnaireId);
 }

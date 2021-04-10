@@ -19,19 +19,19 @@ public interface QuestionnaireQuestionDao {
             "question_order as questionOrder,question_num as questionNum," +
             "question_title as questionTitle, input_placeholder as inputPlaceholder " +
             "from questionnaire_question where questionnaire_id=#{questionnaireId}")
-    List<QuestionnaireQuestion> findByQuestionnaireId(String questionnaireId);
+    List<QuestionnaireQuestion> findByQuestionnaireId(Long questionnaireId);
 
     @Delete("delete from questionnaire_question where questionnaire_id=#{questionnaireId}")
-    int deleteByQuestionnaireId(String questionnaireId); //根据问题id删除
+    int deleteByQuestionnaireId(Long questionnaireId); //根据问题id删除
 
     @Select("select id, questionnaire_id as questionnaireId, question_type as questionType," +
             "question_order as questionOrder,question_num as questionNum," +
             "question_title as questionTitle, input_placeholder as inputPlaceholder " +
             "from questionnaire_question where id=#{id}")
-    QuestionnaireQuestion find(String id);
+    QuestionnaireQuestion find(Long id);
 
     @Select("select id from questionnaire_question where questionnaire_id=#{questionnaireId}")
-    List<String> findIdByQuestionnaireId(String questionnaireId);
+    List<Long> findIdByQuestionnaireId(Long questionnaireId);
 
     @Update("update questionnaire_question set " +
             "questionnaire_id=#{questionnaireId},question_type=#{questionType}," +
@@ -41,12 +41,13 @@ public interface QuestionnaireQuestionDao {
     int update(QuestionnaireQuestion q);
 
     @Delete("delete from questionnaire_question where id=#{id}")
-    void delete(String id);
+    void delete(Long id);
 
     @Insert("insert into questionnaire_question(" +
             "id,questionnaire_id,question_type,question_order,question_num," +
             "question_title,input_placeholder) " +
             "value(#{id},#{questionnaireId},#{questionType},#{questionOrder}," +
             "#{questionNum},#{questionTitle},#{inputPlaceholder})")
+    @Options(keyProperty = "id",useGeneratedKeys = true)
     int add(QuestionnaireQuestion question);
 }

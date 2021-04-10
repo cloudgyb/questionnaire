@@ -50,16 +50,16 @@ public class QuestionnaireController {
 	@Length(max = 30, message = "问卷名称不能超过30个字符") String name,
 			@Length(max = 100, message = "欢迎语不能超过100个字符")
 			@RequestParam(required = false) String greeting) {
-		final String id = questionnaireService.add(name, greeting);
+		final Long id = questionnaireService.add(name, greeting);
 		return ResponseResult.ok("创建成功", id);
 	}
 
 	@GetMapping("/createByTemplate")
 	@RequiredLogin
 	public String createQuestionnaireByTemplate(@RequestParam long templateId) {
-		String id = questionnaireService.addByTemplate(templateId);
+		Long id = questionnaireService.addByTemplate(templateId);
 		if (id == null)
-			id = "templateerror";
+			return String.format("redirect:/questionnaire/design/%s", "templateerror");
 		return String.format("redirect:/questionnaire/design/%s", id);
 	}
 
@@ -69,7 +69,7 @@ public class QuestionnaireController {
 	@PostMapping("/copy")
 	@RequiredLogin
 	@ResponseBody
-	public ResponseResult copy(@RequestParam String questionnaireId,
+	public ResponseResult copy(@RequestParam Long questionnaireId,
 			@NotBlank(message = "问卷名称不能为空")
 			@Length(max = 30, message = "问卷名称不能超过30个字符") String name,
 			@Length(max = 100, message = "欢迎语不能超过100个字符")
@@ -82,7 +82,7 @@ public class QuestionnaireController {
 	 */
 	@GetMapping("/design/{questionnaireId}")
 	@RequiredLogin
-	public String designQuestionnairePage(@PathVariable String questionnaireId, Model m) {
+	public String designQuestionnairePage(@PathVariable Long questionnaireId, Model m) {
 		final QuestionnaireDTO questionnaire = questionnaireService.getUserQuestionnaireDetail(questionnaireId);
 		m.addAttribute("q", questionnaire);
 		return "questionnaire_design";
@@ -93,7 +93,7 @@ public class QuestionnaireController {
 	 */
 	@GetMapping("/preview/{questionnaireId}")
 	@RequiredLogin
-	public String previewQuestionnairePage(@PathVariable String questionnaireId, Model m) {
+	public String previewQuestionnairePage(@PathVariable Long questionnaireId, Model m) {
 		final QuestionnaireDTO questionnaire = questionnaireService.getUserQuestionnaireDetail(questionnaireId);
 		m.addAttribute("qa", questionnaire);
 		return "questionnaire_view";
@@ -109,7 +109,7 @@ public class QuestionnaireController {
 	public ResponseResult saveQuestionnaire(@RequestBody QuestionnaireDTO dto) {
 		final String name = dto.getName();
 		final String greeting = dto.getGreeting();
-		if (!StringUtils.hasText(name) || !StringUtils.hasText(dto.getId()))
+		if (!StringUtils.hasText(name) || null == dto.getId())
 			return ResponseResult.error("name或id参数为空！", null);
 		if (name.length() > 30)
 			return ResponseResult.error("问卷名称太长，不能超过30个字符", null);
@@ -124,7 +124,7 @@ public class QuestionnaireController {
 	@PostMapping("/design/publishQuestionnaire")
 	@RequiredLogin
 	@ResponseBody
-	public ResponseResult publishQuestionnaire(@RequestParam String questionnaireId) {
+	public ResponseResult publishQuestionnaire(@RequestParam Long questionnaireId) {
 		return questionnaireService.publishQuestionnaire(questionnaireId);
 	}
 
@@ -134,7 +134,7 @@ public class QuestionnaireController {
 	@PostMapping("/stop")
 	@RequiredLogin
 	@ResponseBody
-	public ResponseResult stopQuestionnaire(@RequestParam String questionnaireId) {
+	public ResponseResult stopQuestionnaire(@RequestParam Long questionnaireId) {
 		return questionnaireService.stopQuestionnaire(questionnaireId);
 	}
 
@@ -145,7 +145,7 @@ public class QuestionnaireController {
 	@PostMapping("/design/delQuestion")
 	@RequiredLogin
 	@ResponseBody
-	public ResponseResult deleteQuestion(@RequestParam String questionId) {
+	public ResponseResult deleteQuestion(@RequestParam Long questionId) {
 		questionnaireService.deleteQuestion(questionId);
 		return ResponseResult.ok();
 	}
@@ -157,7 +157,7 @@ public class QuestionnaireController {
 	@PostMapping("/design/delOption")
 	@RequiredLogin
 	@ResponseBody
-	public ResponseResult deleteQuestionOption(@RequestParam String optionId) {
+	public ResponseResult deleteQuestionOption(@RequestParam Long optionId) {
 		questionnaireService.deleteQuestionOption(optionId);
 		return ResponseResult.ok();
 	}
@@ -178,7 +178,7 @@ public class QuestionnaireController {
 	@RequiredLogin
 	@PostMapping("/delete")
 	@ResponseBody
-	public ResponseResult deleteQuestionnaire(@RequestParam String questionnaireId) {
+	public ResponseResult deleteQuestionnaire(@RequestParam Long questionnaireId) {
 		return questionnaireService.delete(questionnaireId);
 	}
 
@@ -188,9 +188,9 @@ public class QuestionnaireController {
 	 */
 	@RequiredLogin
 	@GetMapping("/share")
-	public String shareQuestionnaire(@RequestParam(required = false) String qId,
+	public String shareQuestionnaire(@RequestParam(required = false) Long qId,
 			HttpServletRequest request, Model m) {
-		if (!StringUtils.hasText(qId))
+		if (qId == null)
 			return "questionnaire_share";
 		String schema = request.getScheme();
 		String serverName = request.getServerName();

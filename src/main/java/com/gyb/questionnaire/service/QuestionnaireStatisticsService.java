@@ -1,14 +1,25 @@
 package com.gyb.questionnaire.service;
 
-import com.gyb.questionnaire.dao.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.gyb.questionnaire.dao.PaperAnswerDao;
+import com.gyb.questionnaire.dao.PaperDao;
+import com.gyb.questionnaire.dao.QuestionnaireDao;
+import com.gyb.questionnaire.dao.QuestionnaireQuestionDao;
+import com.gyb.questionnaire.dao.QuestionnaireQuestionOptionDao;
 import com.gyb.questionnaire.dto.QuestionnaireQuestionStatisticDTO;
 import com.gyb.questionnaire.dto.QuestionnaireStatisticDTO;
-import com.gyb.questionnaire.entity.*;
+import com.gyb.questionnaire.entity.Questionnaire;
+import com.gyb.questionnaire.entity.QuestionnaireQuestion;
+import com.gyb.questionnaire.entity.QuestionnaireQuestionOption;
+import com.gyb.questionnaire.entity.User;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.util.*;
 
 /**
  * 问卷结果分析与统计Service
@@ -36,9 +47,7 @@ public class QuestionnaireStatisticsService {
     }
 
 
-    public QuestionnaireStatisticDTO statistic(String questionnaireId) {
-        if(!StringUtils.hasText(questionnaireId))
-            return null;
+    public QuestionnaireStatisticDTO statistic(long questionnaireId) {
         final User loginUser = LoginUserService.getLoginUser();
         if (loginUser == null)
             return null;
@@ -51,7 +60,7 @@ public class QuestionnaireStatisticsService {
         if(questions == null || questions.isEmpty())
             return dto;
         questions.sort(Comparator.comparingInt(QuestionnaireQuestion::getQuestionOrder));
-        List<String> paperIds = paperDao.findIdsByQuestionnaireId(questionnaireId);
+        List<Long> paperIds = paperDao.findIdsByQuestionnaireId(questionnaireId);
         questionnaire.setPaperCount(paperIds==null?0:paperIds.size());
         final List<QuestionnaireQuestionStatisticDTO> questionDTOs = new ArrayList<>();
         for (QuestionnaireQuestion question : questions) {
@@ -63,7 +72,7 @@ public class QuestionnaireStatisticsService {
             if(questionType == 3 || questionType == 4) { //对于单选和多选统计选项被选次数
                 List<QuestionnaireQuestionOption> options = questionnaireQuestionOptionDao.findByQuestionId(question.getId());
                 if(options != null && paperIds != null && !paperIds.isEmpty()) {
-                    Map<String, Integer> optionCountMap = countCheckedOption(paperIds, question.getId());
+                    Map<Long, Integer> optionCountMap = countCheckedOption(paperIds, question.getId());
                     for (QuestionnaireQuestionOption option : options) {
                         final Integer count = optionCountMap.get(option.getId());
                         option.setCheckedCount(count==null?0:count);
@@ -81,11 +90,11 @@ public class QuestionnaireStatisticsService {
         return dto;
     }
 
-    private Map<String, Integer> countCheckedOption(List<String> paperIds, String questionId) {
+    private Map<Long, Integer> countCheckedOption(List<Long> paperIds, Long questionId) {
         if(paperIds == null || paperIds.isEmpty())
             return null;
-        final HashMap<String, Integer> map = new HashMap<>();
-        for (String paperId : paperIds) {
+        final HashMap<Long, Integer> map = new HashMap<>();
+        for (Long paperId : paperIds) {
             final String answer = paperAnswerDao.findAnswerByPaperIdAndQuestionId(paperId, questionId);
             if(answer != null && answer.length() >0){
                 final String[] split = answer.split(",");
@@ -93,8 +102,8 @@ public class QuestionnaireStatisticsService {
                     for (String s : split) {
                         if(s == null || s.length() == 0)
                             continue;
-                        final Integer currValue = map.get(s);
-                        map.put(s,currValue == null?1:currValue+1);
+                        final Integer currValue = map.get(Long.valueOf(s));
+                        map.put(Long.valueOf(s),currValue == null?1:currValue+1);
                     }
                 }
             }

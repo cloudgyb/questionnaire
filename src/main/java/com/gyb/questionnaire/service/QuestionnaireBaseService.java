@@ -23,7 +23,7 @@ public abstract class QuestionnaireBaseService {
 	 *
 	 * @param questionnaireId 问卷id
 	 */
-	public Questionnaire get(String questionnaireId) {
+	public Questionnaire get(long questionnaireId) {
 		return questionnaireDao.find(questionnaireId);
 	}
 
@@ -32,7 +32,7 @@ public abstract class QuestionnaireBaseService {
 	 *
 	 * @param questionnaireId 问卷id
 	 */
-	public Questionnaire getUserQuestionnaire(String questionnaireId) {
+	public Questionnaire getUserQuestionnaire(Long questionnaireId) {
 		final User u = (User) (HttpServletUtil.getSession().getAttribute(SESSION_KEY_CURR_USER));
 		if (u == null)
 			return null;

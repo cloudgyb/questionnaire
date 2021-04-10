@@ -26,7 +26,7 @@ public class QuestionnaireStatisticsController {
 
     @GetMapping("/questionnaire/statistics/{questionnaireId}")
     @RequiredLogin
-    public String analysisAndStatistics(@PathVariable String questionnaireId,
+    public String analysisAndStatistics(@PathVariable Long questionnaireId,
                                         Model m){
         final QuestionnaireStatisticDTO dto = statisticsService.statistic(questionnaireId);
         m.addAttribute("dto",dto);
