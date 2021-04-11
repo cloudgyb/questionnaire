@@ -17,9 +17,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PaperAnswer {
 
-  private String id;
-  private String paperId;
-  private String questionId;
+  private Long id;
+  private Long paperId;
+  private Long questionId;
   private String answer;
 
 }

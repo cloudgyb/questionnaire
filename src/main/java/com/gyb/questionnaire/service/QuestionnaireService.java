@@ -1,24 +1,32 @@
 package com.gyb.questionnaire.service;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import com.gyb.questionnaire.controller.ResponseResult;
-import com.gyb.questionnaire.dao.*;
-import com.gyb.questionnaire.dto.QuestionnaireDTO;
-import com.gyb.questionnaire.dto.QuestionnaireQuestionDTO;
-import com.gyb.questionnaire.dto.QuestionnaireTemplateDTO;
-import com.gyb.questionnaire.dto.TemplateQuestionDTO;
-import com.gyb.questionnaire.entity.*;
-import com.gyb.questionnaire.util.HttpServletUtil;
-import com.gyb.questionnaire.util.RandomUtil;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.gyb.questionnaire.config.QuestionnaireStatusEnum;
+import com.gyb.questionnaire.controller.ResponseResult;
+import com.gyb.questionnaire.dao.PaperAnswerDao;
+import com.gyb.questionnaire.dao.PaperDao;
+import com.gyb.questionnaire.dao.QuestionnaireDao;
+import com.gyb.questionnaire.dao.QuestionnaireQuestionDao;
+import com.gyb.questionnaire.dao.QuestionnaireQuestionOptionDao;
+import com.gyb.questionnaire.dto.QuestionnaireDTO;
+import com.gyb.questionnaire.dto.QuestionnaireQuestionDTO;
+import com.gyb.questionnaire.dto.QuestionnaireTemplateDTO;
+import com.gyb.questionnaire.dto.TemplateQuestionDTO;
+import com.gyb.questionnaire.entity.Questionnaire;
+import com.gyb.questionnaire.entity.QuestionnaireQuestion;
+import com.gyb.questionnaire.entity.QuestionnaireQuestionOption;
+import com.gyb.questionnaire.entity.TemplateQuestionOption;
+import com.gyb.questionnaire.entity.User;
+import com.gyb.questionnaire.util.HttpServletUtil;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.gyb.questionnaire.config.GlobalConstant.SESSION_KEY_CURR_USER;
 
@@ -30,7 +38,6 @@ import static com.gyb.questionnaire.config.GlobalConstant.SESSION_KEY_CURR_USER;
  */
 
 @Service
-@Transactional
 public class QuestionnaireService extends QuestionnaireBaseService {
     private final QuestionnaireDao questionnaireDao;
     private final QuestionnaireQuestionDao questionDao;
@@ -72,22 +79,19 @@ public class QuestionnaireService extends QuestionnaireBaseService {
         return pages;
     }
 
-    public String add(String name, String greeting) {
+    @Transactional
+    public long add(String name, String greeting) {
         final Questionnaire questionnaire = new Questionnaire();
-        final String uuid = RandomUtil.uuid();
-        questionnaire.setId(uuid);
         questionnaire.setName(name);
         questionnaire.setGreeting(greeting);
         questionnaire.setCreateDate(new Date());
         final User u = (User) (HttpServletUtil.getSession().getAttribute(SESSION_KEY_CURR_USER));
-        if (u == null)
-            return "";
         questionnaire.setUserId(u.getId());
         questionnaire.setQuestionCount(0);
         questionnaire.setInvokeCount(0);
         questionnaire.setStatus(0);
         questionnaireDao.add(questionnaire);
-        return uuid;
+        return questionnaire.getId();
     }
 
     /**
@@ -95,7 +99,7 @@ public class QuestionnaireService extends QuestionnaireBaseService {
      * @param questionnaireId 问卷ID
      * @see QuestionnaireDTO
      */
-    public QuestionnaireDTO getUserQuestionnaireDetail(String questionnaireId) {
+    public QuestionnaireDTO getUserQuestionnaireDetail(long questionnaireId) {
         final Questionnaire questionnaire = getUserQuestionnaire(questionnaireId);
         if (questionnaire == null)
             return null;
@@ -115,7 +119,7 @@ public class QuestionnaireService extends QuestionnaireBaseService {
         return dto;
     }
 
-    private List<QuestionnaireQuestionDTO> getQuestionnaireQuestionsDTO(String questionnaireId) {
+    private List<QuestionnaireQuestionDTO> getQuestionnaireQuestionsDTO(long questionnaireId) {
         List<QuestionnaireQuestionDTO> dtos = new ArrayList<>();
         List<QuestionnaireQuestion> questions = questionDao.findByQuestionnaireId(questionnaireId);
         for (QuestionnaireQuestion q : questions) {
@@ -135,9 +139,10 @@ public class QuestionnaireService extends QuestionnaireBaseService {
         return dtos;
     }
 
+    @Transactional
     public ResponseResult saveQuestionnaire(QuestionnaireDTO dto) {
         ResponseResult errR = ResponseResult.error("问卷不存在或已被删除",null);
-        if(!StringUtils.hasText(dto.getId())){
+        if(null == dto.getId()){
             return errR;
         }
         final User u = LoginUserService.getLoginUser();
@@ -159,10 +164,9 @@ public class QuestionnaireService extends QuestionnaireBaseService {
             return ResponseResult.ok();
         for (QuestionnaireQuestionDTO question : questions) {
             question.setQuestionnaireId(questionnaire.getId());
-            if(StringUtils.hasText(question.getId())){
+            if(null != question.getId()){
                 questionDao.update(question);
             }else{
-                question.setId(RandomUtil.uuid());
                 questionDao.add(question);
             }
             //3、对单选和多选题更新选项
@@ -172,15 +176,14 @@ public class QuestionnaireService extends QuestionnaireBaseService {
         return ResponseResult.ok();
     }
 
-    private void updateQuestionOptions(List<QuestionnaireQuestionOption> options, String questionId) {
+    private void updateQuestionOptions(List<QuestionnaireQuestionOption> options, long questionId) {
         if(options == null)
             return;
         for (QuestionnaireQuestionOption option : options) {
             option.setQuestionId(questionId);
-            if(StringUtils.hasText(option.getId())){
+            if(option.getId() != null){
                 optionDao.update(option);
             }else {
-                option.setId(RandomUtil.uuid());
                 optionDao.add(option);
             }
         }
@@ -189,31 +192,35 @@ public class QuestionnaireService extends QuestionnaireBaseService {
     /**
      * 删除问卷中问题
      */
-    public void deleteQuestion(String questionId) {
+    @Transactional
+    public void deleteQuestion(long questionId) {
         questionDao.delete(questionId);
         optionDao.deleteByQuestionId(questionId);
     }
     /**
      * 删除问卷中问题的选项
      */
-    public void deleteQuestionOption(String optionId) {
+    @Transactional
+    public void deleteQuestionOption(long optionId) {
         optionDao.delete(optionId);
     }
 
-    public ResponseResult publishQuestionnaire(String questionnaireId) {
+    @Transactional
+    public ResponseResult publishQuestionnaire(long questionnaireId) {
         final Questionnaire questionnaire = getUserQuestionnaire(questionnaireId);
         if(questionnaire == null)
             return ResponseResult.error("问卷不存在或已被删除",null);
-        questionnaire.setStatus(1);
+        questionnaire.setStatus(QuestionnaireStatusEnum.PUBLISHED.intValue());
         questionnaireDao.update(questionnaire);
         return ResponseResult.ok();
     }
 
-    public ResponseResult stopQuestionnaire(String questionnaireId) {
+    @Transactional
+    public ResponseResult stopQuestionnaire(long questionnaireId) {
         final Questionnaire questionnaire = getUserQuestionnaire(questionnaireId);
         if(questionnaire == null)
             return ResponseResult.error("问卷不存在或已被删除",null);
-        questionnaire.setStatus(2);
+        questionnaire.setStatus(QuestionnaireStatusEnum.FINISHED.intValue());
         questionnaireDao.update(questionnaire);
         return ResponseResult.ok();
     }
@@ -222,16 +229,15 @@ public class QuestionnaireService extends QuestionnaireBaseService {
      * 删除问卷
      * @param questionnaireId 问卷id
      */
-    public ResponseResult delete(String questionnaireId) {
-        if(!StringUtils.hasText(questionnaireId))
-            return ResponseResult.error("问卷不存在或已被删除",null);
+    @Transactional
+    public ResponseResult delete(long questionnaireId) {
         final Questionnaire questionnaire = getUserQuestionnaire(questionnaireId);
         if(questionnaire == null)
             return ResponseResult.error("问卷不存在或已被删除",null);
 
-        List<String> questionIds = questionDao.findIdByQuestionnaireId(questionnaireId);
+        List<Long> questionIds = questionDao.findIdByQuestionnaireId(questionnaireId);
         if(questionIds != null){
-            for (String questionId : questionIds) { //将每一个问题下的选项删除
+            for (Long questionId : questionIds) { //将每一个问题下的选项删除
                 optionDao.deleteByQuestionId(questionId);
             }
         }
@@ -239,9 +245,9 @@ public class QuestionnaireService extends QuestionnaireBaseService {
         questionDao.deleteByQuestionnaireId(questionnaireId);
         //删除问卷
         questionnaireDao.delete(questionnaireId);
-        final List<String> paperIds = paperDao.findIdsByQuestionnaireId(questionnaireId);
+        final List<Long> paperIds = paperDao.findIdsByQuestionnaireId(questionnaireId);
         if(paperIds != null){
-            for (String paperId : paperIds) {
+            for (Long paperId : paperIds) {
                 //删除答卷答案
                 paperAnswerDao.deleteByPaperId(paperId);
             }
@@ -256,23 +262,22 @@ public class QuestionnaireService extends QuestionnaireBaseService {
      * @param templateId 模板id
      * @return 如果创建成功返回问卷id
      */
-    public String addByTemplate(long templateId) {
+    @Transactional
+    public Long addByTemplate(long templateId) {
         final QuestionnaireTemplateDTO template = templateService.getTemplateDetail(templateId);
         if(template == null)
             return null;
-        String id = copyQuestionnaire(template);
+        Long id = copyQuestionnaire(template);
         copyQuestion(template.getQuestions(),id);
         return id;
     }
 
-    private void copyQuestion(List<TemplateQuestionDTO> questions, String questionnaireId) {
+    private void copyQuestion(List<TemplateQuestionDTO> questions, Long questionnaireId) {
         if(questions == null)
             return;
         for (TemplateQuestionDTO question : questions) {
             final QuestionnaireQuestion q = new QuestionnaireQuestion();
-            final String qId = RandomUtil.uuid();
             int qType = question.getQuestionType();
-            q.setId(qId);
             q.setQuestionnaireId(questionnaireId);
             q.setQuestionTitle(question.getQuestionTitle());
             q.setQuestionType(qType);
@@ -281,17 +286,15 @@ public class QuestionnaireService extends QuestionnaireBaseService {
             q.setInputPlaceholder(question.getInputPlaceholder());
             questionDao.add(q);
             if(qType == 3 || qType == 4) //只有单选题和多选题才有选项，才需要复制选项
-                copyQuestionOption(question.getQuestionOptions(),qId);
+                copyQuestionOption(question.getQuestionOptions(),q.getId());
         }
     }
 
-    private void copyQuestionOption(List<TemplateQuestionOption> questionOptions, String questionId) {
+    private void copyQuestionOption(List<TemplateQuestionOption> questionOptions, long questionId) {
         if(questionOptions == null)
             return;
         for (TemplateQuestionOption questionOption : questionOptions) {
             final QuestionnaireQuestionOption option = new QuestionnaireQuestionOption();
-            final String uuid = RandomUtil.uuid();
-            option.setId(uuid);
             option.setQuestionId(questionId);
             option.setOptionText(questionOption.getOptionText());
             option.setOptionOrder(questionOption.getOptionOrder());
@@ -299,13 +302,11 @@ public class QuestionnaireService extends QuestionnaireBaseService {
         }
     }
 
-    private String copyQuestionnaire(QuestionnaireTemplateDTO template) {
+    private Long copyQuestionnaire(QuestionnaireTemplateDTO template) {
         final User u = (User) (HttpServletUtil.getSession().getAttribute(SESSION_KEY_CURR_USER));
         if (u == null)
             return null;
         final Questionnaire questionnaire = new Questionnaire();
-        final String uuid = RandomUtil.uuid();
-        questionnaire.setId(uuid);
         questionnaire.setName(template.getName());
         questionnaire.setGreeting("感谢参与，请大家根据自身情况如实填写，谢谢大家配合!");
         questionnaire.setQuestionCount(template.getQuestionCount());
@@ -315,6 +316,6 @@ public class QuestionnaireService extends QuestionnaireBaseService {
         questionnaire.setTemplateId(template.getId());
         questionnaire.setTypeId(template.getTypeId());
         questionnaireDao.add(questionnaire);
-        return uuid;
+        return questionnaire.getId();
     }
 }

@@ -19,7 +19,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Questionnaire {
-  private String id;
+  private Long id;
   private String name;
   private String greeting;
   private Date createDate;

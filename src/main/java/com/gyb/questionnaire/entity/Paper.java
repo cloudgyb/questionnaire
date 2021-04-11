@@ -18,8 +18,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Paper {
-    private String id;
-    private String questionnaireId;
+    private Long id;
+    private Long questionnaireId;
     private Date submitTime;
     //答卷耗时，单位秒
     private int elapsedTime;

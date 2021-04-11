@@ -60,7 +60,7 @@
                             <a th:if="${q.status!=0}" th:href="'/questionnaire/statistics/'+${q.id}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">统计&分析</a>
                             <a th:if="${q.paperCount>0}" target="_blank" th:href="'/paper/list/'+${q.id}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">查看答卷</a>
                             <a th:if="${q.status==1}" target="_blank" th:href="'/questionnaire/share?qId='+${q.id}" class="hover-show layui-btn layui-btn-normal layui-btn-xs">分享问卷</a>
-                            <a th:href="'/questionnaire/preview/'+${q.id}" class="hover-show layui-btn layui-btn-warm layui-btn-xs">预览</a>
+                            <a th:href="'/questionnaire/preview/'+${q.id}" target="_blank" class="hover-show layui-btn layui-btn-warm layui-btn-xs">预览</a>
                             <button th:if="${q.status==1}" th:data-id="${q.id}" data-id="" class="stopBtn hover-show layui-btn layui-btn-warm layui-btn-xs" title="停止答卷">停止</button>
                             <button th:if="${q.status==0}" th:data-id="${q.id}" data-id="" class="publishBtn hover-show layui-btn layui-btn-warm layui-btn-xs" title="发布答卷">发布</button>
                             <button th:data-id="${q.id}" data-id="" class="delBtn hover-show layui-btn layui-btn-danger layui-btn-xs">删除</button>
@@ -101,9 +101,8 @@
         $(function (){
             $(".publishBtn").click(function (){
                 let questionnaireId = $(this).data("id");
-                if(questionnaireId === undefined || questionnaireId.trim() === '')
+                if(questionnaireId === undefined)
                     return ;
-                console.log(questionnaireId);
                 layer.confirm("<span class='text-danger'>发布之后将无法再次设计修改问卷，确认发布答卷？</span>",{
                     btn: ['确认', '取消']
                 }, function () {
@@ -126,9 +125,8 @@
             });
             $(".stopBtn").click(function (){
                 let questionnaireId = $(this).data("id");
-                if(questionnaireId === undefined || questionnaireId.trim() === '')
+                if(questionnaireId === undefined)
                     return ;
-                console.log(questionnaireId);
                 layer.confirm("<span class='text-danger'>状态设为“停止”后该问卷将不能继续填写，确认停止答卷？</span>",{
                     btn: ['确认', '取消']
                 }, function () {
@@ -151,7 +149,7 @@
             });
             $(".delBtn").click(function (){
                 let questionnaireId = $(this).data("id");
-                if(questionnaireId === undefined || questionnaireId.trim() === '')
+                if(questionnaireId === undefined)
                     return ;
                 console.log(questionnaireId);
                 layer.confirm("<span class='text-danger'>将会删除该问卷所有数据，包括已经收集的答卷且不能还原！确认删除？</span>",{
@@ -180,7 +178,7 @@
                 let sourceQuestionnaireGreeting = $(this).data("greeting");
                 $("#cloneName").val(sourceQuestionnaireName + "(复制)");
                 $("#cloneGreeting").val(sourceQuestionnaireGreeting);
-                if (questionnaireId === undefined || questionnaireId.trim() === '')
+                if (questionnaireId === undefined)
                     return;
                 layer.open({
                     type: 1,

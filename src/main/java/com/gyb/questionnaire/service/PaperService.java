@@ -1,24 +1,5 @@
 package com.gyb.questionnaire.service;
 
-import com.gyb.questionnaire.config.CustomThreadFactory;
-import com.gyb.questionnaire.controller.ResponseResult;
-import com.gyb.questionnaire.controller.form.PaperForm;
-import com.gyb.questionnaire.controller.form.QuestionAnswer;
-import com.gyb.questionnaire.dao.*;
-import com.gyb.questionnaire.dto.PaperDetailDTO;
-import com.gyb.questionnaire.dto.PaperQuestionAnswerDTO;
-import com.gyb.questionnaire.entity.*;
-import com.gyb.questionnaire.util.Client;
-import com.gyb.questionnaire.util.ClientUtil;
-import com.gyb.questionnaire.util.RandomUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -26,6 +7,35 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import com.gyb.questionnaire.config.CustomThreadFactory;
+import com.gyb.questionnaire.controller.ResponseResult;
+import com.gyb.questionnaire.controller.form.PaperForm;
+import com.gyb.questionnaire.controller.form.QuestionAnswer;
+import com.gyb.questionnaire.dao.PaperAnswerDao;
+import com.gyb.questionnaire.dao.PaperDao;
+import com.gyb.questionnaire.dao.QuestionnaireDao;
+import com.gyb.questionnaire.dao.QuestionnaireQuestionDao;
+import com.gyb.questionnaire.dao.QuestionnaireQuestionOptionDao;
+import com.gyb.questionnaire.dto.PaperDetailDTO;
+import com.gyb.questionnaire.dto.PaperQuestionAnswerDTO;
+import com.gyb.questionnaire.entity.Paper;
+import com.gyb.questionnaire.entity.PaperAnswer;
+import com.gyb.questionnaire.entity.Questionnaire;
+import com.gyb.questionnaire.entity.QuestionnaireQuestion;
+import com.gyb.questionnaire.entity.QuestionnaireQuestionOption;
+import com.gyb.questionnaire.entity.User;
+import com.gyb.questionnaire.util.Client;
+import com.gyb.questionnaire.util.ClientUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 /**
  * 答卷Service
@@ -71,7 +81,7 @@ public class PaperService {
 
     @Transactional
     public ResponseResult submitPaper(PaperForm paperForm) {
-        final String questionnaireId = paperForm.getQuestionnaireId();
+        final Long questionnaireId = paperForm.getQuestionnaireId();
         final Questionnaire questionnaire = questionnaireDao.find(questionnaireId);
         //如果问卷不存在或者问卷不在“发布”状态，对于参与者来说并不关心这些，直接返回OK
         if (questionnaire == null || questionnaire.getStatus() != 1)
@@ -82,8 +92,6 @@ public class PaperService {
             return updatePaper(paper, paperForm);
         }
         paper = new Paper();
-        String paperId = RandomUtil.uuid();
-        paper.setId(paperId);
         paper.setQuestionnaireId(questionnaireId);
         paper.setSubmitTime(new Date());
         paper.setElapsedTime(paperForm.getElapsedTime() / 1000); //form传的是毫秒，/1000转为秒
@@ -91,7 +99,7 @@ public class PaperService {
         paper.setAddress("");
         paper.setSource(paperForm.getSource());
         paperDao.insert(paper);
-        saveAnswer(paperForm.getResultList(), paperId);
+        saveAnswer(paperForm.getResultList(), paper.getId());
         Paper finalPaper = paper;
         threadPool.execute(() -> updatePaperAddress(clientInfo.getIp(), finalPaper));
         return ResponseResult.ok();
@@ -105,12 +113,11 @@ public class PaperService {
         }
     }
 
-    private void saveAnswer(List<QuestionAnswer> resultList, String paperId) {
+    private void saveAnswer(List<QuestionAnswer> resultList, long paperId) {
         if (resultList == null)
             return;
         for (QuestionAnswer questionAnswer : resultList) {
             final PaperAnswer answer = new PaperAnswer();
-            answer.setId(RandomUtil.uuid());
             answer.setPaperId(paperId);
             answer.setQuestionId(questionAnswer.getQuestionId());
             answer.setAnswer(questionAnswer.getResult());
@@ -122,7 +129,7 @@ public class PaperService {
         return ResponseResult.ok();
     }
 
-    public int paperCount(String questionnaireId) {
+    public int paperCount(long questionnaireId) {
         return paperDao.countByQuestionnaireId(questionnaireId);
     }
 
@@ -131,7 +138,7 @@ public class PaperService {
      *
      * @param questionnaireId 问卷id
      */
-    public List<Paper> getByQuestionnaireId(String questionnaireId) {
+    public List<Paper> getByQuestionnaireId(long questionnaireId) {
         final User loginUser = LoginUserService.getLoginUser();
         if (loginUser == null)
             return null;
@@ -145,7 +152,7 @@ public class PaperService {
      * 获取答卷详情
      * @param paperId 答卷id
      */
-    public PaperDetailDTO getPaperDetail(String paperId) {
+    public PaperDetailDTO getPaperDetail(long paperId) {
         Paper paper = paperDao.find(paperId);
         if(paper == null) //答卷不存在
             return null;
@@ -187,9 +194,29 @@ public class PaperService {
         if(answer == null || "".equals(answer.trim()))
             return;
         for (QuestionnaireQuestionOption option : options) {
-            String id = option.getId();
-            if(answer.contains(id))
+            long id = option.getId();
+            if(answer.contains(id+""))
                 option.setChecked(true);
         }
+    }
+
+    @Transactional
+    public ResponseResult deletePaper(Long paperId) {
+        final User loginUser = LoginUserService.getLoginUser();
+        Paper paper = paperDao.find(paperId);
+        if(paper == null)
+            return ResponseResult.error("答卷不存在！",null);
+        Long questionnaireId = paper.getQuestionnaireId();
+        Questionnaire questionnaire = questionnaireDao.find(questionnaireId);
+        if(loginUser.getId() != questionnaire.getUserId()) //删除的不是用户自己的问卷的答卷
+            return ResponseResult.error("答卷不存在！",null);
+        int i = paperAnswerDao.deleteByPaperId(paperId);
+        log.info(String.format("删除答卷数据%s条!", i));
+        int n = paperDao.delete(paperId);
+        if(n > 0) {
+            log.info(String.format("删除答卷id为%d!", n));
+            return ResponseResult.ok();
+        }
+        return ResponseResult.error("删除失败！",null);
     }
 }

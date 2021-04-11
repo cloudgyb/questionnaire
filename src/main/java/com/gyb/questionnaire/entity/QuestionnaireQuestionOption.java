@@ -18,8 +18,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class QuestionnaireQuestionOption {
 
-    private String id;
-    private String questionId;
+    private Long id;
+    private Long questionId;
     private String optionText;
     private int optionOrder;
     private boolean isChecked;

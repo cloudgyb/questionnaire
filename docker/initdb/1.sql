@@ -29,16 +29,16 @@ CREATE TABLE `log_login` (
 
 DROP TABLE IF EXISTS `paper`;
 CREATE TABLE `paper` (
-  `id` varchar(32) NOT NULL,
-  `questionnaire_id` varchar(32) NOT NULL COMMENT '问卷id',
-  `submit_time` datetime DEFAULT NULL COMMENT '答卷提交时间',
-  `elapsed_time` int(10) unsigned DEFAULT '0' COMMENT '答卷所耗时间(单位：s)',
-  `source` tinyint(4) DEFAULT NULL COMMENT '答卷来源，是微信分享还是QQ分享，0-网站链接，1-QQ，2-WX，3-QQ空间，4-微博,5-二维码扫码，6-其他',
-  `ip` varchar(15) DEFAULT NULL COMMENT '答卷提交的IP地址',
-  `address` varchar(30) DEFAULT NULL COMMENT '答卷提交的地点，粗略精确到城市',
-  PRIMARY KEY (`id`),
-  KEY `questionnaire_paper_questionnaire_id_IDX` (`questionnaire_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='问卷答卷存储表';
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `questionnaire_id` bigint unsigned NOT NULL COMMENT '问卷id',
+    `submit_time` datetime DEFAULT NULL COMMENT '答卷提交时间',
+    `elapsed_time` int unsigned DEFAULT '0' COMMENT '答卷所耗时间(单位：s)',
+    `source` tinyint DEFAULT NULL COMMENT '答卷来源，是微信分享还是QQ分享，0-网站链接，1-QQ，2-WX，3-QQ空间，4-微博,5-二维码扫码，6-其他',
+    `ip` varchar(15) DEFAULT NULL COMMENT '答卷提交的IP地址',
+    `address` varchar(30) DEFAULT NULL COMMENT '答卷提交的地点，粗略精确到城市',
+    PRIMARY KEY (`id`),
+    KEY `questionnaire_paper_questionnaire_id_IDX` (`questionnaire_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='问卷答卷存储表';
 
 
 --
@@ -47,14 +47,14 @@ CREATE TABLE `paper` (
 
 DROP TABLE IF EXISTS `paper_answer`;
 CREATE TABLE `paper_answer` (
-  `id` varchar(32) NOT NULL,
-  `paper_id` varchar(32) DEFAULT NULL COMMENT '答卷id',
-  `question_id` varchar(32) DEFAULT NULL COMMENT '问题id，对应于questionnaire_question表的id字段',
-  `answer` varchar(255) DEFAULT NULL COMMENT '问题答案',
-  PRIMARY KEY (`id`),
-  KEY `paper_answer_paper_id_IDX` (`paper_id`) USING BTREE,
-  KEY `paper_answer_question_id_IDX` (`question_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='答卷的问题答案存储表';
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `paper_id` bigint unsigned DEFAULT NULL COMMENT '答卷id',
+    `question_id` bigint unsigned DEFAULT NULL COMMENT '问题id，对应于questionnaire_question表的id字段',
+    `answer` varchar(255) DEFAULT NULL COMMENT '问题答案',
+    PRIMARY KEY (`id`),
+    KEY `paper_answer_paper_id_IDX` (`paper_id`) USING BTREE,
+    KEY `paper_answer_question_id_IDX` (`question_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='答卷的问题答案存储表';
 
 --
 -- Table structure for table `questionnaire`
@@ -62,37 +62,35 @@ CREATE TABLE `paper_answer` (
 
 DROP TABLE IF EXISTS `questionnaire`;
 CREATE TABLE `questionnaire` (
-  `id` varchar(32) NOT NULL COMMENT 'id 32位UUID',
-  `name` varchar(100) NOT NULL COMMENT '调查问卷名称',
-  `greeting` varchar(200) DEFAULT '' COMMENT '该问卷展示时的问候语',
-  `create_date` datetime DEFAULT NULL COMMENT '问卷创建日期',
-  `publish_date` datetime DEFAULT NULL COMMENT '问卷发布时间',
-  `user_id` bigint(20) DEFAULT '0' COMMENT '问卷所属用户',
-  `type_id` bigint(20) DEFAULT NULL COMMENT '问卷类型id，参考questionnaire_type表的id',
-  `question_count` int(10) unsigned DEFAULT '0' COMMENT '该问卷问题总数',
-  `template_id` bigint(20) DEFAULT '0' COMMENT '该问卷的模板id',
-  `invoke_count` int(11) DEFAULT '0' COMMENT '问卷参与者计数',
-  `status` tinyint(4) DEFAULT '0' COMMENT '该问卷的状态，0设计中，1问卷已发布信息收集中，2问卷结束',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='调查问卷存储表';
-
+     `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+     `name` varchar(100) NOT NULL COMMENT '调查问卷名称',
+     `greeting` varchar(200) DEFAULT '' COMMENT '该问卷展示时的问候语',
+     `create_date` datetime DEFAULT NULL COMMENT '问卷创建日期',
+     `publish_date` datetime DEFAULT NULL COMMENT '问卷发布时间',
+     `user_id` bigint DEFAULT '0' COMMENT '问卷所属用户',
+     `type_id` bigint DEFAULT NULL COMMENT '问卷类型id，参考questionnaire_type表的id',
+     `question_count` int unsigned DEFAULT '0' COMMENT '该问卷问题总数',
+     `template_id` bigint DEFAULT '0' COMMENT '该问卷的模板id',
+     `invoke_count` int DEFAULT '0' COMMENT '问卷参与者计数',
+     `status` tinyint DEFAULT '0' COMMENT '该问卷的状态，0设计中，1问卷已发布信息收集中，2问卷结束',
+     PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='调查问卷存储表';
 --
 -- Table structure for table `questionnaire_question`
 --
 
 DROP TABLE IF EXISTS `questionnaire_question`;
 CREATE TABLE `questionnaire_question` (
-  `id` varchar(32) NOT NULL,
-  `questionnaire_id` varchar(32) NOT NULL COMMENT '所属问卷id',
-  `question_type` tinyint(4) DEFAULT NULL COMMENT '问题类型',
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `questionnaire_id` bigint NOT NULL COMMENT '所属问卷id',
+  `question_type` tinyint DEFAULT NULL COMMENT '问题类型',
   `question_title` varchar(255) DEFAULT NULL COMMENT '问题题目',
-  `question_order` tinyint(4) DEFAULT NULL COMMENT '问题在问卷中的顺序',
-  `question_num` tinyint(4) DEFAULT NULL COMMENT '问题在问卷中的题号',
+  `question_order` tinyint DEFAULT NULL COMMENT '问题在问卷中的顺序',
+  `question_num` tinyint DEFAULT NULL COMMENT '问题在问卷中的题号',
   `input_placeholder` varchar(255) DEFAULT NULL COMMENT '对于填空题input的placeholder',
   PRIMARY KEY (`id`),
   KEY `questionnaire_id` (`questionnaire_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='调查问卷问题表，用于存储问卷中的问题';
-
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='调查问卷问题表，用于存储问卷中的问题';
 
 --
 -- Table structure for table `questionnaire_question_option`
@@ -100,13 +98,13 @@ CREATE TABLE `questionnaire_question` (
 
 DROP TABLE IF EXISTS `questionnaire_question_option`;
 CREATE TABLE `questionnaire_question_option` (
-  `id` varchar(32) NOT NULL,
-  `question_id` varchar(32) NOT NULL COMMENT '问题id',
-  `option_text` varchar(50) DEFAULT '' COMMENT '问题选项文本',
-  `option_order` tinyint(3) unsigned DEFAULT '0' COMMENT '问题选项排序',
-  PRIMARY KEY (`id`),
-  KEY `question_id` (`question_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='调查问卷问题选项存储表';
+ `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+ `question_id` bigint unsigned NOT NULL COMMENT '问题id',
+ `option_text` varchar(50) DEFAULT '' COMMENT '问题选项文本',
+ `option_order` tinyint unsigned DEFAULT '0' COMMENT '问题选项排序',
+ PRIMARY KEY (`id`),
+ KEY `question_id` (`question_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='调查问卷问题选项存储表';
 
 --
 -- Table structure for table `questionnaire_type`

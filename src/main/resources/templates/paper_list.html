@@ -42,7 +42,7 @@
                         </td>
                         <td>
                             <a th:href="'/paper/view/'+${p.id}" target="_blank" class="layui-btn layui-btn-normal layui-btn-xs">查看</a>
-                            <button th:data-id="${p.id}" data-id="" class="layui-btn layui-btn-danger layui-btn-xs">删除</button>
+                            <button th:data-id="${p.id}" data-id="" id="delBtn" class="layui-btn layui-btn-danger layui-btn-xs">删除</button>
                         </td>
                         <td>
                             答卷耗时：<span th:text="${p.elapsedTimeText}" class="layui-badge layui-bg-orange"></span>
@@ -55,4 +55,30 @@
     </body>
     <script src="/static/lib/layui/layui.all.js"></script>
     <script src="/static/lib/jquery-1.9.1.min.js"></script>
+    <script>
+        $(function () {
+            $("#delBtn").click(function () {
+                let paperId = $(this).data("id");
+                if(paperId === undefined){
+                    return;
+                }
+                layer.confirm("" +
+                    "<span class='text-danger'>确认删除该答卷？</span>",
+                    {btn:["确认","取消"]},
+                    function(){
+                        $.post("/paper/delete",{paperId:paperId},function (resp){
+                            if(resp.code === 200){
+                                layer.msg("删除成功！",{icon:1})
+                                setTimeout(()=>window.location.reload(),2000)
+                            }else{
+                                layer.msg(resp.msg,{icon:2})
+                            }
+                        }).fail(function(){
+                            layer.msg("删除失败，请稍后重试！",{icon:5});
+                        });
+                    }
+                );
+            })
+        })
+    </script>
 </html>

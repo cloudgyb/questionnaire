@@ -39,7 +39,7 @@ public class PaperController {
      * @return 如果问卷不能填写返回错误页面
      */
     @GetMapping("/q/{questionnaireId}")
-    public String page(@PathVariable String questionnaireId, Model m) {
+    public String page(@PathVariable Long questionnaireId, Model m) {
         final Questionnaire q = questionnaireService.get(questionnaireId);
         if (q == null) {
             m.addAttribute("errMsg", "感谢您的参与，问卷不存在或者已被发布者删除啦！");
@@ -81,7 +81,7 @@ public class PaperController {
      */
     @GetMapping("/paper/list/{questionnaireId}")
     @RequiredLogin
-    public String paperList(@PathVariable String questionnaireId,Model model){
+    public String paperList(@PathVariable Long questionnaireId,Model model){
         final Questionnaire questionnaire = questionnaireService.getUserQuestionnaire(questionnaireId);
         final int n = paperService.paperCount(questionnaireId);
         if(questionnaire !=null)
@@ -98,9 +98,16 @@ public class PaperController {
      */
     @GetMapping("/paper/view/{paperId}")
     @RequiredLogin
-    public String paperDetail(@PathVariable String paperId,Model m){
+    public String paperDetail(@PathVariable Long paperId,Model m){
         final PaperDetailDTO paperDetail = paperService.getPaperDetail(paperId);
         m.addAttribute("dto",paperDetail);
         return "paper_detail";
+    }
+
+    @PostMapping("/paper/delete")
+    @RequiredLogin
+    @ResponseBody
+    public ResponseResult delete(@RequestParam Long paperId){
+       return paperService.deletePaper(paperId);
     }
 }

@@ -11,7 +11,6 @@ import com.gyb.questionnaire.dao.QuestionnaireQuestionOptionDao;
 import com.gyb.questionnaire.entity.Questionnaire;
 import com.gyb.questionnaire.entity.QuestionnaireQuestion;
 import com.gyb.questionnaire.entity.QuestionnaireQuestionOption;
-import com.gyb.questionnaire.util.RandomUtil;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,39 +39,39 @@ public class QuestionnaireCloneService extends QuestionnaireBaseService {
 	 * @param newDesc 新问卷描述
 	 */
 	@Transactional
-	public ResponseResult copy(String sourceQuestionnaireId, String newName, String newDesc) {
+	public ResponseResult copy(long sourceQuestionnaireId, String newName, String newDesc) {
 		final Questionnaire questionnaire = getUserQuestionnaire(sourceQuestionnaireId);
 		if (questionnaire == null)
 			return ResponseResult.error("问卷不存在或已被删除", null);
 		List<QuestionnaireQuestion> questions = questionnaireQuestionDao.findByQuestionnaireId(sourceQuestionnaireId);
-		List<String> sourceQuestionIds = questionnaireQuestionDao.findIdByQuestionnaireId(sourceQuestionnaireId);
+		List<Long> sourceQuestionIds = questionnaireQuestionDao.findIdByQuestionnaireId(sourceQuestionnaireId);
 		//创建新的调查问卷
 		Questionnaire newQuestionnaire = createNewQuestionnaire(newName, newDesc, questions.size());
+		questionnaireDao.add(newQuestionnaire);
 		//复制问题
 		copyQuestions(newQuestionnaire.getId(), questions);
 		//复制问题选项
 		copyQuestionOption(sourceQuestionIds, questions);
-		questionnaireDao.add(newQuestionnaire);
 		return ResponseResult.ok();
 	}
 
-	private void copyQuestionOption(List<String> sourceQuestionIds, List<QuestionnaireQuestion> newQuestions) {
+	private void copyQuestionOption(List<Long> sourceQuestionIds, List<QuestionnaireQuestion> newQuestions) {
 		int i = 0;
-		for (String sourceQuestionId : sourceQuestionIds) {
+		for (Long sourceQuestionId : sourceQuestionIds) {
 			List<QuestionnaireQuestionOption> options = questionnaireQuestionOptionDao
 					.findByQuestionId(sourceQuestionId);
 			QuestionnaireQuestion newQuestion = newQuestions.get(i++);
 			for (QuestionnaireQuestionOption option : options) {
-				option.setId(RandomUtil.uuid());
+				option.setId(null);
 				option.setQuestionId(newQuestion.getId());
 				questionnaireQuestionOptionDao.add(option);
 			}
 		}
 	}
 
-	private void copyQuestions(String newQuestionnaireId, List<QuestionnaireQuestion> questions) {
+	private void copyQuestions(long newQuestionnaireId, List<QuestionnaireQuestion> questions) {
 		for (QuestionnaireQuestion question : questions) {
-			question.setId(RandomUtil.uuid());
+			question.setId(null);
 			question.setQuestionnaireId(newQuestionnaireId);
 			questionnaireQuestionDao.add(question);
 		}
@@ -80,7 +79,6 @@ public class QuestionnaireCloneService extends QuestionnaireBaseService {
 
 	private Questionnaire createNewQuestionnaire(String newName, String newGreeting, int questionCount) {
 		Questionnaire newQuestionnaire = new Questionnaire();
-		newQuestionnaire.setId(RandomUtil.uuid());
 		newQuestionnaire.setName(newName);
 		newQuestionnaire.setQuestionCount(questionCount);
 		newQuestionnaire.setGreeting(newGreeting);

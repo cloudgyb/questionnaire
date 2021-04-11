@@ -17,8 +17,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuestionnaireQuestion {
-  private String id;
-  private String questionnaireId;
+  private Long id;
+  private Long questionnaireId;
   private int questionType;
   private String questionTitle;
   private int questionOrder;

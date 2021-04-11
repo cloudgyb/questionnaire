@@ -18,6 +18,7 @@ public interface PaperAnswerDao {
     @Insert("insert into paper_answer(" +
             "id,paper_id,question_id,answer) " +
             "value(#{id},#{paperId},#{questionId},#{answer})")
+    @Options(keyProperty = "id",useGeneratedKeys = true)
     int insert(PaperAnswer pa);
 
     @Update("update paper_answer set " +
@@ -27,37 +28,37 @@ public interface PaperAnswerDao {
     int update(PaperAnswer p);
 
     @Delete("delete from paper_answer where id=#{id}")
-    int delete(String id);
+    int delete(long id);
 
     @Delete("delete from paper_answer where paper_id=#{paperId}")
-    int deleteByPaperId(String paperId);
+    int deleteByPaperId(long paperId);
 
     @Delete("delete from paper_answer where question_id=#{questionId}")
-    int deleteByQuestionId(String questionId);
+    int deleteByQuestionId(long questionId);
 
     @Select("select id,paper_id as paperId," +
             "question_id as questionId," +
             "answer from paper_answer where id=#{id}")
-    PaperAnswer find(String id);
+    PaperAnswer find(long id);
 
     @Select("select id,paper_id as paperId," +
             "question_id as questionId," +
             "answer from paper_answer where paper_id=#{paperId}")
-    List<PaperAnswer> findByPaperId(String paperId);
+    List<PaperAnswer> findByPaperId(long paperId);
 
     @Select("select id,paper_id as paperId," +
             "question_id as questionId," +
             "answer from paper_answer where question_id=#{questionId}")
-    List<PaperAnswer> findByQuestionId(String questionId);
+    List<PaperAnswer> findByQuestionId(long questionId);
 
     @Select("select answer from paper_answer where question_id=#{questionId} limit ${limit}")
-    List<String> findAnswerByQuestionId(String questionId,int limit);
+    List<String> findAnswerByQuestionId(long questionId,int limit);
 
     @Select("select id,paper_id as paperId," +
             "question_id as questionId," +
             "answer from paper_answer where paper_id=#{paperId} and question_id=#{questionId}")
-    PaperAnswer findByPaperIdAndQuestionId(String paperId, String questionId);
+    PaperAnswer findByPaperIdAndQuestionId(long paperId, long questionId);
 
     @Select("select answer from paper_answer where paper_id=#{paperId} and question_id=#{questionId}")
-    String findAnswerByPaperIdAndQuestionId(String paperId, String questionId);
+    String findAnswerByPaperIdAndQuestionId(long paperId, long questionId);
 }

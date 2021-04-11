@@ -26,6 +26,7 @@ public interface QuestionnaireDao {
                 "#{userId},#{typeId},#{questionCount},#{templateId}," +
                 "#{invokeCount},#{status}" +
             ")")
+    @Options(keyProperty = "id",useGeneratedKeys = true)
     void add(Questionnaire q);
 
     @Select("select id,name,greeting,create_date as createDate," +
@@ -47,14 +48,14 @@ public interface QuestionnaireDao {
             "type_id as typeId,question_count as questionCount, " +
             "template_id as templateId,invoke_count as invokeCount,status " +
             "from questionnaire where id=#{id}")
-    Questionnaire find(String id);
+    Questionnaire find(long id);
 
     @Select("select id,name,greeting,create_date as createDate," +
             "publish_date as publishDate,user_id as userId," +
             "type_id as typeId,question_count as questionCount, " +
             "template_id as templateId,invoke_count as invokeCount,status " +
             "from questionnaire where id=#{id} and user_id=#{userId}")
-    Questionnaire findByIdAndUserId(String id,long userId);
+    Questionnaire findByIdAndUserId(long id,long userId);
 
     @Update("update questionnaire " +
             "set name=#{name},greeting=#{greeting}," +
@@ -66,5 +67,5 @@ public interface QuestionnaireDao {
     void update(Questionnaire q);
 
     @Delete("delete from questionnaire where id=#{id}")
-    void delete(String id);
+    void delete(long id);
 }
