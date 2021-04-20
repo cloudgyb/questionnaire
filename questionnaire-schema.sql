@@ -221,6 +221,7 @@ CREATE TABLE `user`
     `sex`           tinyint(4)   DEFAULT '0' COMMENT '性别，0男1女',
     `is_vip`        tinyint(4)   DEFAULT '0' COMMENT '是否是vip用户，0否1是',
     `create_date`   datetime     DEFAULT NULL COMMENT '用户注册时间',
+    `status`        tinyint      DEFAULT '1' COMMENT  '用户状态，0已被注销，1正常，2已被锁定',
     PRIMARY KEY (`id`),
     UNIQUE KEY `user_UN` (`username`)
 ) ENGINE = InnoDB
