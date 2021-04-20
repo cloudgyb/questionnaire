@@ -17,25 +17,27 @@ public interface UserDao {
 
     @Select("select id,username,real_name as realName,phone" +
             ",email,age,sex,password,password_salt as passwordSalt,is_vip as isVip" +
-            ",create_date as createDate from user where id=#{id}")
+            ",create_date as createDate,status from user where id=#{id}")
     User find(long id);
 
     @Select("select id,username,real_name as realName,phone" +
             ",email,age,sex,password,password_salt as passwordSalt,is_vip as isVip" +
-            ",create_date as createDate from user")
+            ",create_date as createDate,status from user")
     List<User> findAll();
 
     @Select("select id,username,real_name as realName,phone" +
             ",email,age,sex,password,password_salt as passwordSalt,is_vip as isVip" +
-            ",create_date as createDate from user where username=#{username}")
+            ",create_date as createDate,status from user where username=#{username} and status!=0")
     List<User> findByUsername(String username);
 
     @Select("select count(username) from user where username=#{username}")
     int countByUsername(@Param("username") String username);
 
     @Insert("insert into " +
-            "user(username,real_name,phone,email,age,sex,password,password_salt,is_vip,create_date)" +
-            " value(#{username},#{realName},#{phone},#{email},#{age},#{sex},#{password},#{passwordSalt},#{isVip},#{createDate})")
+            "user(username,real_name,phone,email,age,sex,"
+            + "password,password_salt,is_vip,create_date,status)" +
+            " value(#{username},#{realName},#{phone},#{email},#{age},#{sex},"
+            + "#{password},#{passwordSalt},#{isVip},#{createDate},#{status})")
     void addUser(User user);
 
     @Update("update user set " +
@@ -43,7 +45,7 @@ public interface UserDao {
             "phone=#{phone},email=#{email}," +
             "age=#{age},sex=#{sex}," +
             "password=#{password},password_salt=#{passwordSalt}," +
-            "is_vip=#{isVip} " +
+            "is_vip=#{isVip},status=#{status} " +
             "where id=#{id}")
     int update(User user);
 

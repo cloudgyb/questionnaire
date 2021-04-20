@@ -1,5 +1,6 @@
 package com.gyb.questionnaire.service;
 
+import com.gyb.questionnaire.config.constans.UserStatusEnum;
 import com.gyb.questionnaire.controller.ResponseResult;
 import com.gyb.questionnaire.controller.form.LoginForm;
 import com.gyb.questionnaire.dao.UserDao;
@@ -41,6 +42,9 @@ public class LoginLogoutService {
         User user = users.get(0);
         final String inputPass = EncryptUtil.encryptPassword(loginForm.getPassword(), user.getPasswordSalt());
         if(inputPass != null && inputPass.equals(user.getPassword())){
+            //如果用户被锁定
+            if(user.getStatus() == UserStatusEnum.LOCKED.getStatus())
+                return ResponseResult.error("用户已被锁定，请联系客服！",null);
             session.setAttribute(SESSION_KEY_CURR_USER,user);
             session.removeAttribute(SESSION_KEY_LOGIN_ERR_COUNT); //登录成功清楚登录错误计数
             loginLogService.addLoginLog(user.getId());

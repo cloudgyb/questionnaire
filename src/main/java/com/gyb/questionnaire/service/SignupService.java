@@ -1,5 +1,6 @@
 package com.gyb.questionnaire.service;
 
+import com.gyb.questionnaire.config.constans.UserStatusEnum;
 import com.gyb.questionnaire.controller.ResponseResult;
 import com.gyb.questionnaire.controller.form.SignupForm;
 import com.gyb.questionnaire.dao.UserDao;
@@ -38,6 +39,7 @@ public class SignupService {
         user.setPassword(encryptPass);
         user.setPasswordSalt(passSalt);
         user.setIsVip(0);
+        user.setStatus(UserStatusEnum.NORMAL.getStatus());
         user.setCreateDate(new Date());
         userDao.addUser(user);
         return ResponseResult.ok("注册成功！",null);
