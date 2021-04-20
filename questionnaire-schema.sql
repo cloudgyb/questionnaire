@@ -159,6 +159,7 @@ CREATE TABLE `template`
     `author_id`      bigint(20)       DEFAULT '0' COMMENT '模板制作人id,默认为0代表是系统发布的模板',
     `type_id`        bigint(20)       DEFAULT NULL COMMENT '模板类型id，参考questionnaire_type表的id',
     `question_count` int(10) unsigned DEFAULT '0' COMMENT '该模板问题总数',
+    `status`         tinyint          DEFAULT '0' COMMENT '模板状态，0未发布1已发布2下线',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='调查问卷模板表';
