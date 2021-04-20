@@ -24,4 +24,10 @@ public class Template {
     private String authorName;
     private int typeId;
     private int questionCount;
+    /**
+     * 0未发布
+     * 1已发布
+     * 2以下线（等价于删除）
+     */
+    private int status;
 }
