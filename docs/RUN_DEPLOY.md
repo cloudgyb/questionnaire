@@ -39,7 +39,7 @@
 2. 安装ElasticSearch分词插件IK <br>
    进入elasticsearch的bin目录，执行如下命令直接安装：
    ```bash
-   ./elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.3.0/elasticsearch-analysis-ik-7.6.2.zip
+   ./elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.6.2/elasticsearch-analysis-ik-7.6.2.zip
    ```
    或者先下载到本地再安装：<br>
    [ik下载地址](https://github.com/medcl/elasticsearch-analysis-ik/releases)
