@@ -56,6 +56,7 @@ curl -XPOST localhost:9200/template/_mapping?pretty -H 'content-type:application
        "authorName":{"type":"text"},
        "typeId":{"type":"integer"},
        "questionCount":{"type":"integer"},
+       "status":{"type":"integer"},
        "questions":{
           "type":"nested",
           "properties":{
@@ -105,6 +106,9 @@ curl -XGET localhost:9200/template/_mapping?pretty
           "format" : "yyyy/MM/dd HH:mm:ss"
         },
         "questionCount" : {
+          "type" : "integer"
+        },
+        "status" : {
           "type" : "integer"
         },
         "questions" : {

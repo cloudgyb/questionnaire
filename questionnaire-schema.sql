@@ -159,6 +159,7 @@ CREATE TABLE `template`
     `author_id`      bigint(20)       DEFAULT '0' COMMENT '模板制作人id,默认为0代表是系统发布的模板',
     `type_id`        bigint(20)       DEFAULT NULL COMMENT '模板类型id，参考questionnaire_type表的id',
     `question_count` int(10) unsigned DEFAULT '0' COMMENT '该模板问题总数',
+    `status`         tinyint          DEFAULT '0' COMMENT '模板状态，0未发布1已发布2下线',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='调查问卷模板表';
@@ -221,6 +222,7 @@ CREATE TABLE `user`
     `sex`           tinyint(4)   DEFAULT '0' COMMENT '性别，0男1女',
     `is_vip`        tinyint(4)   DEFAULT '0' COMMENT '是否是vip用户，0否1是',
     `create_date`   datetime     DEFAULT NULL COMMENT '用户注册时间',
+    `status`        tinyint      DEFAULT '1' COMMENT  '用户状态，0已被注销，1正常，2已被锁定',
     PRIMARY KEY (`id`),
     UNIQUE KEY `user_UN` (`username`)
 ) ENGINE = InnoDB

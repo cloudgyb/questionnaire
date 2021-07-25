@@ -1,5 +1,6 @@
 package com.gyb.questionnaire.entity;
 
+import com.gyb.questionnaire.config.constans.UserStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,11 @@ public class User {
     private int sex;
     private int isVip;
     private Date createDate;
+    /**
+     * 用户状态
+     * @see UserStatusEnum
+     */
+    private int status;
 
     public int getIsVip() {
         return isVip;

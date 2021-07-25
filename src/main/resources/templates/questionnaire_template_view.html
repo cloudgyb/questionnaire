@@ -43,7 +43,7 @@
             <span class="text-primary text-right" th:text="'发布日期:'+${#dates.format(td.publishDate,'yyyy/MM/dd HH:mm:ss')}"></span>
             <ul id="questions">
                 <li th:data-id="${q.id}" th:data-type="${q.questionType}" th:each="q : ${td.questions}">
-                    <div class="q-header">
+                    <div class="q-header" th:if="${q.questionType!=5}">
                         <span class="num" th:text="${q.questionNum}+'、'"></span>
                         <span th:for="${q.id}" th:text="${q.questionTitle}"></span>
                     </div>
@@ -68,6 +68,7 @@
                                 </label>
                             </div>
                         </div>
+                        <hr th:if="${q.questionType==5}">
                     </div>
                 </li>
             </ul>
