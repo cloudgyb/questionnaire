@@ -1,6 +1,8 @@
 package com.gyb.questionnaire.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gyb.questionnaire.controller.ResponseResult;
+import com.gyb.questionnaire.util.HttpServletUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -10,8 +12,12 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 
@@ -63,11 +69,34 @@ public class GlobalExceptionHandler {
         return ResponseResult.of(405,"客户端错误，不支持"+e.getMethod()+"方法",null);
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseBody
-    public ResponseResult exception(Exception e) {
+    @ExceptionHandler({Exception.class})
+    public void exception(Exception e) {
         log.error("服务器内部错误",e);
-        return ResponseResult.error("服务器内部错误！",null);
+        final boolean ajaxRequest = HttpServletUtil.isAjaxRequest();
+        final HttpServletResponse response = HttpServletUtil.getResponse();
+        response.setStatus(500);
+        if(ajaxRequest) {
+            final ResponseResult error = ResponseResult.error("服务器内部错误！", null);
+            final ObjectMapper objectMapper = new ObjectMapper();
+            final PrintWriter writer;
+            try {
+                response.setHeader("Content-Type","application/json;charset=utf-8");
+                writer = response.getWriter();
+                writer.write(objectMapper.writeValueAsString(error));
+                writer.flush();
+                writer.close();
+            }
+            catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        }else {
+            try {
+                response.sendRedirect("/static/500.html");
+            }
+            catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        }
     }
 
 }
