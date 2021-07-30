@@ -1,7 +1,7 @@
 # 问卷调查项目--“问卷Online”
 
 ### 使用的技术
-* 开发语言：Jdk 8+
+* 开发语言：Jdk 9+
 * Web框架：Spring Boot2+,Thymeleaf
 * 数据库：MySQL5.5+
 * 前端技术：Layui+Jquery+JqueryUI
