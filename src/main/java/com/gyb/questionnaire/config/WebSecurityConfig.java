@@ -2,6 +2,7 @@ package com.gyb.questionnaire.config;
 
 import com.gyb.questionnaire.config.filters.ContentTypeNoSniffFilter;
 import com.gyb.questionnaire.config.filters.IFrameFilter;
+import com.gyb.questionnaire.config.filters.XSSProtectFilter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,11 @@ public class WebSecurityConfig {
     @Bean
     public IFrameFilter iFrameFilter() {
         return new IFrameFilter();
+    }
+
+    @Bean
+    public XSSProtectFilter xssProtectFilter() {
+        return new XSSProtectFilter();
     }
 
 }
