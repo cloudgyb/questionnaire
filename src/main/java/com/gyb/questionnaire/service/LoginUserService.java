@@ -71,6 +71,9 @@ public class LoginUserService {
             return ResponseResult.error("原密码错误！",null);
         }
         final String newPass = EncryptUtil.encryptPassword(newPassword, passwordSalt);
+        if(newPass != null && newPass.equals(oldPass)){
+            return ResponseResult.error("新密码不能与原密码相同！",null);
+        }
         userDao.updatePassword(user.getId(),newPass);
         return ResponseResult.ok();
     }
