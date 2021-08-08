@@ -53,7 +53,8 @@
                             <label class="layui-form-label">密码<i class="layui-icon layui-icon-password"></i></label>
                             <div class="layui-input-block">
                                 <input id="password" class="layui-input" lay-verify="required|pass" name="password"
-                                       placeholder="密码6-12位不能且不能出现空格"
+                                       title="密码必须包含大小写字母、数字、特殊符号，且长度为8~16！"
+                                       placeholder="密码必须包含大小写字母、数字、特殊符号，且长度为8~16！"
                                        required type="password" lay-reqText="请输入密码">
                             </div>
                         </div>
@@ -131,8 +132,8 @@
                 //我们既支持上述函数式的方式，也支持下述数组的形式
                 //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
                 , pass: [
-                    /^[\S]{6,12}$/
-                    , '密码必须6到12位，且不能出现空格'
+                    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*]).{8,16}$/
+                    , '密码必须包含大小写字母、数字、特殊符号，且长度为8~16！'
                 ]
             });
             //监听提交

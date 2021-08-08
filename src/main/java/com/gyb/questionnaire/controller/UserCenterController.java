@@ -10,6 +10,7 @@ import javax.validation.constraints.Pattern;
 import com.github.pagehelper.Page;
 import com.gyb.questionnaire.config.RequiredLogin;
 import com.gyb.questionnaire.controller.form.UpdateUserForm;
+import com.gyb.questionnaire.controller.validator.Password;
 import com.gyb.questionnaire.entity.LoginLog;
 import com.gyb.questionnaire.entity.User;
 import com.gyb.questionnaire.service.LoginLogService;
@@ -91,7 +92,8 @@ public class UserCenterController {
     @RequiredLogin
     @ResponseBody
     public ResponseResult modifyPassword(@NotBlank(message = "请输入原密码") String oldPassword,
-                                         @NotBlank(message = "请输入新密码") String newPassword){
+                                         @NotBlank(message = "请输入新密码")
+                                         @Password String newPassword){
         return loginUserService.modifyPassword(oldPassword,newPassword);
     }
 
