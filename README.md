@@ -1,5 +1,14 @@
 # 问卷调查项目--“问卷Online”
 
+[![License](https://img.shields.io/github/license/cloudgyb/questionnaire)](https://github.com/cloudgyb/questionnaire/blob/master/LICENSE)
+[![fork](https://img.shields.io/github/forks/cloudgyb/questionnaire)](https://github.com/cloudgyb/questionnaire/network/members)
+[![stars](https://img.shields.io/github/stars/cloudgyb/questionnaire)](https://github.com/cloudgyb/questionnaire/stargazers)
+[![issues](https://img.shields.io/github/issues/cloudgyb/questionnaire)](https://github.com/cloudgyb/questionnaire/issues)
+[![IDE](https://img.shields.io/badge/IDE-IntelliJ%20IDEA%20-green)](https://www.jetbrains.com/idea/)
+
+一个基于Spring Boot的在线问卷调查系统，主要功能包括登录/注册、调查问卷模板、创建调查问卷、在线编辑模板、社交网站分享问卷、问卷结果分析与统计（图表展示）以及个人中心等功能。<br>
+A online questionnaire survey system base on Spring Boot.
+
 ### 使用的技术
 * 开发语言：Jdk 9+
 * Web框架：Spring Boot2+,Thymeleaf
