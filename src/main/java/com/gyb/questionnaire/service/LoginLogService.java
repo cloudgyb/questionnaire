@@ -83,7 +83,7 @@ public class LoginLogService {
         loginLog.setClientName(clientInfo.getName());
         loginLog.setSystemName(clientInfo.getSystem());
         loginLog.setIp(clientInfo.getIp());
-        String position = ClientUtil.getPositionByIP(clientInfo.getIp());
+        String position = ClientUtil.getPositionByIp(clientInfo.getIp());
         loginLog.setPosition(position);
         loginLog.setCreateTime(new Timestamp(System.currentTimeMillis()));
         final int n = loginLogDao.add(loginLog);

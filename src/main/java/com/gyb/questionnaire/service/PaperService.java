@@ -106,7 +106,7 @@ public class PaperService {
     }
 
     private void updatePaperAddress(String ip, Paper paper) {
-        final String addressStr = ClientUtil.getPositionByIP(ip);
+        final String addressStr = ClientUtil.getPositionByIp(ip);
         if (StringUtils.hasText(addressStr)) {
             paper.setAddress(addressStr);
             paperDao.update(paper);
