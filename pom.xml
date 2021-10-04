@@ -92,6 +92,12 @@
       <artifactId>javase</artifactId>
       <version>3.3.0</version>
     </dependency>
+    <!-- 通过ip地址查询地理位置 -->
+    <dependency>
+      <groupId>com.maxmind.geoip2</groupId>
+      <artifactId>geoip2</artifactId>
+      <version>2.15.0</version>
+    </dependency>
   </dependencies>
 
   <build>
