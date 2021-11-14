@@ -2,7 +2,7 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>感谢您的参与^-^</title>
+        <title th:if="${qa}" th:text="${qa.name}">感谢您的参与^-^</title>
         <link href="/static/lib/layui/css/layui.css" rel="stylesheet"/>
         <link href="/static/css/style.css" rel="stylesheet">
         <style>
@@ -12,9 +12,12 @@
 
             /* 问题展示区样式 */
             #templateQuestion-container {
-                margin: 0 auto;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 50%;
+                margin-left: -380px;
                 width: 760px;
-                height: auto;
                 padding: 20px 20px;
                 background: white;
                 z-index: 1;
@@ -84,7 +87,7 @@
                 </li>
             </ul>
         </div>
-        <div style="position: fixed;top:100px;right: 20px;width: 200px">
+        <div style="position: fixed;top:100px;right: 20px;width: 200px;z-index: 1000">
             <button class="layui-btn layui-btn-normal" style="width: 100%" id="submitBtn">^-^提交^-^</button>
         </div>
     </body>
