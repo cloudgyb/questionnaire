@@ -50,6 +50,9 @@ public class UserCenterController {
         this.loginLogService = loginLogService;
     }
 
+    /**
+     * 获取个人信息
+     */
     @GetMapping("/user/profile")
     @RequiredLogin
     public String userProfile(Model m){
