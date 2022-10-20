@@ -58,6 +58,9 @@ public final class ClientUtil {
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
         }
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0];
+        }
         return ip;
     }
 
