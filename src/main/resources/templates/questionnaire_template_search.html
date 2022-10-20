@@ -36,7 +36,7 @@
                 <div class="layui-col-md4" th:each="t : ${res.searchHits}">
                     <div class="layui-card">
                         <div class="layui-card-header">
-                            <a th:href="'/template/preview/'+${t.id}" title="预览模板" target="_blank">
+                            <a th:href="'/template/preview/'+${t.content.id}" title="预览模板" target="_blank">
                                 <h3 class="layui-icon layui-icon-list" th:utext="${t.content.name}"></h3>
                             </a>
                         </div>
@@ -48,7 +48,7 @@
                             <p th:text="'共'+${t.content.questionCount}+'题'"></p>
                             <p>
                                 <span th:text="'发布日期：'+${#dates.format(t.content.publishDate,'yyyy/MM/dd HH:mm:ss')}"></span>
-                                <a th:href="'/template/preview/'+${t.id}" class="layui-btn layui-btn-normal layui-btn-xs"
+                                <a th:href="'/template/preview/'+${t.content.id}" class="layui-btn layui-btn-normal layui-btn-xs"
                                     title="预览模板" target="_blank">
                                     预览
                                 </a>
