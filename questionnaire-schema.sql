@@ -44,7 +44,7 @@ CREATE TABLE `paper`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='问卷答卷存储表';
+   COMMENT ='问卷答卷存储表';
 
 
 --
@@ -64,7 +64,7 @@ CREATE TABLE `paper_answer`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='答卷的问题答案存储表';
+   COMMENT ='答卷的问题答案存储表';
 
 --
 -- Table structure for table `questionnaire`
@@ -88,7 +88,7 @@ CREATE TABLE `questionnaire`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='调查问卷存储表';
+   COMMENT ='调查问卷存储表';
 --
 -- Table structure for table `questionnaire_question`
 --
@@ -108,7 +108,7 @@ CREATE TABLE `questionnaire_question`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='调查问卷问题表，用于存储问卷中的问题';
+   COMMENT ='调查问卷问题表，用于存储问卷中的问题';
 
 --
 -- Table structure for table `questionnaire_question_option`
@@ -126,7 +126,7 @@ CREATE TABLE `questionnaire_question_option`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='调查问卷问题选项存储表';
+   COMMENT ='调查问卷问题选项存储表';
 
 --
 -- Table structure for table `questionnaire_type`
