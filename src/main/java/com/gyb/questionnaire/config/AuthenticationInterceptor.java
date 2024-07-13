@@ -35,9 +35,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                         responseNoLoginJson(response);
                     }else {
                         String queryString = request.getQueryString();
-                        queryString = (queryString != null && !"".equals(queryString)) ? "?" + queryString : "";
+                        queryString = (queryString != null && !queryString.isEmpty()) ? "?" + queryString : "";
                         response.sendRedirect(LOGIN_URL + "?returnUrl=" +
-                                request.getRequestURL().toString() + queryString);
+                                request.getRequestURI() + queryString);
                     }
                     return false;
                 }
