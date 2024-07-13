@@ -10,7 +10,7 @@
 A online questionnaire survey system base on Spring Boot.
 
 ### 使用的技术
-* 开发语言：Jdk 9+
+* 开发语言：Jdk 11
 * Web框架：Spring Boot2+,Thymeleaf
 * 数据库：MySQL5.5+
 * 前端技术：Layui+Jquery+JqueryUI
