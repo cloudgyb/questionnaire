@@ -165,28 +165,38 @@ public class QuestionnaireService extends QuestionnaireBaseService {
         for (QuestionnaireQuestionDTO question : questions) {
             question.setQuestionnaireId(questionnaire.getId());
             if(null != question.getId()){
+                // 校验问题是否属于当前问卷，防止越权修改他人问卷的问题
+                final QuestionnaireQuestion existing = questionDao.find(question.getId());
+                if(existing == null || !questionnaire.getId().equals(existing.getQuestionnaireId()))
+                    return ResponseResult.error("问题不存在或已被删除", null);
                 questionDao.update(question);
             }else{
                 questionDao.add(question);
             }
             //3、对单选和多选题更新选项
             if(question.getQuestionType() == 3 || question.getQuestionType() == 4)
-                updateQuestionOptions(question.getOptions(),question.getId());
+                if(!updateQuestionOptions(question.getOptions(),question.getId()))
+                    return ResponseResult.error("选项不存在或已被删除", null);
         }
         return ResponseResult.ok();
     }
 
-    private void updateQuestionOptions(List<QuestionnaireQuestionOption> options, long questionId) {
+    private boolean updateQuestionOptions(List<QuestionnaireQuestionOption> options, long questionId) {
         if(options == null)
-            return;
+            return true;
         for (QuestionnaireQuestionOption option : options) {
             option.setQuestionId(questionId);
             if(option.getId() != null){
+                // 校验选项是否属于当前问题，防止越权修改他人问卷的选项
+                final QuestionnaireQuestionOption existing = optionDao.find(option.getId());
+                if(existing == null || !Long.valueOf(questionId).equals(existing.getQuestionId()))
+                    return false;
                 optionDao.update(option);
             }else {
                 optionDao.add(option);
             }
         }
+        return true;
     }
 
     /**
