@@ -193,16 +193,33 @@ public class QuestionnaireService extends QuestionnaireBaseService {
      * 删除问卷中问题
      */
     @Transactional
-    public void deleteQuestion(long questionId) {
+    public ResponseResult deleteQuestion(long questionId) {
+        final QuestionnaireQuestion question = questionDao.find(questionId);
+        if (question == null)
+            return ResponseResult.error("问题不存在或已被删除", null);
+        // 校验问题所属问卷是否属于当前登录用户，防止越权删除他人问卷的问题
+        if (getUserQuestionnaire(question.getQuestionnaireId()) == null)
+            return ResponseResult.error("问题不存在或已被删除", null);
         questionDao.delete(questionId);
         optionDao.deleteByQuestionId(questionId);
+        return ResponseResult.ok();
     }
     /**
      * 删除问卷中问题的选项
      */
     @Transactional
-    public void deleteQuestionOption(long optionId) {
+    public ResponseResult deleteQuestionOption(long optionId) {
+        final QuestionnaireQuestionOption option = optionDao.find(optionId);
+        if (option == null)
+            return ResponseResult.error("选项不存在或已被删除", null);
+        final QuestionnaireQuestion question = questionDao.find(option.getQuestionId());
+        if (question == null)
+            return ResponseResult.error("选项不存在或已被删除", null);
+        // 校验选项所属问卷是否属于当前登录用户，防止越权删除他人问卷的选项
+        if (getUserQuestionnaire(question.getQuestionnaireId()) == null)
+            return ResponseResult.error("选项不存在或已被删除", null);
         optionDao.delete(optionId);
+        return ResponseResult.ok();
     }
 
     @Transactional
