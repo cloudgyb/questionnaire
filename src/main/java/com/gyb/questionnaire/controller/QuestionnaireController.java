@@ -146,8 +146,7 @@ public class QuestionnaireController {
 	@RequiredLogin
 	@ResponseBody
 	public ResponseResult deleteQuestion(@RequestParam Long questionId) {
-		questionnaireService.deleteQuestion(questionId);
-		return ResponseResult.ok();
+		return questionnaireService.deleteQuestion(questionId);
 	}
 
 	/**
@@ -158,8 +157,7 @@ public class QuestionnaireController {
 	@RequiredLogin
 	@ResponseBody
 	public ResponseResult deleteQuestionOption(@RequestParam Long optionId) {
-		questionnaireService.deleteQuestionOption(optionId);
-		return ResponseResult.ok();
+		return questionnaireService.deleteQuestionOption(optionId);
 	}
 
 	@RequiredLogin
