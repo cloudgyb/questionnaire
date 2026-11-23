@@ -28,6 +28,13 @@ public interface QuestionnaireQuestionOptionDao {
             "from questionnaire_question_option where question_id=#{questionId}")
     List<QuestionnaireQuestionOption> findByQuestionId(Long questionId);
 
+    @Select("select id," +
+            "question_id as questionId," +
+            "option_text as optionText," +
+            "option_order as optionOrder " +
+            "from questionnaire_question_option where id=#{id}")
+    QuestionnaireQuestionOption find(Long id);
+
     @Insert("insert into questionnaire_question_option(id,question_id,option_text,option_order) " +
             "value(#{id},#{questionId},#{optionText},#{optionOrder})")
     @Options(keyProperty = "id",useGeneratedKeys = true)

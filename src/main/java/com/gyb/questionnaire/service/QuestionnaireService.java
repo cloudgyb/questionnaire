@@ -165,44 +165,71 @@ public class QuestionnaireService extends QuestionnaireBaseService {
         for (QuestionnaireQuestionDTO question : questions) {
             question.setQuestionnaireId(questionnaire.getId());
             if(null != question.getId()){
+                // 校验问题是否属于当前问卷，防止越权修改他人问卷的问题
+                final QuestionnaireQuestion existing = questionDao.find(question.getId());
+                if(existing == null || !questionnaire.getId().equals(existing.getQuestionnaireId()))
+                    return ResponseResult.error("问题不存在或已被删除", null);
                 questionDao.update(question);
             }else{
                 questionDao.add(question);
             }
             //3、对单选和多选题更新选项
             if(question.getQuestionType() == 3 || question.getQuestionType() == 4)
-                updateQuestionOptions(question.getOptions(),question.getId());
+                if(!updateQuestionOptions(question.getOptions(),question.getId()))
+                    return ResponseResult.error("选项不存在或已被删除", null);
         }
         return ResponseResult.ok();
     }
 
-    private void updateQuestionOptions(List<QuestionnaireQuestionOption> options, long questionId) {
+    private boolean updateQuestionOptions(List<QuestionnaireQuestionOption> options, long questionId) {
         if(options == null)
-            return;
+            return true;
         for (QuestionnaireQuestionOption option : options) {
             option.setQuestionId(questionId);
             if(option.getId() != null){
+                // 校验选项是否属于当前问题，防止越权修改他人问卷的选项
+                final QuestionnaireQuestionOption existing = optionDao.find(option.getId());
+                if(existing == null || !Long.valueOf(questionId).equals(existing.getQuestionId()))
+                    return false;
                 optionDao.update(option);
             }else {
                 optionDao.add(option);
             }
         }
+        return true;
     }
 
     /**
      * 删除问卷中问题
      */
     @Transactional
-    public void deleteQuestion(long questionId) {
+    public ResponseResult deleteQuestion(long questionId) {
+        final QuestionnaireQuestion question = questionDao.find(questionId);
+        if (question == null)
+            return ResponseResult.error("问题不存在或已被删除", null);
+        // 校验问题所属问卷是否属于当前登录用户，防止越权删除他人问卷的问题
+        if (getUserQuestionnaire(question.getQuestionnaireId()) == null)
+            return ResponseResult.error("问题不存在或已被删除", null);
         questionDao.delete(questionId);
         optionDao.deleteByQuestionId(questionId);
+        return ResponseResult.ok();
     }
     /**
      * 删除问卷中问题的选项
      */
     @Transactional
-    public void deleteQuestionOption(long optionId) {
+    public ResponseResult deleteQuestionOption(long optionId) {
+        final QuestionnaireQuestionOption option = optionDao.find(optionId);
+        if (option == null)
+            return ResponseResult.error("选项不存在或已被删除", null);
+        final QuestionnaireQuestion question = questionDao.find(option.getQuestionId());
+        if (question == null)
+            return ResponseResult.error("选项不存在或已被删除", null);
+        // 校验选项所属问卷是否属于当前登录用户，防止越权删除他人问卷的选项
+        if (getUserQuestionnaire(question.getQuestionnaireId()) == null)
+            return ResponseResult.error("选项不存在或已被删除", null);
         optionDao.delete(optionId);
+        return ResponseResult.ok();
     }
 
     @Transactional
